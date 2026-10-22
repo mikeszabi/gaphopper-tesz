@@ -660,6 +660,8 @@ def dry_run(job: dict, s: Settings | None = None, graph=None, llm_override: dict
     except Exception as exc:  # a próbafutás eredménye a hiba is
         out["ok"] = False
         out["error"] = str(exc)[:3000]
+    out["failed_calls"] = [{"step": r["step"], "raw": (r["raw_text"] or "")[:800]} for r in ctx.store.db.execute(
+        "SELECT step, raw_text FROM llm_log WHERE parsed_ok = 0 ORDER BY id")]
     usage = with_cost(ctx.store.usage())
     out["usage"] = [{k: r[k] for k in ("step", "model", "hivas", "sikeres", "input", "cache_read", "cache_write",
                                        "output", "ido_mp", "koltseg_usd")} for r in usage]

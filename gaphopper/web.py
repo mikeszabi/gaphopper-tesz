@@ -32,37 +32,43 @@ REC_EXT = {".jsonl", ".json", ".csv", ".xlsx"}
 
 PHASES = [  # a felületen látható fázisok sorrendben
     {"key": "E0", "name": "Kinyerés", "about": "munkakör kiolvasása dokumentumból (csak dokumentumból jött rekordnál)"},
-    {"key": "P1", "name": "Felbontás", "about": "a munkakör TESZ-nivalókra bontása"},
+    {"key": "P1", "name": "Felbontás", "about": "TESZ-MAG-ok és SZÍN-ezett változataik (TESZ-nivalók)"},
     {"key": "P2", "name": "Bírálat", "about": "független ellenőrzés; auto módban csak jelzésnél vagy mintában"},
-    {"key": "P3", "name": "Gráfba írás", "about": "egyesítés a meglévő elemekkel és írás a neo4j-be"},
-    {"key": "P5", "name": "Tanúsítás", "about": "igazolási mondat és rubrika a gráf TESZ-eihez"},
+    {"key": "P3", "name": "Gráfba írás", "about": "MAG-egyesítés (P3), SZÍN-egyezés a kódban, írás a neo4j-be"},
+    {"key": "P5", "name": "Tanúsítás", "about": "MAG-rubrika, változatonként igazolás és SZÍN-rubrika"},
 ]
 PROMPT_STEP = {  # a felület ebben a sorrendben mutatja
     "p0_system": ("P1, P2, P4, P5", "közös rendszerprompt: fogalmak, zárt listák, szabályok"),
     "e0_system": ("E0", "kinyerés: rendszerprompt"),
     "e0_kinyeres": ("E0", "kinyerés: munkakörök egy dokumentumrészletből"),
-    "p1_felbontas": ("P1", "munkakör felbontása TESZ-nivalókra"),
+    "p1_felbontas": ("P1", "munkakör felbontása TESZ-MAG-okra és SZÍN-ezett változatokra"),
     "p2_biralat": ("P2", "bírálat, csak az eltéréseket adja vissza"),
     "p3_system": ("P3", "az egyesítő rövid rendszerpromptja"),
-    "p3_egyesites": ("P3", "a kétes egyesítések, egy hívásban"),
+    "p3_egyesites": ("P3", "a kétes MAG- és SZER-ELEM-egyesítések, egy hívásban"),
     "p4a_keszseg": ("P4", "KÉSZ-ség-horgonyzás"),
     "p4b_eqf": ("P4", "EQF-szintleírók"),
-    "p5_tanusitas": ("P5", "igazolási mondat és rubrika kanonikus TESZ-enként"),
+    "p5_tanusitas": ("P5", "MAG-rubrika és változatonként igazolás + SZÍN-rubrika"),
     "vocab": ("mind", "zárt szótárak és szabálykuszöbök (config/vocab.yaml)"),
 }
 DECISION_HU = {"NEW": "új elem", "SAME": "már megvolt, összekapcsolva", "ALIAS": "már megvolt (név alapján)",
                "VARIANT": "új változat egy meglévőhöz", "NARROWER": "szűkebb elem", "BROADER": "tágabb, meglévő elem"}
 CYPHER = {
     "Csomópontok típus szerint": "MATCH (n) RETURN labels(n)[0] AS tipus, count(*) AS db ORDER BY db DESC",
-    "Legtöbb munkakörben szereplő TESZ": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo) "
-                                         "RETURN t.id AS id, t.label_hu AS tesz, count(m) AS munkakor_db "
-                                         "ORDER BY munkakor_db DESC LIMIT 50",
-    "SZER-ELEM-ek használat szerint": "MATCH (t:TeszNivalo)-[:IRANYUL|HASZNAL]->(s:SzerElem) "
-                                      "RETURN s.id AS id, s.label_hu AS szer_elem, count(t) AS tesz_db "
-                                      "ORDER BY tesz_db DESC LIMIT 100",
-    "TESZ-típus × HELY-zet": "MATCH (:MunkaKor)-[:TARTALMAZ_TESZT]->(t)-[:TIPUSA]->(ty), "
-                             "(t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h) "
-                             "RETURN ty.id AS tipus, h.id AS helyzet, count(*) AS db ORDER BY db DESC",
+    "Legtöbb munkakörben szereplő TESZ-MAG": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(:TeszNivalo)-[:MAGJA]->(g:TeszMag) "
+                                             "RETURN g.id AS id, g.label_hu AS mag, count(DISTINCT m) AS munkakor_db "
+                                             "ORDER BY munkakor_db DESC LIMIT 50",
+    "MAG-ok mélyítési létrája": "MATCH (g:TeszMag)<-[:MAGJA]-(t:TeszNivalo)-[:SZINBEN]->(s:Szin)-[:HELYZETE]->(h:Helyzet) "
+                                "WITH g, collect(h.id + ' (' + coalesce(toString(h.fok), h.tengely) + ')') AS szinek, "
+                                "count(t) AS v WHERE v > 1 RETURN g.label_hu AS mag, v AS valtozat, szinek "
+                                "ORDER BY v DESC LIMIT 100",
+    "Mélyítési jelöltek": "MATCH (g:TeszMag)-[e:MELYITESI_JELOLT]->(s:Szin) "
+                          "RETURN g.label_hu AS mag, s.id AS szin, e.indok_hu AS indok, e.forras_munkakor AS munkakor",
+    "SZER-ELEM-ek használat szerint": "MATCH (x)-[:IRANYUL|HASZNAL]->(s:SzerElem) "
+                                      "RETURN s.id AS id, s.label_hu AS szer_elem, count(x) AS hasznalat "
+                                      "ORDER BY hasznalat DESC LIMIT 100",
+    "TESZ-típus × SZÍN": "MATCH (:MunkaKor)-[:TARTALMAZ_TESZT]->(t)-[:MAGJA]->(:TeszMag)-[:TIPUSA]->(ty), "
+                         "(t)-[:SZINBEN]->(s:Szin) "
+                         "RETURN ty.id AS tipus, s.id AS szin, count(*) AS db ORDER BY db DESC",
 }
 
 
@@ -122,6 +128,9 @@ def _art_index(S: Store) -> dict[str, dict[str, dict]]:
         "CASE step WHEN 'P1' THEN json_array_length(json, '$.tesz') "
         "          WHEN 'P2' THEN json_array_length(json, '$.final_tesz') "
         "          WHEN 'P3' THEN json_array_length(json, '$.tesz') END AS n, "
+        "CASE step WHEN 'P1' THEN json_array_length(json, '$.tesz_magok') "
+        "          WHEN 'P2' THEN json_array_length(json, '$.final_magok') "
+        "          WHEN 'P3' THEN json_array_length(json, '$.magok') END AS nm, "
         "CASE WHEN step='P3' THEN json_extract(json, '$.job_id') END AS graph_id, "
         "CASE WHEN step='P3' THEN json_extract(json, '$.p3_cases') END AS cases "
         "FROM artifacts").fetchall()
@@ -134,9 +143,14 @@ def _art_index(S: Store) -> dict[str, dict[str, dict]]:
 def _graph_counts() -> dict[str, dict] | None:
     rows = GRAPH.read("MATCH (m:MunkaKor) OPTIONAL MATCH (m)-[:TARTALMAZ_TESZT]->(t:TeszNivalo) "
                       "RETURN m.id AS id, count(t) AS n, "
-                      "sum(CASE WHEN size(coalesce(t.rubric_hu, [])) > 0 THEN 1 ELSE 0 END) AS r",
+                      "sum(CASE WHEN t.attestation_hu IS NOT NULL THEN 1 ELSE 0 END) AS r",
                       limit=10 ** 7)
     return None if rows is None else {r["id"]: r for r in rows}
+
+
+def _mag_text(a: dict, what: str) -> str:
+    """'12 MAG / 17 TESZ-nivaló ...' (régi, MAG nélküli eredménynél csak a TESZ-szám)."""
+    return (f"{a['nm']} MAG / {a['n']} TESZ-nivaló {what}" if a.get("nm") else f"{a['n']} TESZ {what}")
 
 
 def display_status(status: str) -> str:
@@ -159,7 +173,7 @@ def phases(status: str, note: str, rec: dict, arts: dict, gc: dict | None) -> tu
         ph["E0"] = {"state": "na", "text": "közvetlenül importált rekord"}
     # P1
     if "P1" in a:
-        ph["P1"] = {"state": "done", "text": f"{a['P1']['n']} TESZ-jelölt"}
+        ph["P1"] = {"state": "done", "text": _mag_text(a["P1"], "jelölt")}
     elif "P1_ERR" in a:
         ph["P1"] = {"state": "error", "text": a["P1_ERR"]["info"] or note}
     # P2
@@ -167,7 +181,7 @@ def phases(status: str, note: str, rec: dict, arts: dict, gc: dict | None) -> tu
         if a["P2"]["verdict"] == "SKIPPED":
             ph["P2"] = {"state": "skip", "text": f"kimaradt: {a['P2']['info'] or ''}"}
         else:
-            ph["P2"] = {"state": "done", "text": f"{a['P2']['verdict']}; {a['P2']['n']} TESZ marad"
+            ph["P2"] = {"state": "done", "text": f"{a['P2']['verdict']}; {_mag_text(a['P2'], 'marad')}"
                         + (f" ({a['P2']['info']})" if a["P2"]["info"] else "")}
     elif "P2_ERR" in a:
         ph["P2"] = {"state": "error", "text": a["P2_ERR"]["info"] or note}
@@ -180,7 +194,7 @@ def phases(status: str, note: str, rec: dict, arts: dict, gc: dict | None) -> tu
         ph["P3"] = {"state": "skip", "text": "elvetve, nem kerül a gráfba"}
     elif "P3" in a and status == "GRAFBAN":
         cases = a["P3"]["cases"]
-        ph["P3"] = {"state": "done", "text": f"{a['P3']['n']} TESZ beírva" + (f", {cases} kétes eset" if cases else "")}
+        ph["P3"] = {"state": "done", "text": f"{_mag_text(a['P3'], 'beírva')}" + (f", {cases} kétes eset" if cases else "")}
     elif "P3_ERR" in a:
         ph["P3"] = {"state": "error", "text": a["P3_ERR"].get("info") or note}
     elif status == "HIBA" and "P1" in a and "P2" in a:
@@ -198,11 +212,11 @@ def phases(status: str, note: str, rec: dict, arts: dict, gc: dict | None) -> tu
         g = gc[gid]
         db = {"state": "in", "text": f"{g['n']} TESZ a gráfban", "n": g["n"], "graph_id": gid}
         if g["n"] and g["r"] == g["n"]:
-            ph["P5"] = {"state": "done", "text": f"mind a {g['n']} TESZ-nek van rubrikája"}
+            ph["P5"] = {"state": "done", "text": f"mind a {g['n']} TESZ-nivalónak van igazolása"}
         elif g["r"]:
-            ph["P5"] = {"state": "part", "text": f"{g['r']} / {g['n']} TESZ-nek van rubrikája"}
+            ph["P5"] = {"state": "part", "text": f"{g['r']} / {g['n']} TESZ-nivalónak van igazolása"}
         else:
-            ph["P5"] = {"state": "wait", "text": "még egy TESZ-nek sincs rubrikája"}
+            ph["P5"] = {"state": "wait", "text": "még egy TESZ-nivalónak sincs igazolása"}
         if fresh:
             db["text"] += " (régi futásból; az újrafuttatás felülírja)"
     else:
@@ -218,6 +232,8 @@ def _mark_running(rows: list[dict]) -> None:
         args, targets = t.get("args") or [], t.get("targets")
         if not args:
             continue
+        if args[0] == "run" and "--dry-run" in args:
+            continue  # a próbafutás nem változtat állapotot
         if args[0] == "run":
             until = args[args.index("--until") + 1] if "--until" in args else "graph"
             last = {"p1": "P1", "p2": "P2", "graph": "P3"}[until]
@@ -262,14 +278,16 @@ def _usage_by_step(S: Store, job_id: str) -> dict[str, dict]:
                                        "prompt_version": "", "last": ""})
         a["calls"] += 1
         a["ok"] += int(r["parsed_ok"])
-        inp, out_, cr = (int(u.get(k) or 0) for k in ("input_tokens", "output_tokens", "cache_read_input_tokens"))
+        inp, out_, cr, cw = (int(u.get(k) or 0) for k in ("input_tokens", "output_tokens", "cache_read_input_tokens",
+                                                            "cache_creation_input_tokens"))
+        inp += cw  # a gyorsítótárba írt bemenet is bemenet (1,25-szörös áron)
         a["input"] += inp
         a["output"] += out_
         a["cache_read"] += cr
         a["seconds"] += (u.get("duration_ms") or 0) / 1000
         p = price(r["provider"].replace("anthropic-batch", "anthropic"), r["model"], inp + cr)
         if p is not None and a["cost"] is not None:
-            c = (inp * p[0] + cr * p[2] + out_ * p[1]) / 1e6
+            c = ((inp - cw) * p[0] + cw * p[0] * 1.25 + cr * p[2] + out_ * p[1]) / 1e6
             a["cost"] += c / 2 if r["provider"] == "anthropic-batch" else c
         else:
             a["cost"] = None
@@ -282,7 +300,8 @@ def _usage_by_step(S: Store, job_id: str) -> dict[str, dict]:
 
 
 def _tesz_brief(t: dict) -> dict:
-    return {"cand_id": t.get("cand_id"), "label_hu": t.get("label_hu"), "tesz_type": t.get("tesz_type"),
+    return {"cand_id": t.get("cand_id"), "mag_id": t.get("mag_id"), "alap_szin": t.get("alap_szin", True),
+            "szin_kulonbseg_hu": t.get("szin_kulonbseg_hu"), "label_hu": t.get("label_hu"), "tesz_type": t.get("tesz_type"),
             "szer_elem": (t.get("primary_szer") or {}).get("label_hu"), "kozeg": t.get("kozeg"),
             "helyzet": t.get("helyzet"), "relevance": t.get("relevance"), "eqf": t.get("expected_eqf"),
             "confidence": t.get("confidence")}
@@ -300,14 +319,18 @@ def job_detail(S: Store, job_id: str) -> dict:
     p1, p2, p3 = arts.get("P1"), arts.get("P2"), arts.get("P3")
     # Mi került a gráfba: a végleges lista soronként, a P3 döntésével együtt
     final = (p2 or {}).get("final_tesz") or (p1 or {}).get("tesz") or []
+    magok = [{k: m.get(k) for k in ("mag_id", "kor_id", "label_hu", "tesz_type", "relevance", "melyites_jeloltek")}
+             | {"szer_elem": (m.get("primary_szer") or {}).get("label_hu")}
+             for m in ((p2 or {}).get("final_magok") or (p1 or {}).get("tesz_magok") or [])]
     decided = {x["cand_id"]: x for x in (p3 or {}).get("tesz", [])}
     graph_ids = None
     gid = (p3 or {}).get("job_id") or job_id
     g_rows = GRAPH.read(
         "MATCH (m:MunkaKor {id: $id})-[r:TARTALMAZ_TESZT]->(t:TeszNivalo) "
-        "OPTIONAL MATCH (t)-[:TIPUSA]->(ty) OPTIONAL MATCH (other:MunkaKor)-[:TARTALMAZ_TESZT]->(t) "
-        "RETURN t.id AS id, t.label_hu AS label_hu, ty.id AS tesz_type, r.cand_id AS cand_id, "
-        "r.relevance AS relevance, size(coalesce(t.rubric_hu, [])) AS rubrika, "
+        "OPTIONAL MATCH (t)-[:MAGJA]->(g:TeszMag) OPTIONAL MATCH (g)-[:TIPUSA]->(ty) "
+        "OPTIONAL MATCH (other:MunkaKor)-[:TARTALMAZ_TESZT]->(t) "
+        "RETURN t.id AS id, t.label_hu AS label_hu, ty.id AS tesz_type, r.cand_id AS cand_id, g.id AS mag, "
+        "r.relevance AS relevance, size(coalesce(g.rubric_alap_hu, [])) + size(coalesce(t.rubric_szin_hu, [])) AS rubrika, "
         "count(DISTINCT other) AS munkakor_db ORDER BY t.label_hu", id=gid)
     if g_rows is not None:
         graph_ids = {x["id"] for x in g_rows}
@@ -336,7 +359,7 @@ def job_detail(S: Store, job_id: str) -> dict:
         "approval_tasks": [t | {"log": tasks.tail(t["id"], 15) if t["status"] in ("hiba", "megszakadt") else ""}
                            for t in tasks.tasks() if (t.get("args") or [""])[0] == "review"
                            and job_id in (t.get("targets") or [])],
-        "usage": usage, "tesz": tesz, "dropped": dropped, "graph": g_rows, "graph_ok": g_rows is not None,
+        "usage": usage, "tesz": tesz, "magok": magok, "dropped": dropped, "dryrun": dryrun_get(job_id, brief=True), "graph": g_rows, "graph_ok": g_rows is not None,
         "graph_id": gid, "queue": queue,
         "p1": None if not p1 else {"label": p1.get("job_label_hu"), "purpose": p1.get("purpose_hu", ""),
                                    "at": p1["_at"], "pv": p1["_pv"]},
@@ -366,6 +389,8 @@ def _art_index_one(S: Store, job_id: str) -> dict:
         "          WHEN 'P3_ERR' THEN json_extract(json, '$.error') END AS info, "
         "CASE step WHEN 'P1' THEN json_array_length(json, '$.tesz') WHEN 'P2' THEN json_array_length(json, '$.final_tesz') "
         "          WHEN 'P3' THEN json_array_length(json, '$.tesz') END AS n, "
+        "CASE step WHEN 'P1' THEN json_array_length(json, '$.tesz_magok') WHEN 'P2' THEN json_array_length(json, '$.final_magok') "
+        "          WHEN 'P3' THEN json_array_length(json, '$.magok') END AS nm, "
         "CASE WHEN step='P3' THEN json_extract(json, '$.job_id') END AS graph_id, "
         "CASE WHEN step='P3' THEN json_extract(json, '$.p3_cases') END AS cases "
         "FROM artifacts WHERE job_id=?", (job_id,)).fetchall()
@@ -410,7 +435,7 @@ def db_state(S: Store) -> dict:
         return out
     out["labels"] = labels
     out["rels"] = GRAPH.read("MATCH ()-[r]->() RETURN type(r) AS kapcsolat, count(*) AS db ORDER BY db DESC")
-    out["no_rubric"] = GRAPH.read("MATCH (t:TeszNivalo) WHERE size(coalesce(t.rubric_hu, [])) = 0 "
+    out["no_rubric"] = GRAPH.read("MATCH (t:TeszNivalo) WHERE t.attestation_hu IS NULL "
                                   "RETURN count(t) AS db")[0]["db"]
     rows, _ = job_rows(S)
     out["compare"] = {
@@ -683,13 +708,58 @@ def preview_records(name: str) -> dict:
                        for r in recs[:15]]}
 
 
+# ------------------------------------------------------------------ próbafutás (dry run)
+def _dry_file(job_id: str) -> Path:
+    from .pipeline import DRYRUN_DIR
+
+    return DRYRUN_DIR / f"{job_id.replace(':', '_').replace('/', '_')}.json"
+
+
+def dryrun_get(job_id: str, brief: bool = False) -> dict | None:
+    f = _dry_file(job_id)
+    if not f.exists():
+        return None
+    d = json.loads(f.read_text(encoding="utf-8"))
+    d["file_time"] = datetime.fromtimestamp(f.stat().st_mtime).isoformat(timespec="seconds")
+    if brief:
+        d.pop("p2", None)
+    return d
+
+
+def dryrun_list() -> dict:
+    from .pipeline import DRYRUN_DIR
+
+    out = []
+    for f in sorted(DRYRUN_DIR.glob("*.json"), key=lambda x: x.stat().st_mtime, reverse=True):
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        out.append({"job_id": d.get("job_id"), "title": d.get("title"), "ok": d.get("ok"), "szamok": d.get("szamok"),
+                    "flags": [x.get("rule") for x in d.get("rule_flags") or []], "total": d.get("total"),
+                    "prompt_version": d.get("prompt_version"),
+                    "time": datetime.fromtimestamp(f.stat().st_mtime).isoformat(timespec="seconds")})
+    return {"runs": out}
+
+
 # ------------------------------------------------------------------ futtatás
 def start_run(body: dict, S: Store) -> str:
     until = body.get("until", "graph")
     if until not in ("p1", "p2", "graph"):
         raise ValueError("until: p1 | p2 | graph")
-    args = ["run", "--until", until, "--workers", str(int(body.get("workers") or 4))]
     ids = [str(j) for j in body.get("jobs") or []]
+    if body.get("dry_run"):
+        # Próbafutás: a rekord a state.sqlite-ból csak olvasva; semmilyen állapot nem változik.
+        if not ids:
+            ids = [r["job_id"] for r in S.jobs() if r["status"] not in ("GRAFBAN", "ELVETVE")][: int(body.get("limit") or 1)]
+        if not ids:
+            raise ValueError("Jelölj ki legalább egy munkakört a próbafutáshoz.")
+        args = ["run", "--dry-run", "--workers", str(int(body.get("workers") or 4))]
+        for j in ids:
+            S.job(j)
+            args += ["--job", j]
+        return tasks.start(f"próbafutás (dry run): {len(ids)} munkakör", args, targets=ids)
+    args = ["run", "--until", until, "--workers", str(int(body.get("workers") or 4))]
     force = bool(body.get("force"))
     if not ids:  # a várakozók közül az első N, vagy mind
         ids = [r["job_id"] for r in S.jobs() if r["status"] not in ("GRAFBAN", "ELVETVE")
@@ -818,6 +888,13 @@ class Handler(BaseHTTPRequestHandler):
                 return None
         if head == "run" and m == "POST":
             return {"task": start_run(self.body(), S)}
+        if head == "dryrun" and m == "GET":
+            if len(p) == 1:
+                return dryrun_list()
+            d = dryrun_get(p[1])
+            if d is None:
+                raise KeyError(p[1])
+            return d
         if head == "certify" and m == "POST":
             b = self.body()
             return {"task": tasks.start("tanúsítás (P5)", ["certify"] + (["--limit", str(int(b["limit"]))]

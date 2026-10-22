@@ -101,3 +101,5 @@ textarea.ed { width: 100%; min-height: 520px; font: 13px/1.5 ui-monospace, Menlo
 details > summary { cursor: pointer; color: var(--muted); font-weight: 500; margin: 6px 0; }
 .diff .add { color: var(--ok); } .diff .del { color: var(--err); }
 @media (max-width: 800px) { .prompts { grid-template-columns: 1fr; } header { gap: 10px; overflow-x: auto; } .brand span { display: none; } }
+
+tr.mag td { background: var(--wait-bg); border-top: 2px solid var(--line); }

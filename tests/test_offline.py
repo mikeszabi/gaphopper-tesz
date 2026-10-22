@@ -820,3 +820,29 @@ def test_web_api_phases_and_files(tmp_path, monkeypatch):
             assert b"app.js" in r.read()
     finally:
         srv.shutdown()
+
+
+def test_web_dry_run_toggle_and_results(tmp_path, monkeypatch):
+    """A Futás oldal próbafutás-kapcsolója: run --dry-run indul, állapot nem változik; az eredmény olvasható."""
+    from gaphopper import pipeline, web
+    from gaphopper.store import Store
+
+    monkeypatch.setenv("GH_STATE_DB", str(tmp_path / "state.sqlite"))
+    monkeypatch.setattr(pipeline, "DRYRUN_DIR", tmp_path / "dryrun")
+    started = []
+    monkeypatch.setattr(web.tasks, "start", lambda label, args, targets=None: started.append((label, args)) or "t1")
+    S = Store(tmp_path / "state.sqlite")
+    S.upsert_job({"job_id": "onet:1", "title": "Ápoló"})
+    assert web.start_run({"jobs": ["onet:1"], "dry_run": True, "until": "graph"}, S) == "t1"
+    label, args = started[0]
+    assert args[:2] == ["run", "--dry-run"] and "--until" not in args and args[-2:] == ["--job", "onet:1"]
+    assert S.status("onet:1") == "NYERS"
+    with pytest.raises(KeyError):
+        web.start_run({"jobs": ["nincs"], "dry_run": True}, S)
+    (tmp_path / "dryrun").mkdir()
+    (tmp_path / "dryrun" / "onet_1.json").write_text(json.dumps(
+        {"job_id": "onet:1", "title": "Ápoló", "ok": True, "szamok": {"mag": 12, "tesz": 16},
+         "rule_flags": [{"rule": "R13", "message": "x"}], "total": {"input": 1, "output": 2}, "p2": {}}), encoding="utf-8")
+    lst = web.dryrun_list()["runs"]
+    assert lst[0]["job_id"] == "onet:1" and lst[0]["flags"] == ["R13"]
+    assert web.dryrun_get("onet:1", brief=True)["szamok"]["mag"] == 12 and web.dryrun_get("x") is None

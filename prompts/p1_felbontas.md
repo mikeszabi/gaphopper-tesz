@@ -4,7 +4,7 @@ FELADAT (P1): Bontsd fel az alábbi MUNKA-KÖR-t TESZ-MAG-okra és azok SZÍN-ez
 MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
 1. FELADATKÖRÖK: a munkakör célja egy mondatban; 4-8 feladatkör (kor_id) becsült
    munkaidő-aránnyal (összesen 90-110%). A feladatkör rendező szint, nem TESZ.
-2. TESZ-MAG-OK: feladatkörönként 2-4, összesen 10-18 MAG (ebből 8-15 CORE). Forrás: tasks,
+2. TESZ-MAG-OK: feladatkörönként 1-4, összesen 10-18 MAG (ebből 8-15 CORE). Forrás: tasks,
    description, requirements, conditions és a szakma ismert gyakorlata a locale-ban. Általános
    mintából ne képezz MAG-ot, csak munkakör-specifikus példányából. A MAG címkéje SZÍN-semleges.
    A MAG-on: tesz_type (az ERED-mény fajtája szerint) és runner_up, primary_szer (definíció egy
@@ -17,12 +17,15 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
    A nem ALAP-SZÍN változat label_hu = MAG-címke + SZÍN-jelző (pl. "... sürgősségi helyzetben"),
    és szin_kulonbseg_hu: egy mondat arról, mitől nehezebb vagy más, mint az ALAP-SZÍN.
    Ami nem éri el az M2 küszöböt, az kísérő SZÍN: kozeg_secondary (0-2) / helyzet_secondary (0-1).
+   Ha a tennivaló lényege mások tanítása (oktatás, gyakorlatvezetés, mentorálás), a HELY-zet
+   HELY_TANITO; a HELY_TANULASI az, amikor a személy maga tanul be.
 4. MÉLYÍTÉSI JELÖLT: ha egy CORE MAG-nak van a szakmában ismert nehezebb SZÍN-e, amely ebben a
    munkakörben NEM jellemző, add meg a MAG melyites_jeloltek listájában (legfeljebb 1; nem TESZ!).
 5. ÖNELLENŐRZÉS: T1-T6 a változatokra, M1 a MAG-okra. Ha két MAG csak KÖZ-egben vagy HELY-zetben
    tér el: egy MAG két változata. Ha egy változat ERED-ménye vagy meghatározó SZER-ELEM-e eltér:
    külön MAG. Készség jellegű elem a skill_mentions listába.
-6. VÁLTOZATONKÉNT: kozeg, helyzet, frequency, expected_eqf (1-8), confidence; 0-4 kísérő
+6. VÁLTOZATONKÉNT: kozeg, helyzet, frequency, expected_eqf (1-8), confidence (0.6 alatt csak
+   valódi, szakértőt igénylő bizonytalanságnál, open_question-nel); 0-4 kísérő
    SZER-ELEM (secondary_szer, definíció nélkül; kozeg/helyzet csak eltérésnél) – a közegfüggő
    eszközök itt vannak.
 7. MUNKAKÖR-NEVEK: magyar és angol preferált név, a látott vagy szokásos alternatív nevek

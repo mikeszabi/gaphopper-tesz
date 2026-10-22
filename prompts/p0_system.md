@@ -31,14 +31,14 @@ KÖZ-EG: KOZ_FIZIKAI test, szerszám, gép, anyag, épített tér, laborműszer 
 csoport, beszélgetés | KOZ_DIGITALIS szoftver, adat, hálózat | KOZ_SZERVEZETI szabály, folyamat,
 szerep, intézmény | KOZ_TERMESZET élőlény, természeti jelenség, külső környezet
 
-HELY-ZET, KISZ tengely (sorrendes, a mélyítés lánca): HELY_TANULASI (0) betanulás, felügyelet
-mellett | HELY_RUTIN (1) begyakorolt rend | HELY_VALTOZO (2) folyamatos alkalmazkodás |
+HELY-ZET, KISZ tengely (sorrendes, a mélyítés lánca): HELY_TANULASI (0) a személy maga tanul be,
+felügyelet mellett | HELY_RUTIN (1) begyakorolt rend | HELY_VALTOZO (2) folyamatos alkalmazkodás |
 HELY_PROBLEMA (3) ismeretlen hiba okának feltárása | HELY_KRITIKUS (4) nagy tét, időnyomás, gyors és
 súlyos következmény (a puszta szabálykövetés nem kritikus).
 SZEREP tengely (nem sorrendes): HELY_DONTESI felelős mérlegelés bizonytalanságban | HELY_ALKOTO új
 megoldás nyitott feladatban | HELY_EGYUTTMUKODESI közös eredmény társakkal | HELY_SZOLGALTATASI más
 ember szükségletének kielégítése | HELY_IRANYITASI felelősség mások munkájáért | HELY_TANITO mások
-tanítása
+tanítása, betanítása (oktató, mentor, gyakorlatvezető szerepe)
 
 SZER-ELEM fajta: TOOL | MATERIAL | OBJECT | SYSTEM | DATA | INFORMATION | RULE | METHOD | PLAN |
 MODEL | STATE | RESULT | ENVIRONMENT. Szerep: ACTS_ON erre irányul | USES ezzel végzi | GUIDED_BY

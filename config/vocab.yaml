@@ -86,9 +86,10 @@ rules:
   core_min: 8              # CORE MAG-ok száma
   core_max: 15
   variants_per_mag_max: 3  # R12
-  mag_per_kor_min: 2       # R9
+  mag_per_kor_min: 1       # R9: feladatkör MAG nélkül (kalibrálva 2 -> 1, 2026-10-22)
   szin_kulonbseg_words_min: 4  # R13: a nem ALAP-SZÍN változat indoklása legalább ennyi szó
-  label_words_min: 4  # magyarul az összetett szavak miatt 4 is elég
+  label_words_min: 4  # magyarul az összetett szavak miatt 4 is elég (változat-címke)
+  mag_label_words_min: 3  # a SZÍN-semleges MAG-címke rövidebb (kalibrálva, 2026-10-22)
   label_words_max: 14
   execute_max_share: 0.30
   natural_pair_max_share: 0.60

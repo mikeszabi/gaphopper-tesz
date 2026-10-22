@@ -66,16 +66,17 @@ def check(tesz: list[Tesz], kor_ids: list[str] | None = None, job_field: str = "
 
     # R4 – címke hossza (MAG) és tiltott minták (MAG és változat)
     bad_len, bad_pat = [], []
+    wmin = r.get("mag_label_words_min", r["label_words_min"])
     for m in magok:
         words = len(m.label_hu.split())
-        if not r["label_words_min"] <= words <= r["label_words_max"]:
+        if not wmin <= words <= r["label_words_max"]:
             bad_len.append(m.mag_id)
     for x in list(magok) + [t for t in tesz if not t.alap_szin]:
         text = f"{x.label_hu} {x.label_en}".lower()
         if any(p in text for p in r["forbidden_label_patterns"]):
             bad_pat.append(getattr(x, "cand_id", None) or x.mag_id)
     if bad_len:
-        flags.append(Flag("R4", f"A MAG-címke hossza nem {r['label_words_min']}–{r['label_words_max']} szó.", bad_len))
+        flags.append(Flag("R4", f"A MAG-címke hossza nem {wmin}–{r['label_words_max']} szó.", bad_len))
     if bad_pat:
         flags.append(Flag("R4", "Tiltott címkeminta (általános minta vagy álcázott készség).", bad_pat))
 
