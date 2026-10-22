@@ -311,7 +311,6 @@ Token- és költségmérés (P1 + P2, ugyanaz a 3 munkakör, ugyanazok a modelle
 | | Hívás (sikeres) | Bemenet | Kimenet | Becsült költség | Idő |
 |---|---|---|---|---|---|
 | Előtte (régi prompt, P2 mindig) | 7 (5) | 53 164 | 56 363 | 0,566 USD | 323 mp |
-| Előtte, P2 auto móddal becsülve | – | – | – | ≈ 0,51 USD | – |
 | Utána (valódi futás) | 3 (3) | 18 815 | 20 973 | 0,232 USD | 127 mp |
 
 - A régi P1 a három munkakörből kettőnél sémahibát adott (`frequency`, `relevance`, `kind`), és újra kellett
