@@ -140,6 +140,17 @@ class Store:
             (key, lang, text, entity_type, entity_id, source, t, t))
         self.db.commit()
 
+    def alias_add_many(self, rows: list[tuple]) -> None:
+        """(key, lang, text, entity_type, entity_id, source) sorok egy tranzakcióban."""
+        if not rows:
+            return
+        t = now()
+        self.db.executemany(
+            "INSERT INTO alias_index(key, lang, text, entity_type, entity_id, source, first_seen, last_seen) "
+            "VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(key, entity_type) DO UPDATE SET "
+            "count=count+1, last_seen=excluded.last_seen", [(*r, t, t) for r in rows])
+        self.db.commit()
+
     def alias_repoint(self, old_id: str, new_id: str) -> None:
         self.db.execute("UPDATE alias_index SET entity_id=? WHERE entity_id=?", (new_id, old_id))
         self.db.commit()
@@ -171,17 +182,19 @@ class Store:
                 continue
             u = json.loads(r["usage_json"] or "{}")
             # A hosszú kontextus díjsávját hívásonként kell meghatározni.
-            prompt_tokens = int(u.get("input_tokens") or 0) + int(u.get("cache_read_input_tokens") or 0)
+            prompt_tokens = (int(u.get("input_tokens") or 0) + int(u.get("cache_read_input_tokens") or 0)
+                             + int(u.get("cache_creation_input_tokens") or 0))
             band = 200001 if prompt_tokens > 200000 else 0
             k = (r["job_id"] or "-", r["step"], r["provider"], r["model"], r["prompt_version"], band)
             a = agg.setdefault(k, {"job_id": k[0], "step": k[1], "provider": k[2], "model": k[3],
                                    "prompt_version": k[4], "pricing_input_tokens": band,
-                                   "hivas": 0, "sikeres": 0, "input": 0, "cache_read": 0, "output": 0,
-                                   "ido_mp": 0.0})
+                                   "hivas": 0, "sikeres": 0, "input": 0, "cache_read": 0, "cache_write": 0,
+                                   "output": 0, "ido_mp": 0.0})
             a["hivas"] += 1
             a["sikeres"] += int(r["parsed_ok"])
             a["input"] += int(u.get("input_tokens") or 0)
             a["cache_read"] += int(u.get("cache_read_input_tokens") or 0)
+            a["cache_write"] += int(u.get("cache_creation_input_tokens") or 0)
             a["output"] += int(u.get("output_tokens") or 0)
             a["ido_mp"] += (u.get("duration_ms") or 0) / 1000
         return list(agg.values())

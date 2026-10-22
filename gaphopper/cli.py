@@ -5,6 +5,10 @@
                             0. lépés: dokumentumokból jobs.jsonl (E0 prompt)
   import FÁJL               munkakörök beolvasása (.xlsx / .jsonl / .csv / .json)
   run [--job ID..] [--limit N] [--until p1|p2|graph] [--force] [--workers N]
+  run --dry-run --job ID.. [--input jobs.jsonl] [--workers N]
+                            próbafutás: P1–P3 lefut, a gráf és a state.sqlite nem változik;
+                            eredmény: runs/dryrun/<job>.json
+  db-reset --yes            neo4j és state.sqlite ürítése (előtte mentés: runs/backup-<dátum>/)
   batch submit --step P1|P2 [--limit N]   kötegelt beküldés (Anthropic)
   batch status | batch collect [--wait]
   manual-submit --job ID --step P1|P2 --file VÁLASZ.json
@@ -105,9 +109,86 @@ def _run_parallel(ctx, a, ids):
             print(f"{jid}: {result}", flush=True)
 
 
+def _dry_run(a):
+    from concurrent.futures import ThreadPoolExecutor
+
+    from .pipeline import dry_run, format_dry_run
+
+    s = settings()
+    recs: dict[str, dict] = {}
+    if a.input:
+        from .importers import load
+
+        recs = {r["job_id"]: r for r in load(a.input)}
+    else:
+        import sqlite3
+
+        if not Path(s.state_db).exists():
+            raise SystemExit(f"Nincs állapotfájl ({s.state_db}); add meg a rekordokat: --input jobs.jsonl")
+        con = sqlite3.connect(f"file:{s.state_db}?mode=ro", uri=True)  # csak olvas
+        for jid, rec in con.execute("SELECT job_id, record_json FROM jobs"):
+            recs[jid] = json.loads(rec)
+        con.close()
+    ids = a.job or list(recs)[: a.limit or 1]
+    missing = [j for j in ids if j not in recs]
+    if missing:
+        raise SystemExit(f"Ismeretlen munkakör: {', '.join(missing)}")
+    graph = None
+    try:
+        from .graph import Graph
+
+        graph = Graph(s)
+        graph.driver.verify_connectivity()
+    except Exception as exc:  # gráf nélkül az egyesítés kimarad
+        print(f"A neo4j nem érhető el ({str(exc).splitlines()[0][:200]}); az egyesítés kimarad.", flush=True)
+        graph = None
+    try:
+        with ThreadPoolExecutor(max_workers=max(1, a.workers)) as ex:
+            for out in ex.map(lambda j: dry_run(recs[j], s, graph), ids):
+                print(format_dry_run(out) + "\n", flush=True)
+    finally:
+        if graph:
+            graph.close()
+
+
+def cmd_db_reset(a):
+    if not a.yes:
+        raise SystemExit("Ez minden neo4j-csomópontot, indexet és a state.sqlite-ot törli. Futtasd --yes kapcsolóval.")
+    import shutil
+    import sqlite3
+    from datetime import date
+
+    s = settings()
+    d = Path(s.state_db).parent / f"backup-{date.today().isoformat()}"
+    d.mkdir(parents=True, exist_ok=True)
+    if Path(s.state_db).exists():
+        src = sqlite3.connect(str(s.state_db))
+        dst = sqlite3.connect(str(d / "state.sqlite"))
+        src.backup(dst)
+        dst.close()
+        src.close()
+    from .graph import Graph
+
+    g = Graph(s)
+    nodes = g.run("MATCH (n) RETURN elementId(n) AS eid, labels(n) AS labels, properties(n) AS props")
+    rels = g.run("MATCH (a)-[r]->(b) RETURN type(r) AS type, elementId(a) AS src, elementId(b) AS dst, "
+                 "properties(r) AS props")
+    (d / "neo4j-export.json").write_text(json.dumps({"nodes": nodes, "relationships": rels}, ensure_ascii=False,
+                                                    default=str), encoding="utf-8")
+    print(f"Mentés: {d}  ({len(nodes)} csomópont, {len(rels)} él)")
+    print("neo4j törölve:", g.reset())
+    g.close()
+    for suffix in ("", "-wal", "-shm"):
+        Path(str(s.state_db) + suffix).unlink(missing_ok=True)
+    print(f"state.sqlite törölve: {s.state_db}. Újraépítés: python -m gaphopper init")
+    shutil.rmtree(Path(s.state_db).parent / "manual", ignore_errors=True)
+
+
 def cmd_run(a):
     from .pipeline import process_job
 
+    if a.dry_run:
+        return _dry_run(a)
     ctx = _ctx(with_graph=a.until == "graph")
     manual = "manual" in (ctx.settings.p1.provider, ctx.settings.p2.provider)
     if a.workers and a.workers > 1 and not manual:  # kézi módban nincs értelme a párhuzamosságnak
@@ -171,7 +252,7 @@ def cmd_embed(a):
             print("Többnyelvű modellnél az első két pár jóval hasonlóbb, mint a harmadik.")
         else:
             total = 0
-            for et in ("MUNKA_KOR", "TESZ", "SZER_ELEM", "KESZSEG"):
+            for et in ("MUNKA_KOR", "TESZ_MAG", "SZER_ELEM", "KESZSEG"):
                 rows = ctx.graph.missing_embeddings(et, a.limit)
                 for r in rows:
                     text = " | ".join(x for x in (r["label_hu"], r["label_en"], r["extra"]) if x)
@@ -327,7 +408,12 @@ def main(argv=None):
     s.add_argument("--until", choices=["p1", "p2", "graph"], default="graph")
     s.add_argument("--force", action="store_true")
     s.add_argument("--workers", type=int, default=1, help="párhuzamos API-hívások száma (P1, P2)")
+    s.add_argument("--dry-run", action="store_true",
+                   help="próbafutás: LLM-lépések lefutnak, a gráf és a state.sqlite nem változik")
+    s.add_argument("--input", help="próbafutásnál: a rekordok fájlból (.jsonl/.json/.csv/.xlsx)")
     s.set_defaults(fn=cmd_run)
+    s = sub.add_parser("db-reset", help="neo4j és state.sqlite ürítése mentéssel")
+    s.add_argument("--yes", action="store_true"); s.set_defaults(fn=cmd_db_reset)
     s = sub.add_parser("embed"); s.add_argument("action", choices=["check", "backfill"])
     s.add_argument("--limit", type=int, default=100000); s.set_defaults(fn=cmd_embed)
     s = sub.add_parser("onet-tasks", help="O*NET Task Statements betöltése a tasks mezőbe")
@@ -353,7 +439,7 @@ def main(argv=None):
     s = sub.add_parser("show"); s.add_argument("--job", required=True)
     s.add_argument("--max-chars", type=int, default=20000); s.set_defaults(fn=cmd_show)
     s = sub.add_parser("certify"); s.add_argument("--limit", type=int, default=1000)
-    s.add_argument("--chunk", type=int, default=10); s.set_defaults(fn=cmd_certify)
+    s.add_argument("--chunk", type=int, default=6, help="MAG-ok hívásonként"); s.set_defaults(fn=cmd_certify)
     s = sub.add_parser("report"); s.add_argument("--job", action="append")
     s.add_argument("--by", default="prompt_version,step"); s.set_defaults(fn=cmd_report)
     s = sub.add_parser("models"); s.add_argument("--check-local", action="store_true"); s.set_defaults(fn=cmd_models)

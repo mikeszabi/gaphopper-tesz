@@ -28,7 +28,7 @@ def test_repeated_candidates_reuse_context():
         calls.append(entity_id)
         return {"tesz_type": "VERIFY"}
 
-    resolver = Resolver(SimpleNamespace(graph=SimpleNamespace(tesz_context=context)))
+    resolver = Resolver(SimpleNamespace(graph=SimpleNamespace(mag_context=context)))
     assert resolver._context("existing") == resolver._context("existing")
     resolver._context("another")
     assert calls == ["existing", "another"]

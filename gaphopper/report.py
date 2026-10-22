@@ -12,7 +12,9 @@ def with_cost(rows: list[dict]) -> list[dict]:
         cost = None
         if p is not None:
             plain = max(r["input"], 0)
-            cost = (plain * p[0] + r["cache_read"] * p[2] + r["output"] * p[1]) / 1e6
+            # A gyorsítótárba írt bemenet (Anthropic, 5 perces cache) a bemeneti ár 1,25-szöröse.
+            cost = (plain * p[0] + r.get("cache_write", 0) * p[0] * 1.25 + r["cache_read"] * p[2]
+                    + r["output"] * p[1]) / 1e6
             if r["provider"] == "anthropic-batch":
                 cost /= 2  # kötegelt kedvezmény
         out.append(r | {"koltseg_usd": None if cost is None else round(cost, 4)})
@@ -26,10 +28,11 @@ def summary(store: Store, job_ids: list[str] | None = None, by: tuple[str, ...] 
     for r in rows:
         k = tuple(r[b] for b in by)
         a = agg.setdefault(k, {b: r[b] for b in by} | {"munkakor": set(), "hivas": 0, "sikeres": 0, "input": 0,
-                                                       "cache_read": 0, "output": 0, "ido_mp": 0.0, "koltseg_usd": 0.0})
+                                                       "cache_read": 0, "cache_write": 0, "output": 0, "ido_mp": 0.0,
+                                                       "koltseg_usd": 0.0})
         if r["job_id"] != "-":
             a["munkakor"].add(r["job_id"])
-        for f in ("hivas", "sikeres", "input", "cache_read", "output", "ido_mp"):
+        for f in ("hivas", "sikeres", "input", "cache_read", "cache_write", "output", "ido_mp"):
             a[f] += r[f]
         a["koltseg_usd"] = None if a["koltseg_usd"] is None or r["koltseg_usd"] is None \
             else a["koltseg_usd"] + r["koltseg_usd"]

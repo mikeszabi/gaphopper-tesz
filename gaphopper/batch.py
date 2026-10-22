@@ -139,7 +139,8 @@ def collect(ctx: Context, client=None) -> dict:
             try:
                 obj = SCHEMA[step].model_validate(extract_json(text))
                 if step == "P2":  # az eltérések alkalmazhatók-e
-                    apply_p2(load_p1(ctx, jid).tesz, obj.changes)
+                    p1x = load_p1(ctx, jid)
+                    apply_p2(p1x.tesz_magok, p1x.tesz, obj.changes)
             except Exception as exc:  # séma-, JSON- vagy eltéréshiba
                 ctx.store.log(jid, step, "anthropic-batch", cfg.model, ctx.pv, "", text, False, usage)
                 record_error(ctx, jid, step, str(exc)[:3000], BACK_TO[step])
@@ -181,7 +182,7 @@ def run_parallel(ctx: Context, step: str, job_ids: list[str] | None = None, limi
     def work(jid: str):
         logs: list = []
         user, extra = prepared[jid]
-        check = (lambda o: apply_p2(extra["p1"].tesz, o.changes)) if step == "P2" else None
+        check = (lambda o: apply_p2(extra["p1"].tesz_magok, extra["p1"].tesz, o.changes)) if step == "P2" else None
         try:
             obj, _ = call_json(llm, ctx.system, user, SCHEMA[step],
                                log=lambda raw, ok, usage: logs.append((raw, ok, usage)), check=check)

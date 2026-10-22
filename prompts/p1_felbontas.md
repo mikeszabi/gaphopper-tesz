@@ -1,73 +1,64 @@
-FELADAT (P1): Bontsd fel az alábbi MUNKA-KÖR-t elemi TESZ-NIVALÓKRA.
+FELADAT (P1): Bontsd fel az alábbi MUNKA-KÖR-t TESZ-MAG-okra és azok SZÍN-ezett változataira
+(TESZ-nivalókra).
 
-MUNKAMENET (ebben a sorrendben):
-1. FELADATKÖRÖK: írd le a MUNKA-KÖR célját egy mondatban, és határozz meg 4-8
-   feladatkört (TESZ-kört) becsült munkaidő-aránnyal (összesen 90-110%). A feladatkör
-   rendező szint, nem TESZ-nivaló.
-2. TESZ-NIVALÓK: feladatkörönként 2-5, összesen 12-25 TESZ-nivaló. Forrás: tasks,
-   description, requirements, conditions, és a szakma általánosan ismert gyakorlata
-   a megadott locale-ban. Ne képezz TESZ-t általános mintából ("a munka tervezése",
-   "dokumentálás"); csak MUNKA-KÖR-specifikus példányából ("ápolási dokumentáció
-   vezetése elektronikus rendszerben").
-3. ÖNELLENŐRZÉS (fejben): minden TESZ-t vigyél át a hat EGY-próbán és az igazolási
-   mondat-próbán. Ami elbukik: bontsd, vond össze vagy hagyd el. A készség jellegű
-   elemeket ("kommunikáció", "problémamegoldó képesség") tedd a skill_mentions listába.
-4. TESZ-TÍPUS: az ERED-mény fajtája alapján, egy runner-up típussal.
-5. SZER-ELEM: egy meghatározó (definícióval, legfeljebb egy rövid mondat) és 0-4 kísérő
-   (definíció nélkül), fajtával és szereppel. Csak ami ténylegesen befolyásolja a
-   teljesítést vagy az értékelést.
-6. KÖZ-EG ÉS HELY-ZET: egy domináns KÖZ-eg (+0-2 kísérő) és egy elsődleges HELY-zet
-   (+0-1 másodlagos). A kísérő SZER-ELEM-ek SZÍN-e alapértelmezés szerint a TESZ-é;
-   kozeg/helyzet mezőt csak eltérésnél adj meg nekik.
-7. MUNKAKÖRI SÚLY: relevance kizárólag CORE vagy SUPPORTING lehet; más érték
-   (például PERIPHERAL) tilos. CORE, ha a MUNKA-KÖR nélküle nem az, ami (8-15 CORE);
-   SUPPORTING, ha támogató vagy járulékos feladat.
-   frequency, és expected_eqf (1-8) az elvárt önállóság és felelősség alapján.
-8. MUNKAKÖR-NEVEK: add meg a munkakör magyar és angol preferált nevét, és a bemenetben
-   látott vagy szokásos alternatív neveit (title_aliases), nyelvjelöléssel.
+MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
+1. FELADATKÖRÖK: a munkakör célja egy mondatban; 4-8 feladatkör (kor_id) becsült
+   munkaidő-aránnyal (összesen 90-110%). A feladatkör rendező szint, nem TESZ.
+2. TESZ-MAG-OK: feladatkörönként 2-4, összesen 10-18 MAG (ebből 8-15 CORE). Forrás: tasks,
+   description, requirements, conditions és a szakma ismert gyakorlata a locale-ban. Általános
+   mintából ne képezz MAG-ot, csak munkakör-specifikus példányából. A MAG címkéje SZÍN-semleges.
+   A MAG-on: tesz_type (az ERED-mény fajtája szerint) és runner_up, primary_szer (definíció egy
+   rövid mondat), outcome_hu (a közös ERED-mény egy mondatban, minőségi küszöbbel, a címke
+   ismétlése nélkül), relevance (CORE, ha a munkakör nélküle nem az, ami; különben SUPPORTING).
+3. SZÍN-EZÉS: minden MAG-hoz pontosan egy ALAP-SZÍN változat (alap_szin true): a munkakörben
+   leggyakoribb ⟨KÖZ-eg, HELY-zet⟩. További változatot (alap_szin false) csak akkor adj, ha
+   (M2) legalább egy új vagy szigorúbb értékelési kritériumot hoz, és (M3) ebben a munkakörben
+   rendszeresen előfordul; MAG-onként legfeljebb 3 változat, összesen 12-25 TESZ-nivaló.
+   A nem ALAP-SZÍN változat label_hu = MAG-címke + SZÍN-jelző (pl. "... sürgősségi helyzetben"),
+   és szin_kulonbseg_hu: egy mondat arról, mitől nehezebb vagy más, mint az ALAP-SZÍN.
+   Ami nem éri el az M2 küszöböt, az kísérő SZÍN: kozeg_secondary (0-2) / helyzet_secondary (0-1).
+4. MÉLYÍTÉSI JELÖLT: ha egy CORE MAG-nak van a szakmában ismert nehezebb SZÍN-e, amely ebben a
+   munkakörben NEM jellemző, add meg a MAG melyites_jeloltek listájában (legfeljebb 1; nem TESZ!).
+5. ÖNELLENŐRZÉS: T1-T6 a változatokra, M1 a MAG-okra. Ha két MAG csak KÖZ-egben vagy HELY-zetben
+   tér el: egy MAG két változata. Ha egy változat ERED-ménye vagy meghatározó SZER-ELEM-e eltér:
+   külön MAG. Készség jellegű elem a skill_mentions listába.
+6. VÁLTOZATONKÉNT: kozeg, helyzet, frequency, expected_eqf (1-8), confidence; 0-4 kísérő
+   SZER-ELEM (secondary_szer, definíció nélkül; kozeg/helyzet csak eltérésnél) – a közegfüggő
+   eszközök itt vannak.
+7. MUNKAKÖR-NEVEK: magyar és angol preferált név, a látott vagy szokásos alternatív nevek
+   (title_aliases) nyelvjelöléssel.
 
-TÖMÖRSÉG ÉS KIMENETI KÖLTSÉG:
-- Tömör JSON-t írj, behúzás és formázó sortörések nélkül. A szövegekben szükséges
-  szóközöket tartsd meg. Ne írj munkamenetet, elemzést vagy magyarázó szöveget.
-- Az outcome_hu egy rövid mondat a megfigyelhető eredménnyel és minőségi küszöbbel;
-  ne ismételje meg a TESZ címét. A rationale_hu célhossza 8-12 szó (legfeljebb 20):
-  csak a besorolás döntő okát írd, ne magyarázd újra a teljes triplettet.
-- A primary_szer.definition_hu egyetlen rövid megkülönböztető mondat;
-  a kísérő SZER-ELEM-ekhez definition_hu mezőt ne írj.
-- Üres listát és null értéket ne írj ki: az alábbi mezők elhagyhatók, ha üresek:
-  title_aliases, skill_mentions, secondary_szer, kozeg_secondary,
-  helyzet_secondary, open_question. A hiányzó értékek listánál [], egyébként null.
-  Ha van tartalmuk, add meg őket; a bizonytalanságot ne rejtsd el.
-- A kísérő SZER-ELEM kozeg/helyzet mezője csak a TESZ-től való eltérésnél kell.
-- Igazolási mondatot, rubrikát és kudarcmódot NE írj: ezek a P5-höz tartoznak.
-- A tömörség nem csökkentheti a szakmai lefedettséget: a 12-25 TESZ és a hat
-  EGY-próba követelménye változatlan. A magyar és angol címkéket is add meg.
+TÖMÖRSÉG:
+- Tömör JSON, behúzás és sortörés nélkül. Ne írj elemzést, indoklást, igazolási mondatot vagy
+  rubrikát (ezek a P5-höz tartoznak).
+- A változat NEM ismétli a MAG mezőit (tesz_type, primary_szer, outcome_hu, relevance, kor_id).
+  Az ALAP-SZÍN változatnál a label_hu/label_en elhagyható (a MAG-címke érvényes).
+- Üres listát, null értéket és alapértéket ne írj ki (title_aliases, skill_mentions,
+  secondary_szer, kozeg_secondary, helyzet_secondary, melyites_jeloltek, open_question).
+- A tömörség nem csökkentheti a lefedettséget: a darabszámok és a próbák kötelezők.
 
 BEMENET:
 {{job_record_json}}
 
-KIMENET (csak tömör JSON; az alábbi minta olvashatóság miatt tördelt):
-{
-  "job_id": "...",
-  "job_label_hu": "...", "job_label_en": "...",
-  "title_aliases": [{"text": "...", "lang": "hu|en"}],
-  "purpose_hu": "...",
-  "eqf_band": {"min": 0, "max": 0, "rationale_hu": "..."},
-  "tesz_korok": [{"kor_id": "K1", "name_hu": "...", "time_share_pct": 0}],
-  "tesz": [
-    {"cand_id": "C01", "kor_id": "K1",
-     "label_hu": "...", "label_en": "...",
-     "outcome_hu": "...",
-     "tesz_type": "VERIFY", "tesz_type_runner_up": "OBSERVE_MEASURE",
-     "primary_szer": {"label_hu": "...", "label_en": "...", "kind": "RULE",
-                      "role": "GUIDED_BY", "definition_hu": "..."},
-     "secondary_szer": [{"label_hu": "...", "label_en": "...", "kind": "TOOL", "role": "USES"}],
-     "kozeg": "KOZ_FIZIKAI",
-     "helyzet": "HELY_KRITIKUS",
-     "relevance": "CORE", "frequency": "DAILY",
-     "expected_eqf": 5,
-     "rationale_hu": "...",
-     "confidence": 0.8}
-  ],
-  "skill_mentions": [{"text": "...", "related_cand_ids": ["C03"]}]
-}
+KIMENET (csak tömör JSON; a minta olvashatóság miatt tördelt):
+{"job_id":"...","job_label_hu":"...","job_label_en":"...",
+ "title_aliases":[{"text":"...","lang":"hu|en"}],
+ "purpose_hu":"...","eqf_band":{"min":4,"max":5,"rationale_hu":"..."},
+ "tesz_korok":[{"kor_id":"K1","name_hu":"...","time_share_pct":30}],
+ "tesz_magok":[
+  {"mag_id":"M01","kor_id":"K1","label_hu":"Gyógyszer beadása orvosi rendelés szerint",
+   "label_en":"Administer medication as prescribed","outcome_hu":"...",
+   "tesz_type":"EXECUTE","runner_up":"COMPLY",
+   "primary_szer":{"label_hu":"Gyógyszerelési rendelés","label_en":"Medication order","kind":"RULE","role":"GUIDED_BY","definition_hu":"..."},
+   "relevance":"CORE",
+   "melyites_jeloltek":[{"kozeg":"KOZ_FIZIKAI","helyzet":"HELY_KRITIKUS","indok_hu":"..."}]}],
+ "tesz":[
+  {"cand_id":"C01","mag_id":"M01","alap_szin":true,"kozeg":"KOZ_FIZIKAI","helyzet":"HELY_RUTIN",
+   "secondary_szer":[{"label_hu":"...","label_en":"...","kind":"TOOL","role":"USES"}],
+   "frequency":"DAILY","expected_eqf":4,"confidence":0.8},
+  {"cand_id":"C02","mag_id":"M01","alap_szin":false,
+   "label_hu":"Gyógyszer beadása orvosi rendelés szerint állapotromlás idején",
+   "label_en":"Administer medication as prescribed during deterioration",
+   "kozeg":"KOZ_FIZIKAI","helyzet":"HELY_VALTOZO","szin_kulonbseg_hu":"...",
+   "frequency":"WEEKLY","expected_eqf":5,"confidence":0.7}],
+ "skill_mentions":[{"text":"...","related_cand_ids":["C01"]}]}

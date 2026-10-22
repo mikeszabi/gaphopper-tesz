@@ -1,6 +1,6 @@
 # Gaphopper zárt szótárak – a kódok stabilak, a nevek változhatnak.
 # hu = jelenlegi magyar név, gyok = gyökös javaslat, en = angol megfeleltetés
-version: "2026-10-13"
+version: "2026-10-22-mag"
 
 tesz_tipus:
   PREPARE:          {hu: "előkészít",               gyok: "ELŐ-KÉSZ-ít",        en: "prepare"}
@@ -28,17 +28,18 @@ kozeg:
   KOZ_TERMESZET:  {hu: "Természet",  gyok: "TERM-észeti közeg", en: "natural"}
 
 helyzet:
-  # tengely: KISZ = kiszámíthatóság, SZEREP = szerep (későbbi kettébontáshoz)
-  HELY_TANULASI:       {hu: "Tanulási",       gyok: "TAN-uló helyzet",      en: "learning",      tengely: KISZ}
-  HELY_RUTIN:          {hu: "Rutin",          gyok: "SZOK-ásos helyzet",    en: "routine",       tengely: KISZ}
-  HELY_VALTOZO:        {hu: "Változó",        gyok: "VÁLT-ozó helyzet",     en: "changing",      tengely: KISZ}
-  HELY_PROBLEMA:       {hu: "Probléma",       gyok: "GOND-helyzet",         en: "problem",       tengely: KISZ}
-  HELY_KRITIKUS:       {hu: "Kritikus",       gyok: "VÉSZ-helyzet",         en: "critical",      tengely: KISZ}
-  HELY_DONTESI:        {hu: "Döntési",        gyok: "DÖNT-ési helyzet",     en: "decision",      tengely: SZEREP}
-  HELY_ALKOTO:         {hu: "Alkotó",         gyok: "ALK-otó helyzet",      en: "creative",      tengely: SZEREP}
-  HELY_EGYUTTMUKODESI: {hu: "Együttműködési", gyok: "EGY-ütt-működő helyzet", en: "collaborative", tengely: SZEREP}
-  HELY_SZOLGALTATASI:  {hu: "Szolgáltatási",  gyok: "SZOLG-áló helyzet",    en: "service",       tengely: SZEREP}
-  HELY_IRANYITASI:     {hu: "Irányítási",     gyok: "VEZ-ető helyzet",      en: "leading",       tengely: SZEREP}
+  # tengely: KISZ = kiszámíthatóság (sorrendes, fok 0..4: a MÉLY-ítés lánca), SZEREP = szerep (nem sorrendes, fok: null)
+  HELY_TANULASI:       {hu: "Betanulási",     gyok: "TAN-uló helyzet",      en: "learning",      tengely: KISZ,   fok: 0}
+  HELY_RUTIN:          {hu: "Rutin",          gyok: "SZOK-ásos helyzet",    en: "routine",       tengely: KISZ,   fok: 1}
+  HELY_VALTOZO:        {hu: "Változó",        gyok: "VÁLT-ozó helyzet",     en: "changing",      tengely: KISZ,   fok: 2}
+  HELY_PROBLEMA:       {hu: "Probléma",       gyok: "GOND-helyzet",         en: "problem",       tengely: KISZ,   fok: 3}
+  HELY_KRITIKUS:       {hu: "Kritikus",       gyok: "VÉSZ-helyzet",         en: "critical",      tengely: KISZ,   fok: 4}
+  HELY_DONTESI:        {hu: "Döntési",        gyok: "DÖNT-ési helyzet",     en: "decision",      tengely: SZEREP, fok: null}
+  HELY_ALKOTO:         {hu: "Alkotó",         gyok: "ALK-otó helyzet",      en: "creative",      tengely: SZEREP, fok: null}
+  HELY_EGYUTTMUKODESI: {hu: "Együttműködési", gyok: "EGY-ütt-működő helyzet", en: "collaborative", tengely: SZEREP, fok: null}
+  HELY_SZOLGALTATASI:  {hu: "Szolgáltatási",  gyok: "SZOLG-áló helyzet",    en: "service",       tengely: SZEREP, fok: null}
+  HELY_IRANYITASI:     {hu: "Irányítási",     gyok: "VEZ-ető helyzet",      en: "leading",       tengely: SZEREP, fok: null}
+  HELY_TANITO:         {hu: "Tanító",         gyok: "TAN-ító helyzet",      en: "teaching",      tengely: SZEREP, fok: null}
 
 szer_elem_fajta:
   TOOL:        {hu: "ESZKÖZ"}
@@ -59,6 +60,14 @@ szer_elem_szerep: [ACTS_ON, USES, GUIDED_BY, INPUT, PRODUCES]
 relevance: [CORE, SUPPORTING]
 frequency: [DAILY, WEEKLY, MONTHLY, RARE]
 
+# Determinisztikus megfeleltetés a zárt listákra (a modell gyakori, egyértelmű eltérései).
+# Csak itt felsorolt érték alakul át; minden más ismeretlen érték sémahiba marad.
+alias_ertek:
+  frequency: {HOURLY: DAILY, SHIFT: DAILY, PER_SHIFT: DAILY, BIWEEKLY: WEEKLY, QUARTERLY: MONTHLY,
+              SEMESTER: RARE, SEMIANNUAL: RARE, ANNUAL: RARE, YEARLY: RARE, OCCASIONAL: RARE,
+              PER_CAMPAIGN: MONTHLY, PER_PROJECT: MONTHLY, AD_HOC: RARE, AS_NEEDED: RARE}
+  relevance: {PERIPHERAL: SUPPORTING, SECONDARY: SUPPORTING, AUXILIARY: SUPPORTING, ESSENTIAL: CORE, PRIMARY: CORE}
+
 # A TESZ-típus "természetes párja" a HELY-zetek között (R6 szabály)
 termeszetes_par:
   PROBLEM_SOLVE: HELY_PROBLEMA
@@ -70,10 +79,15 @@ termeszetes_par:
 
 # Szabálykuszöbök (P2, determinisztikus). Kalibrálandók a referenciakészleten.
 rules:
-  tesz_min: 12
+  mag_min: 10              # TESZ-MAG-ok száma munkakörönként
+  mag_max: 18
+  tesz_min: 12             # TESZ-nivalók (SZÍN-ezett változatok) száma
   tesz_max: 25
-  core_min: 8
+  core_min: 8              # CORE MAG-ok száma
   core_max: 15
+  variants_per_mag_max: 3  # R12
+  mag_per_kor_min: 2       # R9
+  szin_kulonbseg_words_min: 4  # R13: a nem ALAP-SZÍN változat indoklása legalább ennyi szó
   label_words_min: 4  # magyarul az összetett szavak miatt 4 is elég
   label_words_max: 14
   execute_max_share: 0.30
@@ -82,6 +96,11 @@ rules:
   kritikus_max_share_high_risk: 0.40
   high_risk_fields: ["health", "egészség", "energy", "energia", "security", "biztonság", "safety"]
   confidence_min: 0.6
+  # R14: SZÍN-jelző a MAG címkéjében (a MAG KÖZ-eg- és HELY-zet-semleges). Szótőre illesztve, kisbetűvel.
+  szin_jelzok: ["sürgős", "kritikus", "vészhelyzet", "krízis", "rutin", "digitális", "elektronikus", "online",
+                "telefonos", "távoli", "virtuális", "papíralapú", "terepen", "terepi", "váratlan",
+                "rendkívüli", "időnyomás", "emergency", "urgent", "critical", "digital", "online", "remote",
+                "telephone", "routine"]
   forbidden_label_patterns:
     - "alkalmazása a szakmai munkában"
     - "in professional work"

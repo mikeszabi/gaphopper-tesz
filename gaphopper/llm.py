@@ -277,6 +277,7 @@ def call_json(llm, system: str, user: str, schema: type[BaseModel], retries: int
     last_err = ""
     repair_data = None
     repair_indices = set()
+    repair_coll = "tesz"
     for attempt in range(retries + 1):
         t0 = time.monotonic()
         old_schema = getattr(llm, "schema", None)
@@ -300,7 +301,7 @@ def call_json(llm, system: str, user: str, schema: type[BaseModel], retries: int
                     raise ValueError("A javításnak pontosan a kért TESZ-indexeket kell tartalmaznia.")
                 data = deepcopy(repair_data)
                 for fix in fixes:
-                    data["tesz"][fix.index]["relevance"] = fix.relevance
+                    data[repair_coll][fix.index]["relevance"] = fix.relevance
             obj = schema.model_validate(data)
             if check:
                 check(obj)
@@ -316,12 +317,14 @@ def call_json(llm, system: str, user: str, schema: type[BaseModel], retries: int
             from .schemas import P1Output
             errors = exc.errors() if isinstance(exc, ValidationError) else []
             if (attempt < retries and repair_data is None and schema is P1Output and errors
+                    and len({e["loc"][0] for e in errors}) == 1
                     and all(e["type"] == "literal_error" and len(e["loc"]) == 3
-                            and e["loc"][0] == "tesz" and isinstance(e["loc"][1], int)
+                            and e["loc"][0] in ("tesz", "tesz_magok") and isinstance(e["loc"][1], int)
                             and e["loc"][2] == "relevance" for e in errors)):
                 repair_data = data
+                repair_coll = errors[0]["loc"][0]
                 repair_indices = {e["loc"][1] for e in errors}
-                items = [{"index": i, "tesz": data["tesz"][i]} for i in sorted(repair_indices)]
+                items = [{"index": i, "tesz": data[repair_coll][i]} for i in sorted(repair_indices)]
                 prompt = (
                     "P1 célzott mezőjavítás. A relevance kizárólag CORE vagy SUPPORTING lehet. "
                     "CORE: a munkakör lényegéhez tartozik; SUPPORTING: támogató/járulékos. "

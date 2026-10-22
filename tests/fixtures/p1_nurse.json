@@ -43,25 +43,6 @@
  "tesz": [
   {
    "cand_id": "C01",
-   "kor_id": "K1",
-   "label_hu": "Beteg ápolási állapotfelmérése felvételkor strukturált felmérőlappal",
-   "label_en": "Structured nursing assessment on admission",
-   "attestation_hu": "A személy önállóan beteg ápolási állapotfelmérése felvételkor strukturált felmérőlappal.",
-   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
-   "tesz_type": "ASSESS_ANALYSE",
-   "tesz_type_runner_up": null,
-   "primary_szer": {
-    "label_hu": "Strukturált ápolási felmérés",
-    "label_en": "",
-    "kind": "METHOD",
-    "role": "GUIDED_BY",
-    "definition_hu": ""
-   },
    "secondary_szer": [],
    "failure_mode_hu": "",
    "kozeg": "KOZ_TARSAS",
@@ -70,7 +51,6 @@
    ],
    "helyzet": "HELY_DONTESI",
    "helyzet_secondary": null,
-   "relevance": "CORE",
    "frequency": "DAILY",
    "expected_eqf": 6,
    "rationale_hu": {
@@ -80,36 +60,18 @@
     "helyzet": ""
    },
    "confidence": 0.8,
-   "open_question": null
+   "open_question": null,
+   "mag_id": "M01",
+   "alap_szin": true
   },
   {
    "cand_id": "C02",
-   "kor_id": "K1",
-   "label_hu": "Vitális paraméterek mérése és rögzítése műszakonként",
-   "label_en": "Measure and record vital signs each shift",
-   "attestation_hu": "A személy önállóan vitális paraméterek mérése és rögzítése műszakonként.",
-   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
-   "tesz_type": "OBSERVE_MEASURE",
-   "tesz_type_runner_up": null,
-   "primary_szer": {
-    "label_hu": "Vitális paraméter-mérőeszközök",
-    "label_en": "",
-    "kind": "TOOL",
-    "role": "USES",
-    "definition_hu": ""
-   },
    "secondary_szer": [],
    "failure_mode_hu": "",
    "kozeg": "KOZ_FIZIKAI",
    "kozeg_secondary": [],
    "helyzet": "HELY_RUTIN",
    "helyzet_secondary": null,
-   "relevance": "CORE",
    "frequency": "DAILY",
    "expected_eqf": 5,
    "rationale_hu": {
@@ -119,36 +81,31 @@
     "helyzet": ""
    },
    "confidence": 0.8,
-   "open_question": null
+   "open_question": null,
+   "mag_id": "M02",
+   "alap_szin": true
+  },
+  {
+   "cand_id": "C02b",
+   "mag_id": "M02",
+   "alap_szin": false,
+   "label_hu": "Vitális paraméterek mérése és rögzítése műszakonként változó állapotú betegnél",
+   "label_en": "Measure and record vital signs per shift for an unstable patient",
+   "kozeg": "KOZ_FIZIKAI",
+   "helyzet": "HELY_VALTOZO",
+   "szin_kulonbseg_hu": "Sűrített mérési rend és eltérésnél azonnali ismételt mérés.",
+   "frequency": "DAILY",
+   "expected_eqf": 4,
+   "confidence": 0.7
   },
   {
    "cand_id": "C03",
-   "kor_id": "K1",
-   "label_hu": "Állapotromlás felismerése korai figyelmeztető pontrendszerrel és orvos riasztása",
-   "label_en": "Recognise deterioration with an early warning score and escalate",
-   "attestation_hu": "A személy önállóan állapotromlás felismerése korai figyelmeztető pontrendszerrel és orvos riasztása.",
-   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
-   "tesz_type": "DECIDE",
-   "tesz_type_runner_up": null,
-   "primary_szer": {
-    "label_hu": "Korai figyelmeztető pontrendszer",
-    "label_en": "",
-    "kind": "METHOD",
-    "role": "GUIDED_BY",
-    "definition_hu": ""
-   },
    "secondary_szer": [],
    "failure_mode_hu": "",
    "kozeg": "KOZ_TARSAS",
    "kozeg_secondary": [],
    "helyzet": "HELY_KRITIKUS",
    "helyzet_secondary": null,
-   "relevance": "CORE",
    "frequency": "DAILY",
    "expected_eqf": 6,
    "rationale_hu": {
@@ -158,36 +115,18 @@
     "helyzet": ""
    },
    "confidence": 0.8,
-   "open_question": null
+   "open_question": null,
+   "mag_id": "M03",
+   "alap_szin": true
   },
   {
    "cand_id": "C04",
-   "kor_id": "K1",
-   "label_hu": "Ápolási terv készítése és frissítése a felmérés alapján",
-   "label_en": "Prepare and update the care plan",
-   "attestation_hu": "A személy önállóan ápolási terv készítése és frissítése a felmérés alapján.",
-   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
-   "tesz_type": "PLAN",
-   "tesz_type_runner_up": null,
-   "primary_szer": {
-    "label_hu": "Ápolási terv",
-    "label_en": "",
-    "kind": "PLAN",
-    "role": "PRODUCES",
-    "definition_hu": ""
-   },
    "secondary_szer": [],
    "failure_mode_hu": "",
    "kozeg": "KOZ_SZERVEZETI",
    "kozeg_secondary": [],
    "helyzet": "HELY_DONTESI",
    "helyzet_secondary": null,
-   "relevance": "CORE",
    "frequency": "DAILY",
    "expected_eqf": 6,
    "rationale_hu": {
@@ -197,29 +136,12 @@
     "helyzet": ""
    },
    "confidence": 0.8,
-   "open_question": null
+   "open_question": null,
+   "mag_id": "M04",
+   "alap_szin": true
   },
   {
    "cand_id": "C05",
-   "kor_id": "K3",
-   "label_hu": "Gyógyszer előkészítése és beadása orvosi rendelés szerint",
-   "label_en": "Prepare and administer medication as prescribed",
-   "attestation_hu": "A személy önállóan gyógyszer előkészítése és beadása orvosi rendelés szerint.",
-   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
-   "tesz_type": "EXECUTE",
-   "tesz_type_runner_up": null,
-   "primary_szer": {
-    "label_hu": "Gyógyszerelési rendelés",
-    "label_en": "",
-    "kind": "RULE",
-    "role": "GUIDED_BY",
-    "definition_hu": ""
-   },
    "secondary_szer": [
     {
      "label_hu": "Elektronikus betegdokumentációs rendszer",
@@ -233,9 +155,8 @@
    "failure_mode_hu": "",
    "kozeg": "KOZ_FIZIKAI",
    "kozeg_secondary": [],
-   "helyzet": "HELY_KRITIKUS",
+   "helyzet": "HELY_RUTIN",
    "helyzet_secondary": null,
-   "relevance": "CORE",
    "frequency": "DAILY",
    "expected_eqf": 5,
    "rationale_hu": {
@@ -245,36 +166,31 @@
     "helyzet": ""
    },
    "confidence": 0.8,
-   "open_question": null
+   "open_question": null,
+   "mag_id": "M05",
+   "alap_szin": true
+  },
+  {
+   "cand_id": "C05b",
+   "mag_id": "M05",
+   "alap_szin": false,
+   "label_hu": "Gyógyszer előkészítése és beadása orvosi rendelés szerint állapotromlás idején",
+   "label_en": "Prepare and administer medication as prescribed during deterioration",
+   "kozeg": "KOZ_FIZIKAI",
+   "helyzet": "HELY_VALTOZO",
+   "szin_kulonbseg_hu": "Változó paraméterek mellett ismételt dózisellenőrzés és azonnali orvosi visszacsatolás.",
+   "frequency": "WEEKLY",
+   "expected_eqf": 5,
+   "confidence": 0.75
   },
   {
    "cand_id": "C06",
-   "kor_id": "K3",
-   "label_hu": "Seb ellátása és kötéscsere az előírt technikával",
-   "label_en": "Wound care and dressing change",
-   "attestation_hu": "A személy önállóan seb ellátása és kötéscsere az előírt technikával.",
-   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
-   "tesz_type": "EXECUTE",
-   "tesz_type_runner_up": null,
-   "primary_szer": {
-    "label_hu": "Sebkezelési eljárás",
-    "label_en": "",
-    "kind": "METHOD",
-    "role": "GUIDED_BY",
-    "definition_hu": ""
-   },
    "secondary_szer": [],
    "failure_mode_hu": "",
    "kozeg": "KOZ_FIZIKAI",
    "kozeg_secondary": [],
    "helyzet": "HELY_RUTIN",
    "helyzet_secondary": null,
-   "relevance": "CORE",
    "frequency": "DAILY",
    "expected_eqf": 5,
    "rationale_hu": {
@@ -284,36 +200,18 @@
     "helyzet": ""
    },
    "confidence": 0.8,
-   "open_question": null
+   "open_question": null,
+   "mag_id": "M06",
+   "alap_szin": true
   },
   {
    "cand_id": "C07",
-   "kor_id": "K3",
-   "label_hu": "Perifériás vénás kanül behelyezése és gondozása",
-   "label_en": "Insert and maintain a peripheral IV cannula",
-   "attestation_hu": "A személy önállóan perifériás vénás kanül behelyezése és gondozása.",
-   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
-   "tesz_type": "EXECUTE",
-   "tesz_type_runner_up": null,
-   "primary_szer": {
-    "label_hu": "Perifériás vénás kanül",
-    "label_en": "",
-    "kind": "TOOL",
-    "role": "USES",
-    "definition_hu": ""
-   },
    "secondary_szer": [],
    "failure_mode_hu": "",
    "kozeg": "KOZ_FIZIKAI",
    "kozeg_secondary": [],
    "helyzet": "HELY_RUTIN",
    "helyzet_secondary": null,
-   "relevance": "CORE",
    "frequency": "DAILY",
    "expected_eqf": 5,
    "rationale_hu": {
@@ -323,36 +221,18 @@
     "helyzet": ""
    },
    "confidence": 0.8,
-   "open_question": null
+   "open_question": null,
+   "mag_id": "M07",
+   "alap_szin": true
   },
   {
    "cand_id": "C08",
-   "kor_id": "K3",
-   "label_hu": "Beteg biztonságos mozgatása és pozicionálása emelőeszközzel",
-   "label_en": "Safe patient handling with a lift",
-   "attestation_hu": "A személy önállóan beteg biztonságos mozgatása és pozicionálása emelőeszközzel.",
-   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
-   "tesz_type": "EXECUTE",
-   "tesz_type_runner_up": null,
-   "primary_szer": {
-    "label_hu": "Betegemelő eszköz",
-    "label_en": "",
-    "kind": "TOOL",
-    "role": "USES",
-    "definition_hu": ""
-   },
    "secondary_szer": [],
    "failure_mode_hu": "",
    "kozeg": "KOZ_FIZIKAI",
    "kozeg_secondary": [],
    "helyzet": "HELY_RUTIN",
    "helyzet_secondary": null,
-   "relevance": "SUPPORTING",
    "frequency": "DAILY",
    "expected_eqf": 4,
    "rationale_hu": {
@@ -362,20 +242,310 @@
     "helyzet": ""
    },
    "confidence": 0.8,
-   "open_question": null
+   "open_question": null,
+   "mag_id": "M08",
+   "alap_szin": true
   },
   {
    "cand_id": "C09",
+   "secondary_szer": [],
+   "failure_mode_hu": "",
+   "kozeg": "KOZ_FIZIKAI",
+   "kozeg_secondary": [],
+   "helyzet": "HELY_KRITIKUS",
+   "helyzet_secondary": null,
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "rationale_hu": {
+    "type": "",
+    "szer": "",
+    "kozeg": "",
+    "helyzet": ""
+   },
+   "confidence": 0.8,
+   "open_question": null,
+   "mag_id": "M09",
+   "alap_szin": true
+  },
+  {
+   "cand_id": "C10",
+   "secondary_szer": [],
+   "failure_mode_hu": "",
+   "kozeg": "KOZ_TARSAS",
+   "kozeg_secondary": [],
+   "helyzet": "HELY_TANITO",
+   "helyzet_secondary": null,
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "rationale_hu": {
+    "type": "",
+    "szer": "",
+    "kozeg": "",
+    "helyzet": ""
+   },
+   "confidence": 0.8,
+   "open_question": null,
+   "mag_id": "M10",
+   "alap_szin": true
+  },
+  {
+   "cand_id": "C11",
+   "secondary_szer": [],
+   "failure_mode_hu": "",
+   "kozeg": "KOZ_TARSAS",
+   "kozeg_secondary": [],
+   "helyzet": "HELY_EGYUTTMUKODESI",
+   "helyzet_secondary": null,
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "rationale_hu": {
+    "type": "",
+    "szer": "",
+    "kozeg": "",
+    "helyzet": ""
+   },
+   "confidence": 0.8,
+   "open_question": null,
+   "mag_id": "M11",
+   "alap_szin": true
+  },
+  {
+   "cand_id": "C11b",
+   "mag_id": "M11",
+   "alap_szin": false,
+   "label_hu": "Műszakátadás strukturált átadási protokollal sürgős áthelyezéskor",
+   "label_en": "Structured handover during urgent patient transfer",
+   "kozeg": "KOZ_TARSAS",
+   "helyzet": "HELY_KRITIKUS",
+   "szin_kulonbseg_hu": "Időnyomás alatt hiánytalan, ellenőrzött átadás a fogadó egység felé.",
+   "frequency": "WEEKLY",
+   "expected_eqf": 5,
+   "confidence": 0.7
+  },
+  {
+   "cand_id": "C12",
+   "secondary_szer": [],
+   "failure_mode_hu": "",
+   "kozeg": "KOZ_DIGITALIS",
+   "kozeg_secondary": [
+    "KOZ_SZERVEZETI"
+   ],
+   "helyzet": "HELY_RUTIN",
+   "helyzet_secondary": null,
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "rationale_hu": {
+    "type": "",
+    "szer": "",
+    "kozeg": "",
+    "helyzet": ""
+   },
+   "confidence": 0.8,
+   "open_question": null,
+   "mag_id": "M12",
+   "alap_szin": true
+  },
+  {
+   "cand_id": "C13",
+   "secondary_szer": [],
+   "failure_mode_hu": "",
+   "kozeg": "KOZ_SZERVEZETI",
+   "kozeg_secondary": [],
+   "helyzet": "HELY_IRANYITASI",
+   "helyzet_secondary": null,
+   "frequency": "DAILY",
+   "expected_eqf": 6,
+   "rationale_hu": {
+    "type": "",
+    "szer": "",
+    "kozeg": "",
+    "helyzet": ""
+   },
+   "confidence": 0.8,
+   "open_question": null,
+   "mag_id": "M13",
+   "alap_szin": true
+  },
+  {
+   "cand_id": "C14",
+   "secondary_szer": [],
+   "failure_mode_hu": "",
+   "kozeg": "KOZ_SZERVEZETI",
+   "kozeg_secondary": [],
+   "helyzet": "HELY_EGYUTTMUKODESI",
+   "helyzet_secondary": null,
+   "frequency": "DAILY",
+   "expected_eqf": 6,
+   "rationale_hu": {
+    "type": "",
+    "szer": "",
+    "kozeg": "",
+    "helyzet": ""
+   },
+   "confidence": 0.8,
+   "open_question": null,
+   "mag_id": "M14",
+   "alap_szin": true
+  }
+ ],
+ "skill_mentions": [
+  {
+   "text": "empátia",
+   "related_cand_ids": [
+    "C10"
+   ]
+  }
+ ],
+ "tesz_magok": [
+  {
+   "mag_id": "M01",
+   "kor_id": "K1",
+   "label_hu": "Beteg ápolási állapotfelmérése felvételkor strukturált felmérőlappal",
+   "label_en": "Structured nursing assessment on admission",
+   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
+   "tesz_type": "ASSESS_ANALYSE",
+   "tesz_type_runner_up": null,
+   "primary_szer": {
+    "label_hu": "Strukturált ápolási felmérés",
+    "label_en": "",
+    "kind": "METHOD",
+    "role": "GUIDED_BY",
+    "definition_hu": ""
+   },
+   "relevance": "CORE"
+  },
+  {
+   "mag_id": "M02",
+   "kor_id": "K1",
+   "label_hu": "Vitális paraméterek mérése és rögzítése műszakonként",
+   "label_en": "Measure and record vital signs each shift",
+   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
+   "tesz_type": "OBSERVE_MEASURE",
+   "tesz_type_runner_up": null,
+   "primary_szer": {
+    "label_hu": "Vitális paraméter-mérőeszközök",
+    "label_en": "",
+    "kind": "TOOL",
+    "role": "USES",
+    "definition_hu": ""
+   },
+   "relevance": "CORE"
+  },
+  {
+   "mag_id": "M03",
+   "kor_id": "K1",
+   "label_hu": "Állapotromlás felismerése korai figyelmeztető pontrendszerrel és orvos riasztása",
+   "label_en": "Recognise deterioration with an early warning score and escalate",
+   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
+   "tesz_type": "DECIDE",
+   "tesz_type_runner_up": null,
+   "primary_szer": {
+    "label_hu": "Korai figyelmeztető pontrendszer",
+    "label_en": "",
+    "kind": "METHOD",
+    "role": "GUIDED_BY",
+    "definition_hu": ""
+   },
+   "relevance": "CORE"
+  },
+  {
+   "mag_id": "M04",
+   "kor_id": "K1",
+   "label_hu": "Ápolási terv készítése és frissítése a felmérés alapján",
+   "label_en": "Prepare and update the care plan",
+   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
+   "tesz_type": "PLAN",
+   "tesz_type_runner_up": null,
+   "primary_szer": {
+    "label_hu": "Ápolási terv",
+    "label_en": "",
+    "kind": "PLAN",
+    "role": "PRODUCES",
+    "definition_hu": ""
+   },
+   "relevance": "CORE"
+  },
+  {
+   "mag_id": "M05",
+   "kor_id": "K3",
+   "label_hu": "Gyógyszer előkészítése és beadása orvosi rendelés szerint",
+   "label_en": "Prepare and administer medication as prescribed",
+   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
+   "tesz_type": "EXECUTE",
+   "tesz_type_runner_up": null,
+   "primary_szer": {
+    "label_hu": "Gyógyszerelési rendelés",
+    "label_en": "",
+    "kind": "RULE",
+    "role": "GUIDED_BY",
+    "definition_hu": ""
+   },
+   "relevance": "CORE",
+   "melyites_jeloltek": [
+    {
+     "kozeg": "KOZ_FIZIKAI",
+     "helyzet": "HELY_KRITIKUS",
+     "indok_hu": "Újraélesztés alatti gyógyszerelés, osztályos ápolónál ritka."
+    }
+   ]
+  },
+  {
+   "mag_id": "M06",
+   "kor_id": "K3",
+   "label_hu": "Seb ellátása és kötéscsere az előírt technikával",
+   "label_en": "Wound care and dressing change",
+   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
+   "tesz_type": "EXECUTE",
+   "tesz_type_runner_up": null,
+   "primary_szer": {
+    "label_hu": "Sebkezelési eljárás",
+    "label_en": "",
+    "kind": "METHOD",
+    "role": "GUIDED_BY",
+    "definition_hu": ""
+   },
+   "relevance": "CORE"
+  },
+  {
+   "mag_id": "M07",
+   "kor_id": "K3",
+   "label_hu": "Perifériás vénás kanül behelyezése és gondozása",
+   "label_en": "Insert and maintain a peripheral IV cannula",
+   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
+   "tesz_type": "EXECUTE",
+   "tesz_type_runner_up": null,
+   "primary_szer": {
+    "label_hu": "Perifériás vénás kanül",
+    "label_en": "",
+    "kind": "TOOL",
+    "role": "USES",
+    "definition_hu": ""
+   },
+   "relevance": "CORE"
+  },
+  {
+   "mag_id": "M08",
+   "kor_id": "K3",
+   "label_hu": "Beteg biztonságos mozgatása és pozicionálása emelőeszközzel",
+   "label_en": "Safe patient handling with a lift",
+   "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
+   "tesz_type": "EXECUTE",
+   "tesz_type_runner_up": null,
+   "primary_szer": {
+    "label_hu": "Betegemelő eszköz",
+    "label_en": "",
+    "kind": "TOOL",
+    "role": "USES",
+    "definition_hu": ""
+   },
+   "relevance": "SUPPORTING"
+  },
+  {
+   "mag_id": "M09",
    "kor_id": "K3",
    "label_hu": "Fertőzéskontroll-előírások alkalmazása ápolási beavatkozásoknál",
    "label_en": "Apply infection control in nursing procedures",
-   "attestation_hu": "A személy önállóan fertőzéskontroll-előírások alkalmazása ápolási beavatkozásoknál.",
    "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
    "tesz_type": "COMPLY",
    "tesz_type_runner_up": null,
    "primary_szer": {
@@ -385,36 +555,14 @@
     "role": "GUIDED_BY",
     "definition_hu": ""
    },
-   "secondary_szer": [],
-   "failure_mode_hu": "",
-   "kozeg": "KOZ_FIZIKAI",
-   "kozeg_secondary": [],
-   "helyzet": "HELY_KRITIKUS",
-   "helyzet_secondary": null,
-   "relevance": "CORE",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "rationale_hu": {
-    "type": "",
-    "szer": "",
-    "kozeg": "",
-    "helyzet": ""
-   },
-   "confidence": 0.8,
-   "open_question": null
+   "relevance": "CORE"
   },
   {
-   "cand_id": "C10",
+   "mag_id": "M10",
    "kor_id": "K5",
    "label_hu": "Beteg és hozzátartozó betegoktatása az öngondozásról",
    "label_en": "Patient and family self-care education",
-   "attestation_hu": "A személy önállóan beteg és hozzátartozó betegoktatása az öngondozásról.",
    "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
    "tesz_type": "COMMUNICATE",
    "tesz_type_runner_up": null,
    "primary_szer": {
@@ -424,36 +572,14 @@
     "role": "INPUT",
     "definition_hu": ""
    },
-   "secondary_szer": [],
-   "failure_mode_hu": "",
-   "kozeg": "KOZ_TARSAS",
-   "kozeg_secondary": [],
-   "helyzet": "HELY_TANULASI",
-   "helyzet_secondary": null,
-   "relevance": "CORE",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "rationale_hu": {
-    "type": "",
-    "szer": "",
-    "kozeg": "",
-    "helyzet": ""
-   },
-   "confidence": 0.8,
-   "open_question": null
+   "relevance": "CORE"
   },
   {
-   "cand_id": "C11",
+   "mag_id": "M11",
    "kor_id": "K5",
    "label_hu": "Műszakátadás strukturált átadási protokollal",
    "label_en": "Structured shift handover",
-   "attestation_hu": "A személy önállóan műszakátadás strukturált átadási protokollal.",
    "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
    "tesz_type": "COMMUNICATE",
    "tesz_type_runner_up": null,
    "primary_szer": {
@@ -463,36 +589,14 @@
     "role": "GUIDED_BY",
     "definition_hu": ""
    },
-   "secondary_szer": [],
-   "failure_mode_hu": "",
-   "kozeg": "KOZ_TARSAS",
-   "kozeg_secondary": [],
-   "helyzet": "HELY_EGYUTTMUKODESI",
-   "helyzet_secondary": null,
-   "relevance": "CORE",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "rationale_hu": {
-    "type": "",
-    "szer": "",
-    "kozeg": "",
-    "helyzet": ""
-   },
-   "confidence": 0.8,
-   "open_question": null
+   "relevance": "CORE"
   },
   {
-   "cand_id": "C12",
+   "mag_id": "M12",
    "kor_id": "K6",
-   "label_hu": "Ápolási dokumentáció vezetése elektronikus betegdokumentációs rendszerben",
-   "label_en": "Maintain nursing records in the EHR",
-   "attestation_hu": "A személy önállóan ápolási dokumentáció vezetése elektronikus betegdokumentációs rendszerben.",
+   "label_hu": "Ápolási dokumentáció vezetése betegdokumentációs rendszerben",
+   "label_en": "Maintain nursing records in the patient record system",
    "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
    "tesz_type": "DOCUMENT",
    "tesz_type_runner_up": null,
    "primary_szer": {
@@ -502,38 +606,14 @@
     "role": "USES",
     "definition_hu": ""
    },
-   "secondary_szer": [],
-   "failure_mode_hu": "",
-   "kozeg": "KOZ_DIGITALIS",
-   "kozeg_secondary": [
-    "KOZ_SZERVEZETI"
-   ],
-   "helyzet": "HELY_RUTIN",
-   "helyzet_secondary": null,
-   "relevance": "CORE",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "rationale_hu": {
-    "type": "",
-    "szer": "",
-    "kozeg": "",
-    "helyzet": ""
-   },
-   "confidence": 0.8,
-   "open_question": null
+   "relevance": "CORE"
   },
   {
-   "cand_id": "C13",
+   "mag_id": "M13",
    "kor_id": "K6",
    "label_hu": "Ápolási asszisztensek napi feladatainak kiosztása és felügyelete",
    "label_en": "Allocate and supervise nursing assistants' tasks",
-   "attestation_hu": "A személy önállóan ápolási asszisztensek napi feladatainak kiosztása és felügyelete.",
    "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
    "tesz_type": "COORDINATE",
    "tesz_type_runner_up": null,
    "primary_szer": {
@@ -543,36 +623,14 @@
     "role": "PRODUCES",
     "definition_hu": ""
    },
-   "secondary_szer": [],
-   "failure_mode_hu": "",
-   "kozeg": "KOZ_SZERVEZETI",
-   "kozeg_secondary": [],
-   "helyzet": "HELY_IRANYITASI",
-   "helyzet_secondary": null,
-   "relevance": "SUPPORTING",
-   "frequency": "DAILY",
-   "expected_eqf": 6,
-   "rationale_hu": {
-    "type": "",
-    "szer": "",
-    "kozeg": "",
-    "helyzet": ""
-   },
-   "confidence": 0.8,
-   "open_question": null
+   "relevance": "SUPPORTING"
   },
   {
-   "cand_id": "C14",
+   "mag_id": "M14",
    "kor_id": "K6",
    "label_hu": "Beteg elbocsátásának előkészítése és az ellátás folytonosságának szervezése",
    "label_en": "Discharge planning and continuity of care",
-   "attestation_hu": "A személy önállóan beteg elbocsátásának előkészítése és az ellátás folytonosságának szervezése.",
    "outcome_hu": "Az elvárt minőségű, dokumentált eredmény.",
-   "rubric_hu": [
-    "pontos végrehajtás",
-    "biztonsági szabályok betartása",
-    "dokumentálás"
-   ],
    "tesz_type": "COORDINATE",
    "tesz_type_runner_up": null,
    "primary_szer": {
@@ -582,31 +640,7 @@
     "role": "PRODUCES",
     "definition_hu": ""
    },
-   "secondary_szer": [],
-   "failure_mode_hu": "",
-   "kozeg": "KOZ_SZERVEZETI",
-   "kozeg_secondary": [],
-   "helyzet": "HELY_EGYUTTMUKODESI",
-   "helyzet_secondary": null,
-   "relevance": "SUPPORTING",
-   "frequency": "DAILY",
-   "expected_eqf": 6,
-   "rationale_hu": {
-    "type": "",
-    "szer": "",
-    "kozeg": "",
-    "helyzet": ""
-   },
-   "confidence": 0.8,
-   "open_question": null
-  }
- ],
- "skill_mentions": [
-  {
-   "text": "empátia",
-   "related_cand_ids": [
-    "C10"
-   ]
+   "relevance": "SUPPORTING"
   }
  ]
 }
