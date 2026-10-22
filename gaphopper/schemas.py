@@ -264,6 +264,21 @@ def link_magok(magok: list[TeszMag], tesz: list[Tesz], strict: bool = True) -> t
         if m is None:
             raise ValueError(f"{t.cand_id}: ismeretlen mag_id '{t.mag_id}'; a tesz_magok listájából válassz.")
         out.append(inherit(m, t))
+    # Egy MAG-on belül a SZÍN a változat kiléte: azonos ⟨KÖZ-eg, HELY-zet⟩ = ugyanaz a TESZ-nivaló.
+    seen: dict[tuple, int] = {}
+    dedup: list[Tesz] = []
+    for t in out:
+        k = (t.mag_id, t.kozeg, t.helyzet)
+        if k in seen:
+            keep = dedup[seen[k]]
+            if t.alap_szin and not keep.alap_szin:
+                dedup[seen[k]] = t.model_copy(update={"kozeg_secondary": keep.kozeg_secondary or t.kozeg_secondary})
+            warnings.append(f"{t.cand_id} és {keep.cand_id}: azonos SZÍN ugyanazon a MAG-on ({t.mag_id}, "
+                            f"{t.kozeg}/{t.helyzet}) – egy TESZ-nivalóként maradt meg ({dedup[seen[k]].cand_id}).")
+            continue
+        seen[k] = len(dedup)
+        dedup.append(t)
+    out = dedup
     used = {t.mag_id for t in out}
     final_magok = []
     for m in magok:
@@ -318,10 +333,13 @@ class P1Output(_Base):
     tesz_magok: list[TeszMag] = Field(default_factory=list)
     tesz: list[Tesz] = Field(min_length=1)
     skill_mentions: list[SkillMention] = Field(default_factory=list)
+    # A determinisztikus javítások (pl. azonos SZÍN egy MAG-on) nyoma; a modell nem írja.
+    link_warnings: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _link(self):
-        self.tesz_magok, self.tesz, _ = link_magok(self.tesz_magok, self.tesz, strict=True)
+        self.tesz_magok, self.tesz, w = link_magok(self.tesz_magok, self.tesz, strict=True)
+        self.link_warnings = list(dict.fromkeys(self.link_warnings + w))
         return self
 
 

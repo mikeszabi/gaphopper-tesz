@@ -159,8 +159,12 @@ def cmd_db_reset(a):
     from datetime import date
 
     s = settings()
+    from datetime import datetime
+
     d = Path(s.state_db).parent / f"backup-{date.today().isoformat()}"
-    d.mkdir(parents=True, exist_ok=True)
+    if d.exists():  # ugyanaznapi korábbi mentést nem írunk felül
+        d = d.with_name(d.name + datetime.now().strftime("-%H%M%S"))
+    d.mkdir(parents=True)
     if Path(s.state_db).exists():
         src = sqlite3.connect(str(s.state_db))
         dst = sqlite3.connect(str(d / "state.sqlite"))

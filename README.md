@@ -1,6 +1,8 @@
 # Gaphopper TESZ-felbontó
 
-MUNKA-KÖR → elemi TESZ-nivalók ⟨SZER-ELEM, KÖZ-eg, HELY-zet⟩ triplettel → helyi neo4j.
+MUNKA-KÖR → TESZ-MAG-ok (TESZ-típus + meghatározó SZER-ELEM + ERED-mény) → SZÍN-ezett változataik, a
+TESZ-nivalók (MAG × SZÍN, SZÍN = ⟨KÖZ-eg, HELY-zet⟩) → helyi neo4j. A tervezés indoklása:
+[docs/TESZ-MAG es SZIN - granularitas.md](docs/TESZ-MAG%20es%20SZIN%20-%20granularitas.md).
 A feldolgozás lépései: E0 kinyerés, P1 felbontás, P2 bírálat, P3 egyesítés, P4 készséghorgonyzás és EQF, P5 tanúsítás.
 
 Ez a teljes beállítási referencia. A [futtatási segédlet](docs/Gaphopper%20TESZ%20–%20futtatási%20segédlet.md) a napi munkamenetet, a [CLAUDE.md](CLAUDE.md) a fejlesztési szabályokat írja le.
@@ -13,9 +15,10 @@ gaphopper-tesz/
 │   ├─ schemas.py          a promptkimenetek pydantic-sémái
 │   ├─ llm.py              Anthropic / Gemini / helyi OpenAI-kompatibilis (pl. Qwen a DGX Sparkon) / kézi / teszt
 │   ├─ report.py           tokenek, idő és költség a futásnaplóból
-│   ├─ rules.py            R1–R10 determinisztikus szabályok
-│   ├─ merge.py            P3: alias-találat → hasonlóság → a kétes esetek egy LLM-hívásban
-│   ├─ graph.py            neo4j-séma és MERGE-alapú írás
+│   ├─ rules.py            R1–R16 determinisztikus szabályok (MAG- és SZÍN-szinten)
+│   ├─ merge.py            P3: MAG-egyezés (alias → hasonlóság → kétes esetek egy LLM-hívásban),
+│   │                      SZÍN-egyezés determinisztikusan; az írandók egy WritePlan-be gyűlnek
+│   ├─ graph.py            neo4j-séma, kötegelt (UNWIND) írás egy tranzakcióban
 │   ├─ store.py            SQLite: állapot, napló, köztes eredmények, alias-index, kötegek
 │   ├─ extract.py          0. lépés: dokumentumokból jobs.jsonl
 │   ├─ batch.py            kötegelt (Anthropic) és párhuzamos futtatás
@@ -115,11 +118,47 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
 
 ## 5. Mit csinál egy futás
 
-1. **P1** – a modell felbontja a munkakört, tömören: igazolási mondat, rubrika és kudarcmód nélkül, TESZ-enként egy rövid indoklással. A kimenetet a séma ellenőrzi (zárt listák, mezők). Sémahibánál egyszer újrapróbál a hibaüzenettel.
-2. **Szabályok** – R1 darabszám, R4 címke, R5 EXECUTE-arány, R6 „természetes pár”, R7 Kritikus-arány, R8 duplikátum, R9 feladatkör-lefedés, R10 bizonyosság (küszöbök: `config/vocab.yaml`).
-3. **P2** – csak akkor fut, ha kell: szabályjelzésnél, és a minőség követésére egy véletlen mintán (alapból 15%, `GH_P2_MODE=auto|always|never`, `GH_P2_SAMPLE`). A bíráló csak az eltéréseket adja vissza (FIX, DROP, MERGE, SPLIT, ADD), a kód alkalmazza őket. Ha a szabályok utána is sérülnek, vagy a bíráló EXPERT-et mond → szakértői sor.
-4. **P3 + gráf** – alias-találat (magyarul és angolul is) → hasonlósági keresés → a kétes esetek munkakörönként **egyetlen** LLM-hívásban, rövid saját rendszerprompttal. A szinonimák az elem `aliases` / `alias_keys` tulajdonságaiba kerülnek, nem külön csomópontba.
-5. **P5 (`certify`)** – az igazolási mondat és a 3–6 rubrikaszempont kanonikus TESZ-enként egyszer készül, a gráfba írás után, tízesével kötegelve.
+1. **P1** – a modell TESZ-MAG-okra bontja a munkakört (10–18 MAG, 8–15 CORE), és minden MAG-hoz pontosan egy
+   ALAP-SZÍN változatot ad, további változatot csak az M2 (új vagy szigorúbb értékelési kritérium) és az M3
+   (a munkakörben rendszeres) próba szerint, MAG-onként legfeljebb 3-at (összesen 12–25 TESZ-nivaló). CORE MAG-on
+   legfeljebb 1 mélyítési jelölt (a szakmában ismert, itt nem jellemző nehezebb SZÍN). A változat nem ismétli a
+   MAG mezőit (`tesz_type`, `primary_szer`, `outcome_hu`, `relevance`, `kor_id`): a séma a MAG-ról tölti ki őket.
+   Igazolási mondat, rubrika és indoklás nincs a kimenetben. Sémahibánál egyszer újrapróbál a hibaüzenettel; a
+   gyakori, egyértelmű értékeltérések (pl. `QUARTERLY` → `MONTHLY`, `PERIPHERAL` → `SUPPORTING`) a
+   `vocab.yaml` `alias_ertek` táblája szerint újrahívás nélkül javulnak.
+2. **Szabályok** (küszöbök: `config/vocab.yaml` → `rules`):
+
+   | Kód | Szint | Mit jelez |
+   | --- | --- | --- |
+   | R1 | MAG + változat | MAG 10–18, TESZ-nivaló 12–25, CORE MAG 8–15 |
+   | R4 | MAG (+ változat mintái) | MAG-címke 3–14 szó, tiltott címkeminták |
+   | R5 | MAG | EXECUTE-arány > 30% |
+   | R6 | ALAP-SZÍN | a HELY-zet a TESZ-típus „természetes párja” > 60% |
+   | R7 | változat | Kritikus HELY-zet aránya (magas kockázatú szakterületen 40%, egyébként 25%) |
+   | R8 | változat | azonos ⟨típus, SZER-ELEM, KÖZ-eg, HELY-zet⟩ négyes |
+   | R9 | MAG | MAG nélküli feladatkör |
+   | R10 | változat | alacsony bizonyosság (szakértőhöz) |
+   | R11 | MAG | két MAG azonos ⟨típus, meghatározó SZER-ELEM⟩ párral – egy MAG két SZÍN-e? |
+   | R12 | MAG | több mint 3 változat |
+   | R13 | változat | nem ALAP-SZÍN változat érdemi `szin_kulonbseg_hu` nélkül (M2) |
+   | R14 | MAG | SZÍN-jelző a MAG címkéjében (`szin_jelzok` szólista) |
+   | R15 | séma | MAG-onként pontosan egy ALAP-SZÍN (a P1-nél sémahiba, a P2 után a kód javítja) |
+   | R16 | változat | csak KÖZ-egben eltér, azonos kísérő SZER-ELEM-ekkel – valószínű kísérő KÖZ-eg |
+3. **P2** – csak akkor fut, ha kell: szabályjelzésnél, és a minőség követésére egy véletlen mintán (alapból 15%,
+   `GH_P2_MODE=auto|always|never`, `GH_P2_SAMPLE`). A bíráló a P1 tömörített, MAG-onként csoportosított nézetét
+   kapja (indoklás, angol címke és definíció nélkül), és csak az eltéréseket adja vissza: FIX (változaton vagy
+   `mag_id`-vel a MAG-on), DROP, MERGE, SPLIT (változat vagy MAG), ADD (új MAG-gal is), REMAG (változatok egy MAG
+   alá), FOLD (változat kísérő SZÍN-né). A kód alkalmazza őket. Ha a szabályok utána is sérülnek, vagy a bíráló
+   EXPERT-et mond → szakértői sor.
+4. **P3 + gráf** – két lépcsőben. *MAG-egyezés*: alias-találat (magyarul és angolul is) → hasonlósági keresés a
+   MAG-címkén és az `outcome_hu`-n → a kétes MAG- és SZER-ELEM-esetek munkakörönként **egyetlen** LLM-hívásban
+   (SAME / NARROWER / BROADER / NEW; a KÖZ-eg és a HELY-zet nem számít). *SZÍN-egyezés*: determinisztikus, a
+   TESZ-nivaló kiléte `stable_id(gh_tesz, mag_id, kozeg, helyzet)`; ha a MAG-on már van ilyen SZÍN, SAME, különben új
+   változat. Az írás egy tranzakcióban, típusonként egy `UNWIND`-lekérdezéssel megy. A szinonimák az elem
+   `aliases` / `alias_keys` tulajdonságaiba kerülnek, nem külön csomópontba.
+5. **P5 (`certify`)** – halmozható tanúsítvány: MAG-onként 3–6 alapkritérium (`rubric_alap_hu`), változatonként
+   igazolási mondat és 1–3 kiegészítő SZÍN-kritérium (`rubric_szin_hu`, az ALAP-SZÍN-nél üres). Egyszer készül,
+   a gráfba írás után, hívásonként 6 MAG a változataival.
 6. **Napló** – minden LLM-hívás nyers válasza, modellje, promptverziója, tokenje és ideje a `runs/state.sqlite`-ban. Összesítés: `python -m gaphopper report` (promptverziónként, így a régi és az új futás összevethető).
 
 ## 5a. Modellek és költség
@@ -149,6 +188,55 @@ A helyi modell lassabban ír, mint az API, ezért a rövid kimenetű lépésekre
 
 A futás idempotens: a kész munkakör nem fut újra (`--force` kell hozzá), a változatlan rekord importja nem állítja vissza.
 
+## 5b. A gráf sémája (TESZ-MAG × SZÍN)
+
+```
+(:TeszMag {id, label_hu, label_en, outcome_hu, aliases, embedding, status, rubric_alap_hu})
+   -[:TIPUSA]->(:TeszTipus)   -[:IRANYUL {role}]->(:SzerElem)          // a meghatározó SZER-ELEM a MAG-on
+(:TeszNivalo {id, label_hu, alap_szin, szin_kulonbseg_hu, attestation_hu, rubric_szin_hu})
+   -[:MAGJA]->(:TeszMag)   -[:SZINBEN]->(:Szin)
+   -[:KOZEGBEN_ZAJLIK {primary}]->(:Kozeg)   -[:HELYZETBEN_VEGZENDO {primary}]->(:Helyzet)
+   -[:HASZNAL {role}]->(:SzerElem)                                     // kísérő, közegfüggő SZER-ELEM
+(:Szin {id: "KOZ_FIZIKAI|HELY_KRITIKUS"})-[:KOZEGE]->(:Kozeg), -[:HELYZETE]->(:Helyzet)   // 5 × 11 rögzített
+(:Helyzet {tengely, fok})-[:MELYEBB]->(:Helyzet)   // KISZ: TANULASI 0 → RUTIN 1 → VALTOZO 2 → PROBLEMA 3 → KRITIKUS 4
+(:TeszMag)-[:MELYITESI_JELOLT {indok_hu, forras_munkakor}]->(:Szin)
+(:MunkaKor)-[:TARTALMAZ_TESZT {relevance, frequency, expected_eqf, alap_szin, ...}]->(:TeszNivalo)
+```
+
+Kilét: `mag_id = stable_id("gh_mag", tesz_type, primary_szer_id, label_hu)`,
+`tesz_id = stable_id("gh_tesz", mag_id, kozeg, helyzet)`. A HELY-zet SZEREP tengelyén (DÖNTÉSI, ALKOTÓ,
+EGYÜTTMŰKÖDÉSI, SZOLGÁLTATÁSI, IRÁNYÍTÁSI, TANÍTÓ) nincs fok. A `HELY_TANULASI` a betanulás (a személy maga
+tanul), a tanítás `HELY_TANITO`. A `MELYITI` / `ATVISZI` viszony nincs tárolva: a MAG és a `Helyzet.fok`
+lekérdezéssel megadja (példák a tervezési doksi 5.4 fejezetében és a felület Adatbázis oldalán).
+
+## 5c. Próbafutás (dry run)
+
+```bash
+python -m gaphopper run --dry-run --job onet:29-1141.00            # a rekord a state.sqlite-ból (csak olvasva)
+python -m gaphopper run --dry-run --input data/job_100.jsonl --job onet:47-2111.00 --workers 3
+```
+
+A P1, a (szükség szerinti) P2 és az egyesítés P3-hívása lefut, de **sem a gráf, sem a `state.sqlite` nem
+változik**: a napló és a köztes eredmények memóriában élnek, az egyesítés csak olvas. A kimenet a MAG-ok és
+változataik táblázata (● ALAP-SZÍN, ○ mélyítő/átvivő, ◇ mélyítési jelölt, egyesítési döntés), a
+szabályjelzések, lépésenként a tokenek, a becsült költség és az idő; mentés: `runs/dryrun/<job>.json`. A
+webes felületen a Futás oldal „Próbafutás (dry run)” kapcsolójával, illetve egy munkakör részleteinél a
+„Próbafutás” gombbal indítható; az eredmény a munkakör részleteinél látszik.
+
+## 5d. Újraépítés (új séma vagy új promptverzió után)
+
+```bash
+python -m gaphopper db-reset --yes   # mentés: runs/backup-<dátum>/ (state.sqlite + neo4j-export.json), majd
+                                     # minden neo4j-csomópont, index és constraint és a state.sqlite törlése
+python -m gaphopper init             # új séma: constraint-ek, indexek, szótárak, 55 Szin, MELYEBB-lánc
+python -m gaphopper import data/job_100.jsonl
+python -m gaphopper run --dry-run --job <id>   # kalibráció
+python -m gaphopper run --workers 4
+python -m gaphopper certify
+```
+
+A Docker-kötet mappáját nem kell (és nem szabad) fájlrendszerből törölni: a `db-reset` Cypherrel ürít.
+
 ## 6. Hasonlóságkeresés (helyi Ollama)
 
 Alapból (üres `GH_EMBED_MODEL`) a neo4j teljes szöveges indexe adja a jelölteket, és a P3 dönt.
@@ -173,12 +261,13 @@ python -m gaphopper embed backfill            # a már a gráfban lévő elemek 
 ## 7. KÉSZ-ségek (P4a)
 
 ```bash
-python -m gaphopper anchors                       # az 1. kapu (≥3 munkakör, ≥5 TESZ) feletti SZÍN-ek
+python -m gaphopper anchors                       # az 1. kapu (≥3 munkakör, ≥5 TESZ) feletti SZÍN-ek (a Szin csomópontból)
 python -m gaphopper p4a --type HELYZET --value HELY_RUTIN --runs 3
 python -m gaphopper p4a --type SZIN --value "KOZ_TARSAS|HELY_SZOLGALTATASI"
 ```
 
-A P4a háromszor fut; ELLENŐRZÖTT státuszt kap a KÉSZ-ség, ha legalább 2 futásban megjelenik, és a horgony
+SZÍN-horgonynál a KÉSZ-ség a `Szin` csomóponthoz köt (`HORGONYOZ`, `ASPEKTUSA`), ugyanahhoz, amelyhez a
+TESZ-nivaló `SZINBEN` éle: a TESZ és a KÉSZ-ség mélyülése egy gráfúton látszik. A P4a háromszor fut; ELLENŐRZÖTT státuszt kap a KÉSZ-ség, ha legalább 2 futásban megjelenik, és a horgony
 TESZ-einek legalább 70%-át lefedi; különben JELÖLT. Az ELFOGADOTT státusz szakértői döntés.
 
 ## 8. Claude Code és neo4j MCP
@@ -217,8 +306,8 @@ python -m gaphopper ui --host 0.0.0.0  # a helyi hálózatról is elérhető (je
 
 Egyetlen JavaScript-oldal (`web/`), a Python oldalon csak a standard könyvtár fut (`gaphopper/web.py`); külön csomag nem kell.
 
-- **Futás:** felül a fázisok (E0 kinyerés → P1 felbontás → P2 bírálat → P3 gráfba írás → neo4j → P5 tanúsítás), mindegyiknél hány munkakör kész, kihagyott, hibás, várakozó vagy fut éppen. Alatta munkakörönként ugyanez egy sorban, és külön oszlopban, hogy a munkakör ténylegesen benne van-e a neo4j-ben (a gráfból ellenőrizve, nem az állapotmezőből). Indítás: kijelöltek / következő N / minden várakozó, meddig, hány szálon; a futó parancs kimenete élőben, leállítható. Egy munkakörre kattintva: fázisonként a modell, a tokenek, az idő és a költség, a hiba szövege, a P2 módosításai, és TESZ-enként, hogy bekerült-e a gráfba (új elemként vagy egy meglévőhöz kapcsolva), illetve mit vett ki a P2. A szakértői jóváhagyás és elutasítás is itt van.
-- **Adatbázis:** összevetés: hány munkakör van a gráfban, hány nincs, melyik „kész” munkakör hiányzik a gráfból, mi van csak a gráfban, hány TESZ-nek nincs még rubrikája. A SQLite állapotai és a neo4j csomópontjai, kapcsolatai; csak olvasó Cypher- és SQL-lekérdezés.
+- **Futás:** a „Próbafutás (dry run)” kapcsolóval a kijelölt munkakörök P1–P3 lépése lefut, de semmi nem íródik (lásd 5c). Felül a fázisok (E0 kinyerés → P1 felbontás → P2 bírálat → P3 gráfba írás → neo4j → P5 tanúsítás), mindegyiknél hány munkakör kész, kihagyott, hibás, várakozó vagy fut éppen. Alatta munkakörönként ugyanez egy sorban, és külön oszlopban, hogy a munkakör ténylegesen benne van-e a neo4j-ben (a gráfból ellenőrizve, nem az állapotmezőből). Indítás: kijelöltek / következő N / minden várakozó, meddig, hány szálon; a futó parancs kimenete élőben, leállítható. Egy munkakörre kattintva: fázisonként a modell, a tokenek, az idő és a költség, a hiba szövege, a P2 módosításai, és MAG-onként csoportosítva a változatok (● ALAP-SZÍN, ○ mélyítő/átvivő, ◇ mélyítési jelölt), hogy bekerültek-e a gráfba (új elemként vagy egy meglévőhöz kapcsolva), illetve mit vett ki a P2. A szakértői jóváhagyás és elutasítás is itt van.
+- **Adatbázis:** összevetés: hány munkakör van a gráfban, hány nincs, melyik „kész” munkakör hiányzik a gráfból, mi van csak a gráfban, hány TESZ-nivalónak nincs még igazolása. Kész lekérdezések: MAG-ok mélyítési létrája, mélyítési jelöltek, TESZ-típus × SZÍN. A SQLite állapotai és a neo4j csomópontjai, kapcsolatai; csak olvasó Cypher- és SQL-lekérdezés.
 - **Modellek:** lépésenként szolgáltató és modell; API-ból frissíthető modellválaszték; OpenAI-kompatibilis API és beágyazó modell beállítása és ellenőrzése; szerkeszthető egységárak; P2-mód. A mentés a `config/models.yaml`-ba kerül, és erősebb, mint a `.env`.
 - **Promptok:** a lépés sorrendjében, melyik lépés használja; szerkesztés, eltérés mentés előtt, korábbi változatok (`prompts/.history/`) betöltése.
 - **Feltöltés:** dokumentumok behúzása és kinyerése (E0, utána rögtön import), rekordfájlok előnézete (új / változott / változatlan) és importja.

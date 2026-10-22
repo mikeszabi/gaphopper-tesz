@@ -107,7 +107,7 @@ def finish_p1(ctx: Context, job: dict, obj: P1Output) -> P1Output:
         ctx.store.set_status(job["job_id"], "P1_KESZ", f"P2 kell: {reason}")
         return obj
     # A bírálat kimarad: a P1 lista a végleges.
-    art = {"verdict": "SKIPPED", "p2_reason": reason, "changes": [], "warnings": [],
+    art = {"verdict": "SKIPPED", "p2_reason": reason, "changes": [], "warnings": obj.link_warnings,
            "final_magok": [m.model_dump() for m in obj.tesz_magok],
            "final_tesz": [t.model_dump() for t in obj.tesz],
            "rule_flags_before": [f.as_dict() for f in flags], "rule_flags_after": [f.as_dict() for f in flags]}
@@ -362,7 +362,8 @@ def finish_p2(ctx: Context, job: dict, p1: P1Output, obj: P2Output, flags: list)
     magok, final, warnings = apply_p2(p1.tesz_magok, p1.tesz, obj.changes)
     flags2 = check_rules(p1, job, magok, final)
     art = obj.model_dump() | {"final_magok": [m.model_dump() for m in magok],
-                              "final_tesz": [t.model_dump() for t in final], "warnings": warnings,
+                              "final_tesz": [t.model_dump() for t in final],
+                              "warnings": p1.link_warnings + warnings,
                               "rule_flags_before": [f.as_dict() for f in flags],
                               "rule_flags_after": [f.as_dict() for f in flags2]}
     ctx.store.save_artifact(job["job_id"], "P2", art, ctx.pv)

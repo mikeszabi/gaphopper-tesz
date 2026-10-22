@@ -17,6 +17,7 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
    A nem ALAP-SZÍN változat label_hu = MAG-címke + SZÍN-jelző (pl. "... sürgősségi helyzetben"),
    és szin_kulonbseg_hu: egy mondat arról, mitől nehezebb vagy más, mint az ALAP-SZÍN.
    Ami nem éri el az M2 küszöböt, az kísérő SZÍN: kozeg_secondary (0-2) / helyzet_secondary (0-1).
+   Egy MAG változatainak SZÍN-e mind különböző; a nyelv, a címzett köre vagy a téma nem SZÍN.
    Ha a tennivaló lényege mások tanítása (oktatás, gyakorlatvezetés, mentorálás), a HELY-zet
    HELY_TANITO; a HELY_TANULASI az, amikor a személy maga tanul be.
 4. MÉLYÍTÉSI JELÖLT: ha egy CORE MAG-nak van a szakmában ismert nehezebb SZÍN-e, amely ebben a

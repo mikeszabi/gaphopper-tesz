@@ -67,6 +67,19 @@ def test_schema_mag_rules():
         P1Output.model_validate(d)
 
 
+def test_same_szin_on_one_mag_is_one_tesz():
+    """Egy MAG-on a SZÍN a változat kiléte: az azonos SZÍN-ű változat determinisztikusan összeolvad."""
+    d = p1_fixture()
+    d["tesz"].append({"cand_id": "C05x", "mag_id": "M05", "alap_szin": False, "kozeg": "KOZ_FIZIKAI",
+                      "helyzet": "HELY_RUTIN", "label_hu": "Gyógyszer beadása angol nyelvű betegnek",
+                      "szin_kulonbseg_hu": "Idegen nyelvű kommunikáció a beadás közben.", "expected_eqf": 4})
+    p1 = P1Output.model_validate(d)
+    assert "C05x" not in [t.cand_id for t in p1.tesz] and len(p1.tesz) == 17
+    assert p1.link_warnings and "C05x" in p1.link_warnings[0]
+    flags = rules.check(p1.tesz, [k.kor_id for k in p1.tesz_korok], "Health", magok=p1.tesz_magok)
+    assert "R8" not in {f.rule for f in flags}
+
+
 def test_legacy_p1_without_magok_still_loads():
     """Régi futás (MAG nélküli TESZ-ek): egyelemű MAG-ok készülnek, a szabályok futnak."""
     d = p1_fixture()
@@ -455,6 +468,7 @@ def test_apply_p2_changes():
 
     p1 = _p1_obj()
     fx = p1_fixture()
+    c06 = next(t for t in fx["tesz"] if t["cand_id"] == "C06")
     new_t = {"cand_id": "C02", "mag_id": "M01", "alap_szin": False, "kozeg": "KOZ_DIGITALIS",
              "helyzet": "HELY_PROBLEMA", "label_hu": "Új, hozzáadott változat leírása itt",
              "szin_kulonbseg_hu": "Hiányos adatokból kell következtetni.", "expected_eqf": 5}
@@ -464,9 +478,9 @@ def test_apply_p2_changes():
                                                "runner_up": "DECIDE"}},
         {"op": "DROP", "cand_id": "C03"},
         {"op": "MERGE", "cand_id": "C04", "into": "C05"},
-        {"op": "SPLIT", "cand_id": "C06", "new": [fx["tesz"][6] | {"cand_id": "C06a"},
-                                                 fx["tesz"][6] | {"cand_id": "C06b", "alap_szin": False,
-                                                                  "helyzet": "HELY_PROBLEMA"}]},
+        {"op": "SPLIT", "cand_id": "C06", "new": [c06 | {"cand_id": "C06a"},
+                                                 c06 | {"cand_id": "C06b", "alap_szin": False,
+                                                        "helyzet": "HELY_PROBLEMA"}]},
         {"op": "ADD", "new": [new_t]},
         {"op": "FOLD", "cand_id": "C02b", "into": "C02", "as": "helyzet_secondary"},
         {"op": "REMAG", "cand_ids": ["C14"], "mag_id": "M13"},
