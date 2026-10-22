@@ -1,8 +1,11 @@
 # Gaphopper TESZ-felbontó – útmutató Claude Code-nak
 
 ## Cél
-MUNKA-KÖR-ök felbontása elemi TESZ-nivalókra (egy TESZ = egy mikrotanúsítvány), mindegyik egy
-TESZ-típussal és egy meghatározó triplettel ⟨SZER-ELEM, KÖZ-eg, HELY-zet⟩, majd betöltés a helyi neo4j-be.
+MUNKA-KÖR-ök felbontása TESZ-MAG-okra (TESZ-típus + meghatározó SZER-ELEM + ERED-mény; KÖZ-eg- és
+HELY-zet-semleges) és azok SZÍN-ezett változataira, a TESZ-nivalókra (MAG × SZÍN ⟨KÖZ-eg, HELY-zet⟩; egy
+TESZ-nivaló = egy mikrotanúsítvány), majd betöltés a helyi neo4j-be. Minden MAG-nak pontosan egy ALAP-SZÍN-e
+van; további változat csak az M2 (új/szigorúbb kritérium) és M3 (rendszeres) próbával. A tervezés:
+`docs/TESZ-MAG es SZIN - granularitas.md` (7. fejezet: a felhasználó döntései, kötelezők).
 A szakmai szabályok forrása a `prompts/p0_system.md` és a `config/vocab.yaml`; ezeket ne írd át
 kérés nélkül, mert minden változás új `prompt_version`-t és újrafuttatást jelent.
 
@@ -23,19 +26,23 @@ a Futás oldal naplózott tokeneket és becsült API-költséget mutat. Kulcsér
 - `python -m gaphopper batch submit|status|collect --step P1|P2` – kötegelt futtatás; `run --workers N` – párhuzamos
 - `python -m gaphopper import <fájl>` – munkakörök beolvasása
 - `python -m gaphopper run --job <id> [--until p1|p2]` – feldolgozás
+- `python -m gaphopper run --dry-run --job <id> [--input f.jsonl]` – próbafutás: LLM-lépések lefutnak, a gráf
+  és a state.sqlite nem változik; kimenet `runs/dryrun/<job>.json` (a fő UI Futás oldalán kapcsolóként is)
+- `python -m gaphopper db-reset --yes` – mentés (`runs/backup-<dátum>/`), majd neo4j és state.sqlite ürítése; utána `init`
 - `python -m gaphopper show --job <id>` – köztes eredmények
 - `python -m gaphopper review` – szakértői sor; `--approve <qid>` gráfba írja
 - `python -m gaphopper stats`, `anchors`, `p4a --type ... --value ...`
 - `python -m gaphopper onet-tasks <Task Statements> [--ratings <Task Ratings>]` – O*NET-feladatlisták a `tasks` mezőbe
 - `python -m gaphopper embed check|backfill` – helyi Ollama beágyazás próbája, hiányzó vektorok pótlása
-- `python -m gaphopper certify` – P5: igazolási mondat és rubrika a rubrika nélküli TESZ-ekhez
+- `python -m gaphopper certify` – P5: MAG-rubrika (`rubric_alap_hu`), változatonként igazolás + SZÍN-rubrika (`rubric_szin_hu`)
 - `python -m gaphopper report` – tokenek, idő, költség promptverziónként; `models` – érvényes modellbeállítás
 - `python -m gaphopper ui` – webes felület (http://localhost:8765; `gaphopper/web.py` + `web/`)
 - tesztek: `python -m pytest -q`
 
 ## Kézi mód (amikor te vagy a modell)
 Ha `GH_PROVIDER=manual`, a `run` a `runs/manual/<job>/` mappába írja a promptot.
-1. Olvasd el a `P1_system.md` és `P1_user.md` fájlt, és pontosan a kért JSON-sémában válaszolj.
+1. Olvasd el a `P1_system.md` és `P1_user.md` fájlt, és pontosan a kért JSON-sémában válaszolj
+   (`tesz_magok` + `tesz`; a változat nem ismétli a MAG mezőit).
 2. Mentsd a választ `runs/manual/<job>/P1_answer.json` néven.
 3. `python -m gaphopper manual-submit --job <id> --step P1 --file runs/manual/<job>/P1_answer.json`
 4. Ugyanígy a P2-vel (ha a szabályok jeleznek vagy mintába esik). A P2-nél légy szigorú, független bíráló:
@@ -47,6 +54,12 @@ Kézi módban az `extract` a `runs/manual/extract/<fájlnév>/` mappába írja a
 újra ugyanazt az `extract` parancsot. Csak a szövegben szereplő adatot gyűjtsd ki, ne egészítsd ki.
 
 ## Szabályok munka közben
+- MAG-szintű mezők (`tesz_type`, `primary_szer`, `outcome_hu`, `relevance`, `kor_id`) csak a MAG-on élnek; a
+  változatot a séma tölti ki (`schemas.link_magok`). A változat kiléte a gráfban a ⟨MAG, KÖZ-eg, HELY-zet⟩.
+- A P3 LLM csak MAG- és SZER-ELEM-egyezésről dönt; a SZÍN-egyezés determinisztikus (`merge.py`).
+- Gráfírás csak `WritePlan` + `graph.write_plan()` úton (UNWIND, egy tranzakció); soronkénti lekérdezést ne vezess be.
+- Szabályok: R1–R16 (`rules.py`), küszöbök a `vocab.yaml` `rules` részében; a zárt listák egyértelmű
+  eltérései az `alias_ertek` táblában (új tételt csak egyértelmű megfeleltetésnél vegyél fel).
 - Ne hozz létre külön csomópontot szinonimáknak: a nevek az elem `aliases` tulajdonságába kerülnek.
 - A magyar név az elsődleges, az angol a megfeleltetés; régi gyökű magyar szót válassz az idegen helyett.
 - Ha egy kimenet sémahibás, ne kerüld meg a validálást: javítsd a választ vagy a promptot.

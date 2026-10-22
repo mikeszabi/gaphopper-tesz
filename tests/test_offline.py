@@ -643,7 +643,10 @@ def test_write_graph_single_p3_call(tmp_path):
     assert len(t5) == 2 and t5[0]["tesz_id"] != t5[1]["tesz_id"]
     assert {plan.tesz[t["tesz_id"]]["mag"] for t in t5} == {m05["graph_id"]}
     assert plan.tesz[t5[1]["tesz_id"]]["szin"] == "KOZ_FIZIKAI|HELY_VALTOZO"
-    assert summary["magok"][0]["graph_id"] == "old_TESZ_MAG" and not plan.magok["old_TESZ_MAG"]["new"]
+    # az LLM SAME-je a MAG-ra csak azonos TESZ-típusnál és meghatározó SZER-ELEM-nél áll meg (M1-őr):
+    # a FakeGraph törzseleme VERIFY / 'x', a jelölt nem az -> új MAG, szakértői átnézésre
+    assert summary["magok"][0]["decision"] == "NEW" and summary["magok"][0]["via"] == "llm-elutasitva"
+    assert any(r["kind"] == "mag" for r in summary["review"])
     assert len(plan.links) == 17 and len(summary["magok"]) == 14
     assert plan.magok[m05["graph_id"]]["melyites"][0]["helyzet"] == "HELY_KRITIKUS"
     assert ctx.store.status(job["job_id"]) == "GRAFBAN"
@@ -652,6 +655,23 @@ def test_write_graph_single_p3_call(tmp_path):
     c05 = next(t for t in p1.tesz if t.cand_id == "C05")
     assert Resolver.tesz_id("g1", c05) == Resolver.tesz_id("g1", c05.model_copy(update={"label_hu": "más"}))
     assert Resolver.tesz_id("g1", c05) != Resolver.tesz_id("g1", c05.model_copy(update={"kozeg": "KOZ_TARSAS"}))
+
+
+def test_mag_same_accepted_when_type_and_szer_match(tmp_path):
+    from gaphopper.merge import Resolver
+    from gaphopper.pipeline import Context
+
+    s = Settings()
+    s.state_db = tmp_path / "state.sqlite"
+    s.embed_model = ""
+    ctx = Context(s, with_graph=False)
+    ctx.graph = FakeGraph()
+    res = Resolver(ctx)
+    m = _p1_obj().tesz_magok[0].model_copy(update={"tesz_type": "VERIFY"})
+    res.decisions["M1"] = __import__("gaphopper.schemas", fromlist=["P3Decision"]).P3Decision(
+        case_id="M1", decision="SAME", target_id="old_TESZ_MAG", confidence=0.9)
+    assert res.mag(m, "M1", "x").decision == "SAME"
+    assert res.mag(m, "M1", "y").decision == "NEW"
 
 
 def test_dry_run_writes_nothing(tmp_path):
@@ -671,7 +691,7 @@ def test_dry_run_writes_nothing(tmp_path):
     assert out["ok"], out.get("error")
     assert not s.state_db.exists() and graph.plans == [] and len(calls) == 1
     assert out["szamok"] == {"mag": 14, "tesz": 17, "core_mag": 11, "nem_alap": 3, "melyitesi_jelolt": 1}
-    assert out["magok"][0]["egyesites"] == "SAME" and out["p3_cases"] >= 14
+    assert out["magok"][0]["egyesites"] == "NEW" and out["p3_cases"] >= 14
     assert [u["step"] for u in out["usage"]] == ["P1", "P3"]
     saved = json.loads((tmp_path / "dry" / "onet_29-1141.00.json").read_text(encoding="utf-8"))
     assert saved["szamok"]["tesz"] == 17

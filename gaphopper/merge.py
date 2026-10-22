@@ -247,6 +247,11 @@ class Resolver:
         if ans is None:
             return Resolution(new_id, "NEW", None, "manual", needs_review=True)
         if ans.decision in ("SAME", "BROADER") and ans.target_id:
+            # M1-őr: a MAG kiléte a TESZ-típus és a meghatározó SZER-ELEM; ha a törzselemé más, az LLM SAME
+            # döntését nem fogadjuk el (új MAG, szakértői átnézésre).
+            cx = self._context(ans.target_id)
+            if cx.get("tesz_type") != m.tesz_type or (cx.get("primary_szer_id") or primary_szer_id) != primary_szer_id:
+                return Resolution(new_id, "NEW", ans.target_id, "llm-elutasitva", needs_review=True)
             extra = [(a.text, a.lang) for a in ans.new_aliases]
             return Resolution(ans.target_id, "SAME", ans.target_id, "llm", ans.confidence < 0.6, extra)
         return Resolution(new_id, "NEW", None, "llm", ans.confidence < 0.6)

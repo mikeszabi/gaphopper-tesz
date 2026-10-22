@@ -269,3 +269,60 @@ Az 1. lépés durva: két, ténylegesen eltérő ERED-ményű TESZ is egy MAG-ba
 4. **Küszöbök: MAG 10–18, MAG-onként legfeljebb 3 változat.** Kalibrálás 3–5 referencia-munkakörön (ápoló, egyetemi oktató, egy O*NET-tétel), új `prompt_version`-nel.
 5. **Újrakezdés:** a meglévő adatbázisok törlődnek (előtte mentés), a gráf az új sémával épül újra; munkakörönként dry run lehetőség kell.
 6. **Elsődleges szempont:** gyors futás és optimalizált tokenhasználat.
+
+## 8. Kalibrálási eredmények (2026-10-22)
+
+Referencia-munkakörök: ápoló (`onet:29-1141.00`, `data/sample_jobs.jsonl`), egyetemi oktató (`ad:3486c602e3`,
+`data/jobs_dokumentumokbol.jsonl`), villanyszerelő (`onet:47-2111.00`, `data/job_100.jsonl`). Modellek változatlanul:
+P1 `claude-sonnet-5-5` (effort low), P2 `gemini-3.6-flash`, P3 `shared-local`. P2 mód: auto (15% minta).
+
+| Kör (prompt_version) | Munkakör | MAG (CORE) | TESZ-nivaló (nem ALAP) | Mélyítési jelölt | Jelzés a P1 után | P2 |
+|---|---|---|---|---|---|---|
+| 1. dry run (`…-1da03af5`) | ápoló | 15 (11) | 19 (4) | 2 | R10 | lefutott |
+| | oktató | 13 (9) | 15 (2) | 0 | R4, R8, R9, R10 | lefutott, R9 + R10 maradt |
+| | villanyszerelő | 15 (9) | 17 (2) | 0 | R5, R9 | lefutott |
+| 2. dry run (`…-59aef6aa`) | ápoló | 13 (10) | 21 (8) | 2 | – | kimaradt |
+| | oktató | 11 (8) | 14 (3) | 1 | R1 (7 CORE), R4, R8 | lefutott, R8 maradt |
+| | villanyszerelő | 14 (9) | 17 (3) | 0 | R5 (33%) | lefutott |
+| Valódi futás (`…-67e499ff`) | ápoló | 12 | 21 (9) | 2 | – | kimaradt |
+| | oktató | 11 | 13 (2) | 0 | – | kimaradt |
+| | villanyszerelő | 14 | 16 (2) | 0 | – | kimaradt |
+
+Az M1–M3 próbák a végső futásban: R11 (MAG-iker), R12 (>3 változat), R13 (üres SZÍN-különbség) és R14
+(SZÍN-jelző a MAG-címkében) egyik munkakörnél sem jelzett. A változat/MAG arány: ápoló 1,75, oktató 1,18,
+villanyszerelő 1,14. Az ápolónál a ~1,6-os irányszám fölött van, de MAG-onként legfeljebb 3 változattal, és
+mindegyik változat konkrét SZÍN-különbséget nevez meg. A ritkán ismétlődő szakmákban az M3 szigorúan érvényesül.
+
+A két kör változtatásai:
+1. kör: `mag_label_words_min: 3`, mert a SZÍN-semleges MAG-címke rövidebb. `mag_per_kor_min: 1` (R9 csak MAG
+   nélküli feladatkörre jelez), a P1-ben „feladatkörönként 1-4 MAG”. A tanításnál `HELY_TANITO`, mert az
+   oktatónál az 1. körben a tanító helyzet nem jelent meg. Confidence 0,6 alatt csak valódi bizonytalanságnál.
+2. kör: R5 `execute_max_share` 0,30 → 0,40 MAG-szinten (a villanyszerelő 33–36%-a a szakmában természetes). Egy
+   MAG változatainak SZÍN-e különböző; a nyelv, a címzett köre vagy a téma nem SZÍN. Az azonos SZÍN-ű változat
+   (ugyanaz a ⟨MAG, KÖZ-eg, HELY-zet⟩ kilét) determinisztikusan összeolvad, figyelmeztetéssel.
+
+Az egyesítésben a helyi P3-modell az első valódi futásban négy villanyszerelő-MAG-ot SAME-nek ítélt más
+SZER-ELEM-ű ápolói és oktatói MAG-okkal (pl. ápolási dokumentáció ≈ szerelési nyilvántartás). Erre M1-őr került
+a kódba: az LLM SAME-döntése csak azonos TESZ-típusnál és meghatározó SZER-ELEM-nél áll meg, különben új MAG
+jön létre, és szakértői átnézésre kerül. A három munkakör ezután újra beíródott.
+
+Token- és költségmérés (P1 + P2, ugyanaz a 3 munkakör, ugyanazok a modellek; régi kód: `main` ág):
+
+| | Hívás (sikeres) | Bemenet | Kimenet | Becsült költség | Idő |
+|---|---|---|---|---|---|
+| Előtte (régi prompt, P2 mindig) | 7 (5) | 53 164 | 56 363 | 0,566 USD | 323 mp |
+| Előtte, P2 auto móddal becsülve | – | – | – | ≈ 0,51 USD | – |
+| Utána (valódi futás) | 3 (3) | 18 815 | 20 973 | 0,232 USD | 127 mp |
+
+- A régi P1 a három munkakörből kettőnél sémahibát adott (`frequency`, `relevance`, `kind`), és újra kellett
+  hívni; a villanyszerelőnél két kísérlet után is elbukott. Az új P1 mindháromnál elsőre érvényes volt. Ez
+  egyrészt az `alias_ertek` táblának köszönhető, másrészt annak, hogy a P0 megadja a zárt értéklistát.
+- Munkakörönként a P1 kimenete sikeres hívásonként 8,2–9,4 ezer tokenről 6,1–8,1 ezerre csökkent: a változat
+  nem ismétli a MAG mezőit, és nincs indoklás.
+- A P0 rendszerprompt 3122 tokenről 2863-ra csökkent, és gyorsítótárazva megy (Anthropic `cache_control`).
+- A P2 bemenete hívásonként 9,5–10,7 ezerről 6,7–7,5 ezer tokenre csökkent (MAG-onként csoportosított, karcsú
+  nézet). A végső futásban a P2 egyik munkakörnél sem kellett.
+- A gráfírás munkakörönként 0,1–0,5 mp egy tranzakcióban (UNWIND). Az egyesítés ideje a helyi P3-modellen múlik
+  (30–70 mp, ha van kétes eset).
+
+Nyitott: a P5 (MAG- és SZÍN-rubrika) a mérés idején nem futott le, mert az Anthropic-fiók egyenlege elfogyott.
