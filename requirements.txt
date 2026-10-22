@@ -1,0 +1,16 @@
+# alap
+pydantic>=2.6
+pyyaml>=6.0
+python-dotenv>=1.0
+openpyxl>=3.1
+neo4j>=5.20
+# dokumentumok olvasása (0. lépés); ODT/RTF-hez a pandoc parancs kell, szkennelt PDF-hez OCR
+pypdf>=4.0
+python-docx>=1.1
+# LLM-szolgáltatók (amelyiket használod)
+anthropic>=0.40
+google-genai>=1.0
+# opcionális: többnyelvű beágyazás a hasonlóságkereséshez (nagyobb letöltés)
+# sentence-transformers>=3.0
+# opcionális: lemmatizálás (GH_LEMMATIZE=1)
+# spacy>=3.7

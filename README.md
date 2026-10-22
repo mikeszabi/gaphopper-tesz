@@ -1,0 +1,311 @@
+# Gaphopper TESZ-felbontó
+
+MUNKA-KÖR → elemi TESZ-nivalók ⟨SZER-ELEM, KÖZ-eg, HELY-zet⟩ triplettel → helyi neo4j.
+A feldolgozás lépései: E0 kinyerés, P1 felbontás, P2 bírálat, P3 egyesítés, P4 készséghorgonyzás és EQF, P5 tanúsítás.
+
+Ez a teljes beállítási referencia. A [futtatási segédlet](docs/Gaphopper%20TESZ%20–%20futtatási%20segédlet.md) a napi munkamenetet, a [CLAUDE.md](CLAUDE.md) a fejlesztési szabályokat írja le.
+
+```
+gaphopper-tesz/
+├─ config/vocab.yaml       zárt szótárak (TESZ-típus, KÖZ-eg, HELY-zet, SZER-ELEM) + szabálykuszöbök
+├─ prompts/                E0 kinyerés, P0 rendszerprompt, P1 felbontás, P2 bírálat, P3 egyesítés, P4a/P4b
+├─ gaphopper/              Python-csomag (CLI: python -m gaphopper)
+│   ├─ schemas.py          a promptkimenetek pydantic-sémái
+│   ├─ llm.py              Anthropic / Gemini / helyi OpenAI-kompatibilis (pl. Qwen a DGX Sparkon) / kézi / teszt
+│   ├─ report.py           tokenek, idő és költség a futásnaplóból
+│   ├─ rules.py            R1–R10 determinisztikus szabályok
+│   ├─ merge.py            P3: alias-találat → hasonlóság → a kétes esetek egy LLM-hívásban
+│   ├─ graph.py            neo4j-séma és MERGE-alapú írás
+│   ├─ store.py            SQLite: állapot, napló, köztes eredmények, alias-index, kötegek
+│   ├─ extract.py          0. lépés: dokumentumokból jobs.jsonl
+│   ├─ batch.py            kötegelt (Anthropic) és párhuzamos futtatás
+│   └─ pipeline.py         a sor vezérlése
+├─ gaphopper/web.py + web/ webes felület (JavaScript, külön csomag nélkül): futás, adatbázis, modellek, promptok, feltöltés
+├─ config/models.yaml      a felületen mentett modellbeállítás (ha létezik, erősebb a .env-nél)
+├─ data/sample_jobs.jsonl  három minta (angol katalógus, magyar, angol hirdetés)
+└─ tests/                  offline tesztek (neo4j és API-kulcs nélkül)
+```
+
+## 1. Telepítés
+
+```bash
+cd gaphopper-tesz
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+# első telepítéskor: cp .env.example .env
+# töltsd ki a neo4j adatait és a használt szolgáltatók API-kulcsait
+```
+
+A helyi neo4j 5.x legyen elindítva (Desktop vagy Docker). A vektorindexhez 5.11 vagy újabb kell.
+
+## 2. Első futtatás
+
+### 0. lépés: dokumentumokból jobs.jsonl
+
+Munkaköri leírások, álláshirdetések, katalógusok (PDF, DOCX, TXT, MD, HTML, ODT, RTF), akár egész mappa:
+
+```bash
+python -m gaphopper extract ~/Dokumentumok/munkakori_leirasok/ --out data/jobs.jsonl --import
+```
+
+- A szöveget kód olvassa ki (szkennelt PDF-hez előbb OCR kell), 24 000 karakteres, átfedő részletekre vágja.
+- Részletenként az E0 prompt gyűjti ki a munkaköröket: cím, feladatok, elvárások, körülmények, kódok (FEOR, ISCO, ESCO, O\*NET, ha a szöveg megadja), szó szerinti forrásidézet. Nem egészít ki szakmai tudásból.
+- Kód fésüli össze a részletek határán szétvágott és az ismétlődő munkaköröket (a szintjelzők, pl. „senior”, nem különböztetnek).
+- Azonosító: álláshirdetés → `ad:…`, katalógus → `cat:…`, munkaköri leírás → `doc:…`. A kimenet hozzáfűződik a meglévő `jobs.jsonl`-hez; azonos azonosítónál a régi sor cserélődik.
+- `--import` azonnal betölti a feldolgozó sorba; anélkül előbb átnézheted a fájlt, és utána `python -m gaphopper import data/jobs.jsonl`.
+- Csonka vagy bizonytalan kinyerésnél figyelmeztetést ír ki.
+
+### 1–3. lépés: felbontás, bírálat, gráf
+
+```bash
+python -m gaphopper init                                  # séma + zárt szótárak a gráfban
+python -m gaphopper import data/sample_jobs.jsonl         # vagy a munkakör-táblázat .xlsx-e
+python -m gaphopper run --job onet:29-1141.00 --until p2  # P1 + P2, gráfba írás nélkül
+python -m gaphopper show --job onet:29-1141.00            # eredmények
+python -m gaphopper run --job onet:29-1141.00             # P3 + gráfba írás
+python -m gaphopper certify                               # P5: rubrika és igazolási mondat a gráf új TESZ-eihez
+python -m gaphopper ui                                    # webes felület: http://localhost:8765
+```
+
+Táblázatból: `python -m gaphopper import ../Gaphopper_top100_TESZ_SZERELEM_seed_v01.xlsx`
+(a `Munkakörök` és `Forrás` lapot olvassa; a kész TESZ-lapokat nem). Ugyanez előre elkészítve: `data/job_100.jsonl`.
+
+O\*NET-feladatlisták a `tasks` mezőbe: töltsd le a [O\*NET adatbázis](https://www.onetcenter.org/database.html) „Task Statements” és „Task Ratings” fájlját (szöveg vagy Excel), majd
+`python -m gaphopper onet-tasks "../Task Statements.txt" --ratings "../Task Ratings.txt" --release 31.0`.
+A fő (Core) feladatok fontossági sorrendben a `tasks`, a kiegészítők a `tasks_supplemental` mezőbe kerülnek; a változott rekordot az újabb `import` visszaállítja NYERS-re. JSONL/CSV mezők: `job_id, title, field, description,
+tasks (;-vel elválasztva), requirements, conditions, entry_route, source, locale`.
+Hirdetésnél a `job_id` legyen `ad:` előtagú: ilyenkor a rendszer alias alapján keresi a kanonikus munkakört.
+
+## 3. Tömeges futtatás
+
+**Kötegelt mód (Anthropic Message Batches API)** – sok munkakörre a legolcsóbb: a kérések aszinkron, kedvezményes áron futnak (a feltételeket a szolgáltató aktuális dokumentációjában nézd meg).
+
+```bash
+python -m gaphopper batch submit --step P1            # minden NYERS rekord (--limit N, --job ID)
+python -m gaphopper batch status
+python -m gaphopper batch collect --wait              # percenként ellenőriz, amíg minden köteg kész
+python -m gaphopper batch submit --step P2            # a kész P1-ekre
+python -m gaphopper batch collect --wait
+python -m gaphopper run                               # P3 + gráfba írás helyben (P2_ELFOGADVA rekordok)
+```
+
+- Beküldéskor a rekordok `P1_KOTEGBEN` / `P2_KOTEGBEN` állapotba kerülnek, így nem futnak kétszer.
+- Begyűjtéskor minden választ ugyanaz a séma- és szabályellenőrzés vizsgál, mint egyenként. A hibás rekord visszaáll, és a hibaüzenet a következő `submit` promptjába kerül; elég újra beküldeni.
+- Egy köteg legfeljebb `--max-per-batch` (alapból 2000) kérés; több rekordnál több köteg jön létre.
+- A kötegben alapból nem küldünk hőmérsékletet (egyes modellek nem fogadják); `GH_BATCH_TEMPERATURE=1` bekapcsolja.
+- A P2 kötegelt módja is Anthropic-ot használ: ehhez a P2 szolgáltatója legyen `anthropic`.
+
+**Párhuzamos mód (bármely szolgáltató, pl. Gemini vagy a helyi Qwen)** – azonnali válasz, normál áron:
+
+```bash
+python -m gaphopper run --workers 8                  # P1 és P2 párhuzamosan, a gráfba írás egy szálon
+```
+
+## 4. Három futtatási mód
+
+| Mód | Beállítás | Mikor |
+| --- | --- | --- |
+| API | `anthropic`, `gemini` vagy `local` (lépésenként) | rendes futtatás |
+| Kézi | `GH_PROVIDER=manual` | prompt-finomítás Claude Code-ban vagy chatben, API-kulcs nélkül |
+| Teszt | `FakeLLM` a tesztekben | fejlesztés |
+
+Kézi módban a `run` a `runs/manual/<job>/` mappába írja a promptot (`P1_system.md`, `P1_user.md`).
+A választ JSON-fájlba mentve: `python -m gaphopper manual-submit --job <id> --step P1 --file válasz.json`,
+ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ; a kétes egyesítések szakértői sorba kerülnek.
+
+## 5. Mit csinál egy futás
+
+1. **P1** – a modell felbontja a munkakört, tömören: igazolási mondat, rubrika és kudarcmód nélkül, TESZ-enként egy rövid indoklással. A kimenetet a séma ellenőrzi (zárt listák, mezők). Sémahibánál egyszer újrapróbál a hibaüzenettel.
+2. **Szabályok** – R1 darabszám, R4 címke, R5 EXECUTE-arány, R6 „természetes pár”, R7 Kritikus-arány, R8 duplikátum, R9 feladatkör-lefedés, R10 bizonyosság (küszöbök: `config/vocab.yaml`).
+3. **P2** – csak akkor fut, ha kell: szabályjelzésnél, és a minőség követésére egy véletlen mintán (alapból 15%, `GH_P2_MODE=auto|always|never`, `GH_P2_SAMPLE`). A bíráló csak az eltéréseket adja vissza (FIX, DROP, MERGE, SPLIT, ADD), a kód alkalmazza őket. Ha a szabályok utána is sérülnek, vagy a bíráló EXPERT-et mond → szakértői sor.
+4. **P3 + gráf** – alias-találat (magyarul és angolul is) → hasonlósági keresés → a kétes esetek munkakörönként **egyetlen** LLM-hívásban, rövid saját rendszerprompttal. A szinonimák az elem `aliases` / `alias_keys` tulajdonságaiba kerülnek, nem külön csomópontba.
+5. **P5 (`certify`)** – az igazolási mondat és a 3–6 rubrikaszempont kanonikus TESZ-enként egyszer készül, a gráfba írás után, tízesével kötegelve.
+6. **Napló** – minden LLM-hívás nyers válasza, modellje, promptverziója, tokenje és ideje a `runs/state.sqlite`-ban. Összesítés: `python -m gaphopper report` (promptverziónként, így a régi és az új futás összevethető).
+
+## 5a. Modellek és költség
+
+Alapértékek (a `.env`, illetve a felület Modellek oldala felülírja):
+
+| Lépés | Modell | Gondolkodás |
+| --- | --- | --- |
+| E0, P1 | `claude-sonnet-5-5` | `effort=low` |
+| P2, P3, P5 | `claude-haiku-5-5` | `effort=low` |
+| P4 | `claude-sonnet-5-5` | `effort=medium` |
+
+**Helyi modell (pl. Qwen a DGX Sparkon):** bármely OpenAI-kompatibilis szerver (vLLM, SGLang, llama.cpp, Ollama) használható, külön Python-csomag nélkül:
+
+```
+GH_LOCAL_BASE_URL=http://<spark-cím>:8000/v1
+GH_LOCAL_MODEL=<a szerver /v1/models listája szerinti név>
+GH_PROVIDER_P2=local
+GH_PROVIDER_P3=local
+GH_PROVIDER_P5=local
+GH_THINKING_P3=off          # Qwen: a chat-sablon gondolkodása ki (enable_thinking=false)
+GH_LOCAL_JSON_MODE=object   # object | schema (kötött dekódolás, vLLM) | none
+```
+
+`python -m gaphopper models --check-local` kiírja a lépésenként érvényes beállítást, és lekéri a helyi szerver modelljeit.
+A helyi modell lassabban ír, mint az API, ezért a rövid kimenetű lépésekre (P2 eltérések, P3, P5) érdemes; a P1 hosszú kimenete a Sonneten gyorsabb.
+
+A futás idempotens: a kész munkakör nem fut újra (`--force` kell hozzá), a változatlan rekord importja nem állítja vissza.
+
+## 6. Hasonlóságkeresés (helyi Ollama)
+
+Alapból (üres `GH_EMBED_MODEL`) a neo4j teljes szöveges indexe adja a jelölteket, és a P3 dönt.
+Pontosabb és olcsóbb nagy tömegnél a beágyazás. Helyi Ollama-val nem kell hozzá extra Python-csomag:
+
+```bash
+ollama list                                   # a modell neve, pl. bge-m3
+# .env:
+#   GH_EMBED_PROVIDER=ollama
+#   GH_EMBED_MODEL=bge-m3
+#   OLLAMA_HOST=http://localhost:11434
+python -m gaphopper embed check               # dimenzió + magyar–angol hasonlósági próba
+python -m gaphopper init                      # létrehozza a vektorindexeket a modell dimenziójával
+python -m gaphopper embed backfill            # a már a gráfban lévő elemek vektorai
+```
+
+- Magyar és angol munkakörökhöz **többnyelvű** modell kell (pl. `bge-m3`). Az `embed check` megmutatja: a „szoftverfejlesztő” – „software developer” párnak jóval hasonlóbbnak kell lennie, mint az „ápoló” – „software developer” párnak. Csak angolra tanított modellnél (pl. `nomic-embed-text`) a két nyelv nem kerül egymás közelébe.
+- Ha a modell feladat-előtagot vár, add meg: `GH_EMBED_PREFIX="search_document: "`.
+- A vektorindex dimenziója a modellhez kötött. Modellcserénél töröld a vektorindexeket (`DROP INDEX tesz_vec` stb.) és a régi vektorokat (`MATCH (n) REMOVE n.embedding`), majd `init` és `embed backfill`.
+- Bekapcsolt beágyazással `GH_SIM_HI` felett automatikusan azonos (ha a típus, a meghatározó SZER-ELEM és a HELY-zet is egyezik), `GH_SIM_LO` alatt automatikusan új; csak a köztes sáv megy LLM-hez. A küszöbök modellfüggők: az első 50–100 munkakör után nézd meg a P3-döntéseket, és állítsd be őket.
+
+## 7. KÉSZ-ségek (P4a)
+
+```bash
+python -m gaphopper anchors                       # az 1. kapu (≥3 munkakör, ≥5 TESZ) feletti SZÍN-ek
+python -m gaphopper p4a --type HELYZET --value HELY_RUTIN --runs 3
+python -m gaphopper p4a --type SZIN --value "KOZ_TARSAS|HELY_SZOLGALTATASI"
+```
+
+A P4a háromszor fut; ELLENŐRZÖTT státuszt kap a KÉSZ-ség, ha legalább 2 futásban megjelenik, és a horgony
+TESZ-einek legalább 70%-át lefedi; különben JELÖLT. Az ELFOGADOTT státusz szakértői döntés.
+
+## 8. Claude Code és neo4j MCP
+
+A `CLAUDE.md` leírja Claude Code-nak a projektet. A gráf közvetlen lekérdezéséhez másold a `.mcp.json.example`
+fájlt `.mcp.json` néven (a neo4j MCP szerver `uvx`-szel indul; a pontos csomagnevet és változókat a
+neo4j-contrib/mcp-neo4j leírásában ellenőrizd).
+
+Hasznos lekérdezések:
+
+```cypher
+// egy munkakör TESZ-ei tripletekkel
+MATCH (m:MunkaKor {id:'onet:29-1141.00'})-[r:TARTALMAZ_TESZT]->(t)-[i:IRANYUL]->(s)
+MATCH (t)-[:TIPUSA]->(ty)
+RETURN t.label_hu, ty.id, s.label_hu, i.kozeg_id, i.helyzet_id, r.relevance, r.expected_eqf;
+
+// több munkakörben ismétlődő TESZ-ek
+MATCH (t:TeszNivalo)<-[:TARTALMAZ_TESZT]-(m) WITH t, collect(m.label_hu) AS mk
+WHERE size(mk) > 1 RETURN t.label_hu, mk ORDER BY size(mk) DESC;
+```
+
+## 9. Tesztek
+
+```bash
+pip install pytest && python -m pytest -q
+GH_TEST_XLSX=../Gaphopper_top100_TESZ_SZERELEM_seed_v01.xlsx python -m pytest -q   # Excel-import is
+```
+
+## 10. Webes felület
+
+```bash
+python -m gaphopper ui                 # http://localhost:8765, megnyitja a böngészőt
+python -m gaphopper ui --port 9000 --no-browser
+python -m gaphopper ui --host 0.0.0.0  # a helyi hálózatról is elérhető (jelszó nincs rajta!)
+```
+
+Egyetlen JavaScript-oldal (`web/`), a Python oldalon csak a standard könyvtár fut (`gaphopper/web.py`); külön csomag nem kell.
+
+- **Futás:** felül a fázisok (E0 kinyerés → P1 felbontás → P2 bírálat → P3 gráfba írás → neo4j → P5 tanúsítás), mindegyiknél hány munkakör kész, kihagyott, hibás, várakozó vagy fut éppen. Alatta munkakörönként ugyanez egy sorban, és külön oszlopban, hogy a munkakör ténylegesen benne van-e a neo4j-ben (a gráfból ellenőrizve, nem az állapotmezőből). Indítás: kijelöltek / következő N / minden várakozó, meddig, hány szálon; a futó parancs kimenete élőben, leállítható. Egy munkakörre kattintva: fázisonként a modell, a tokenek, az idő és a költség, a hiba szövege, a P2 módosításai, és TESZ-enként, hogy bekerült-e a gráfba (új elemként vagy egy meglévőhöz kapcsolva), illetve mit vett ki a P2. A szakértői jóváhagyás és elutasítás is itt van.
+- **Adatbázis:** összevetés: hány munkakör van a gráfban, hány nincs, melyik „kész” munkakör hiányzik a gráfból, mi van csak a gráfban, hány TESZ-nek nincs még rubrikája. A SQLite állapotai és a neo4j csomópontjai, kapcsolatai; csak olvasó Cypher- és SQL-lekérdezés.
+- **Modellek:** lépésenként szolgáltató és modell; API-ból frissíthető modellválaszték; OpenAI-kompatibilis API és beágyazó modell beállítása és ellenőrzése; szerkeszthető egységárak; P2-mód. A mentés a `config/models.yaml`-ba kerül, és erősebb, mint a `.env`.
+- **Promptok:** a lépés sorrendjében, melyik lépés használja; szerkesztés, eltérés mentés előtt, korábbi változatok (`prompts/.history/`) betöltése.
+- **Feltöltés:** dokumentumok behúzása és kinyerése (E0, utána rögtön import), rekordfájlok előnézete (új / változott / változatlan) és importja.
+
+A felületről indított parancsok a háttérben futnak (`python -m gaphopper ...`), a kimenetük a `runs/ui_tasks/` mappába kerül, így a felület újraindítása után is visszanézhetők.
+
+## Következő lépések (még nincs benne)
+
+- Gemini kötegelt mód (most a Gemini párhuzamos módban fut);
+- újrahasznosítás munkakörök között: a P1 megkapja a rokon munkakörök meglévő TESZ-eit, és azonosítóval hivatkozik rájuk;
+- P4b (EQF-szintleírók) futtató parancsa; a prompt kész (`prompts/p4b_eqf.md`);
+- munkakör-összevonás LLM-mel hirdetéseknél (most: alias-egyezés vagy új munkakör);
+- crawler és PostgreSQL, amikor a hirdetések száma a százezres tartományba lép.
+
+## Modellválasztás, kapcsolatellenőrzés és fogyasztás
+
+Az elsődleges felület: `python -m gaphopper ui`, cím: `http://localhost:8765`.
+Az `app.py`, `review_app.py` és `ui/` régi, opcionális Streamlit-felület; a jelen útmutató a beépített webfelületre vonatkozik, amelyhez Streamlit nem szükséges.
+
+A **Modellek** oldalon válassz szolgáltatót minden lépéshez (E0, P1–P5), majd nyomd meg a szolgáltató **modelllista frissítése** gombját. A lista az API által az adott kulccsal elérhető modelleket mutatja; a kiválasztott nevek és a mentett modelllista később is láthatók. Egyedi modellazonosító is beírható. A listában szereplés önmagában nem garantál JSON- vagy gondolkodásiparaméter-támogatást. Szolgáltatóváltáskor válaszd ki az új modellt, majd **Mentés**. A következő indított futás használja az új beállítást; a már futó folyamat nem vált modellt.
+
+A **Promptok** oldalon a lépés melletti hivatkozás a modellbeállításokhoz vezet. A modell a feldolgozási lépéshez tartozik: például a P3 rendszer- és feladatpromptja közösen használja a P3 modelljét; a közös P0 rendszerpromptot több lépés használja.
+
+- Anthropic: `ANTHROPIC_API_KEY`; Gemini: `GEMINI_API_KEY` vagy `GOOGLE_API_KEY` a `.env` fájlban. A szolgáltatói Python-csomagokat a `requirements.txt` tartalmazza.
+- Helyi generatív modellhez nincs külön beállítópanel vagy előbeállítás az elsődleges webfelületen. A régi `local` konfiguráció CLI-kompatibilitása megmaradt; meglévő ilyen lépésnél válassz másik szolgáltatót. Az Ollama-beágyazás külön funkcióként megmarad.
+- OpenAI-kompatibilis API: `openai`. Külön base URL (alapérték: `https://api.openai.com/v1`), kulcsváltozó neve (alapérték: `OPENAI_API_KEY`), JSON-mód. Más szolgáltatóhoz is megadható saját URL és kulcsváltozó. A külön **Kapcsolati próba** gomb a beírt, még nem mentett beállításokkal lekéri a `/models` végpontot. Siker vagy hiba helyben megjelenik; a próba nem ment és nem indít szöveggenerálást, ezért annak jogosultságát nem igazolja. A kulcs értéke a `.env` fájlban marad, nem kerül a modellkonfigurációba vagy az API-válaszba.
+- Beágyazás: `ollama` vagy az opcionálisan telepített `sentence-transformers`. Modell, Ollama-cím és szövegelőtag menthető. A **Beágyazás ellenőrzése** tényleges vektorokat kér, majd dimenziót és magyar–angol hasonlóságot mutat. Üres modell kikapcsolja a beágyazást. A próba sentence-transformers esetén letöltést is indíthat. Modellcsere után a meglévő vektorok és indexek migrációja külön feladat; lásd a futtatási segédlet hibaelhárítását.
+
+A konfiguráció erősorrendje: `config/models.yaml` → `.env` / környezet → kód alapértékei. A felületi lépésbeállítás teljes lépéskonfigurációként érvényesül. A jelenlegi effektív értékeket a `python -m gaphopper models` mutatja, ezért a dokumentált alapérték helyett ezt ellenőrizd futtatás előtt. A felületi beállítás törlése a teljes `models.yaml` fájlt törli (árakat és mentett modelllistákat is).
+
+A **Futás** oldalon az összes naplózott hívás bemeneti, cache-olvasási és kimeneti tokenje, valamint az árazott fogyasztás látható; futás közben automatikusan frissül. A részletes táblázat lépésenként, a munkakör részletei munkakörönként mutatják a fogyasztást. Parancssorban: `python -m gaphopper report`.
+Az egységárak a **Modellek** oldalon USD / 1M tokenben szerkeszthetők (bemenet, kimenet, cache olvasás). Új modellhez az üres sort töltsd ki, ments, majd újabb sorhoz töltsd újra az oldalt. A költség becslés a beállított árakkal; ismeretlen árú hívások külön jelennek meg. A helyi modellek API-költsége 0, a hardver és áram nincs benne. A számláló a naplózott válaszokat és sémajavítási próbákat összesíti; válasz nélküli hálózati hibák és a beágyazás tokenjei nem részei. Az API-válaszok alapján a Gemini gondolkodási tokenjei a kimenethez számítanak.
+
+
+A Gemini választó tíz előre betöltött szöveges modellt tartalmaz (2.5 Pro/Flash/Flash-Lite,
+3 Flash Preview, 3.1 Pro Preview/Flash-Lite, 3.5 Flash-Lite, 3.6/3.8 Flash, 4 Argon).
+Az API-listafrissítés további, a kulccsal elérhető azonosítókat adhat hozzá; az előre betöltött lista
+önmagában nem igazol hozzáférést. A [Google díjszabásából](https://ai.google.dev/gemini-api/docs/pricing)
+2026-10-21-én ellenőrzött Standard szöveges árak a választóban is látszanak.
+A 2.5 és 3.1 Pro hosszúkontextus-díjsávja hívásonként érvényesül. A 4 Argon kedvezményes tarifája
+2026-11-30-ig, a 3.6/3.8 Flash tarifája 2026-12-31-ig érvényes; lejáratkor az árakat frissíteni kell.
+A díjak fizetős használatra vonatkozó becslések, a szabad kvótát és a cache tárolási díját nem számolják.
+
+
+A webfelületen nincs szolgáltatói kötegelt mód: a **Feldolgozás indítása** a lépésenként
+kiválasztott szolgáltatóval és modellel, a megadott párhuzamossággal dolgozik.
+A régi Anthropic-kötegek kezelése csak a `batch` CLI-parancsokkal érhető el.
+
+A **Jóváhagyás és gráfba írás** háttérfeladatként fut. A gomb mellett és a P3 fázisnál
+folyamatjelzés látszik; a Futás oldalon a napló is követhető. A kérés sikeres gráfírás után
+záródik le, hiba esetén nyitva marad, és a hiba a munkakör részleteinél olvasható.
+
+A **Komponensek** oldalon külön ellenőrizhető a Neo4j Docker-konténer, a Neo4j
+adatbázis-kapcsolat (hitelesítéssel és olvasási próbával), a helyi beágyazás és az
+OpenAI-kompatibilis API modelllistája. A beágyazáspróba egy rövid szövegből vektort
+készít; kikapcsolt beágyazásnál ezt külön jelzi. A sentence-transformers modellt
+itt nem tölti be automatikusan: annak próbája a Modellek oldalon érhető el.
+Az ellenőrzések kézzel frissíthetők, a szerver gépéről futnak.
+
+A **Neo4j Docker indítása** gomb a meglévő, leállított `neo4j_gh` konténert indítja,
+hiányzó konténernél pedig ezt futtatja:
+
+```bash
+docker run -d --rm -i --name neo4j_gh -p 7474:7474 -p 7687:7687 -v /mnt/data/project_data/gh:/data neo4j
+```
+
+Ez a helyi `neo4j` image-et és a megadott adatkönyvtárat használja. A terminált
+igénylő `-t` kapcsoló a webes indításból kimarad. A konténer nevét a `.env`
+`GH_NEO4J_CONTAINER` változója írhatja felül. A Dockernek futnia kell, és a webes
+szerver felhasználójának hozzá kell férnie. A futó konténert nem indítja újra.
+Indítás után a Neo4j felállása eltarthat néhány másodpercig; utána frissítsd az állapotot.
+
+P3 közben a kereséshez kiszámított beágyazást a mentés is újrahasználja; a már
+lekért TESZ-kontextusokat munkakörönként gyorsítótárazza. A P3 naplója és mentett
+összesítése külön időt mutat az előkészítésre (`planning_seconds`), döntésre
+(`decision_seconds`) és gráfírásra (`writing_seconds`); modellhívás esetén a
+`model_seconds` is szerepel. Ezekkel elkülöníthető az API és a gráfműveletek ideje.
+
+A P1 tömör JSON-t kér (formázó behúzás nélkül), az üres listák és null értékű
+opcionális mezők elhagyhatók. A séma ezeket visszaállítja, így a mentett eredmény
+és a következő lépések formátuma változatlan. Az indoklások célhossza 8–12 szó,
+legfeljebb 20; a 12–25 TESZ, a kétnyelvű címkék és a szakmai szabályok megmaradnak.
+A bemeneti rekord teljes tartalma tömör JSON-ként megy a modellnek. Ez új
+promptverziót eredményez; a korábbi eredményeket nem futtatja automatikusan újra.
+
+Ha a P1 válaszában kizárólag hibás `relevance` értékek vannak, az egy javító
+újrapróbálkozás csak ezekhez a TESZ-indexekhez kér `CORE` / `SUPPORTING` döntést.
+A kód csak a kért mezőket módosítja, majd a teljes P1-et ismét validálja. Hiányzó,
+dupla vagy nem kért index, illetve érvénytelen besorolás hibát eredményez; nincs
+csendes automatikus átminősítés. Más sémahibák esetén a teljes válasz javítását kéri.

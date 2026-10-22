@@ -1,0 +1,18 @@
+FROM neo4j:5.26.4
+
+ENV NEO4J_AUTH=neo4j/neo4jSKILL \
+    NEO4J_PLUGINS='["apoc"]' \
+    NEO4J_dbms_security_auth__minimum__password__length=8 \
+    NEO4J_dbms_memory_heap_initial__size=1G \
+    NEO4J_dbms_memory_heap_max__size=2G
+
+
+EXPOSE 7474 7687
+
+VOLUME ["/data"]
+
+CMD ["neo4j"]
+
+# docker build -t neo4j -f Dockerfile_neo4j .
+# docker run -d --rm -it --name neo4j_gh -p 7474:7474 -p 7687:7687 -v /mnt/data/project_data/gh:/data neo4j
+# docker exec -it neo4j_skill bash

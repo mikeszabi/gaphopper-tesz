@@ -1,0 +1,90 @@
+# Gaphopper zárt szótárak – a kódok stabilak, a nevek változhatnak.
+# hu = jelenlegi magyar név, gyok = gyökös javaslat, en = angol megfeleltetés
+version: "2026-10-13"
+
+tesz_tipus:
+  PREPARE:          {hu: "előkészít",               gyok: "ELŐ-KÉSZ-ít",        en: "prepare"}
+  OBSERVE_MEASURE:  {hu: "megfigyel / mér",         gyok: "FIGY-el, MÉR",       en: "observe, measure"}
+  ASSESS_ANALYSE:   {hu: "értékel / elemez",        gyok: "ÉRT-ékel",           en: "assess, analyse"}
+  PLAN:             {hu: "tervez / ütemez",         gyok: "TERV-ez",            en: "plan"}
+  DECIDE:           {hu: "felelősen dönt",          gyok: "DÖNT",               en: "decide"}
+  CREATE_DESIGN:    {hu: "újat alkot",              gyok: "ALK-ot",             en: "create"}
+  EXECUTE:          {hu: "ismert eljárást végrehajt", gyok: "VÉGRE-HAJT",       en: "execute"}
+  OPERATE_USE:      {hu: "gépet / rendszert működtet", gyok: "HASZ-nál, MŰ-ködtet", en: "operate, use"}
+  PROBLEM_SOLVE:    {hu: "hibát feltár és megold",  gyok: "GOND-ot OLD",        en: "solve problems"}
+  VERIFY:           {hu: "kritériumhoz képest ellenőriz", gyok: "ELLEN-ŐR-iz",  en: "verify"}
+  DOCUMENT:         {hu: "rögzít",                  gyok: "LE-ÍR, RÖGZ-ít",     en: "document"}
+  COMMUNICATE:      {hu: "címzettnek átad",         gyok: "KÖZ-öl",             en: "communicate"}
+  COORDINATE:       {hu: "mások munkáját összehangolja", gyok: "ÖSSZE-HANG-ol", en: "coordinate"}
+  SUPPORT_SERVE:    {hu: "másik ember szükségletét kielégíti", gyok: "SEG-ít, SZOLG-ál", en: "support, serve"}
+  COMPLY:           {hu: "előírást alkalmaz és igazol", gyok: "BE-TART",        en: "comply"}
+  IMPROVE:          {hu: "mérhetően javít",         gyok: "JAV-ít",             en: "improve"}
+
+kozeg:
+  KOZ_FIZIKAI:    {hu: "Fizikai",    gyok: "ANYAG-i közeg",     en: "physical"}
+  KOZ_TARSAS:     {hu: "Társas",     gyok: "TÁRS-as közeg",     en: "social"}
+  KOZ_DIGITALIS:  {hu: "Digitális",  gyok: "JEL-közeg",         en: "digital"}
+  KOZ_SZERVEZETI: {hu: "Szervezeti", gyok: "SZER-vezeti közeg", en: "organisational"}
+  KOZ_TERMESZET:  {hu: "Természet",  gyok: "TERM-észeti közeg", en: "natural"}
+
+helyzet:
+  # tengely: KISZ = kiszámíthatóság, SZEREP = szerep (későbbi kettébontáshoz)
+  HELY_TANULASI:       {hu: "Tanulási",       gyok: "TAN-uló helyzet",      en: "learning",      tengely: KISZ}
+  HELY_RUTIN:          {hu: "Rutin",          gyok: "SZOK-ásos helyzet",    en: "routine",       tengely: KISZ}
+  HELY_VALTOZO:        {hu: "Változó",        gyok: "VÁLT-ozó helyzet",     en: "changing",      tengely: KISZ}
+  HELY_PROBLEMA:       {hu: "Probléma",       gyok: "GOND-helyzet",         en: "problem",       tengely: KISZ}
+  HELY_KRITIKUS:       {hu: "Kritikus",       gyok: "VÉSZ-helyzet",         en: "critical",      tengely: KISZ}
+  HELY_DONTESI:        {hu: "Döntési",        gyok: "DÖNT-ési helyzet",     en: "decision",      tengely: SZEREP}
+  HELY_ALKOTO:         {hu: "Alkotó",         gyok: "ALK-otó helyzet",      en: "creative",      tengely: SZEREP}
+  HELY_EGYUTTMUKODESI: {hu: "Együttműködési", gyok: "EGY-ütt-működő helyzet", en: "collaborative", tengely: SZEREP}
+  HELY_SZOLGALTATASI:  {hu: "Szolgáltatási",  gyok: "SZOLG-áló helyzet",    en: "service",       tengely: SZEREP}
+  HELY_IRANYITASI:     {hu: "Irányítási",     gyok: "VEZ-ető helyzet",      en: "leading",       tengely: SZEREP}
+
+szer_elem_fajta:
+  TOOL:        {hu: "ESZKÖZ"}
+  MATERIAL:    {hu: "ANYAG"}
+  OBJECT:      {hu: "TÁRGY"}
+  SYSTEM:      {hu: "REND-szer"}
+  DATA:        {hu: "AD-at"}
+  INFORMATION: {hu: "ISMER-et"}
+  RULE:        {hu: "SZAB-ály"}
+  METHOD:      {hu: "EL-JÁR-ás"}
+  PLAN:        {hu: "TERV"}
+  MODEL:       {hu: "MINTA"}
+  STATE:       {hu: "ÁLL-apot"}
+  RESULT:      {hu: "ERED-mény"}
+  ENVIRONMENT: {hu: "KÖR-nyezet"}
+
+szer_elem_szerep: [ACTS_ON, USES, GUIDED_BY, INPUT, PRODUCES]
+relevance: [CORE, SUPPORTING]
+frequency: [DAILY, WEEKLY, MONTHLY, RARE]
+
+# A TESZ-típus "természetes párja" a HELY-zetek között (R6 szabály)
+termeszetes_par:
+  PROBLEM_SOLVE: HELY_PROBLEMA
+  CREATE_DESIGN: HELY_ALKOTO
+  DECIDE: HELY_DONTESI
+  COORDINATE: HELY_IRANYITASI
+  SUPPORT_SERVE: HELY_SZOLGALTATASI
+  COMPLY: HELY_KRITIKUS
+
+# Szabálykuszöbök (P2, determinisztikus). Kalibrálandók a referenciakészleten.
+rules:
+  tesz_min: 12
+  tesz_max: 25
+  core_min: 8
+  core_max: 15
+  label_words_min: 4  # magyarul az összetett szavak miatt 4 is elég
+  label_words_max: 14
+  execute_max_share: 0.30
+  natural_pair_max_share: 0.60
+  kritikus_max_share: 0.25
+  kritikus_max_share_high_risk: 0.40
+  high_risk_fields: ["health", "egészség", "energy", "energia", "security", "biztonság", "safety"]
+  confidence_min: 0.6
+  forbidden_label_patterns:
+    - "alkalmazása a szakmai munkában"
+    - "in professional work"
+    - "methods and reference material"
+    - "perform the core professional procedure"
+    - "szakmai alapeljárás"

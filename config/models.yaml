@@ -1,0 +1,62 @@
+steps:
+  E0:
+    provider: openai
+    model: shared-local
+    effort: ''
+    thinking: ''
+    max_tokens: 64000
+    temperature: null
+  P1:
+    provider: anthropic
+    model: claude-sonnet-5-5
+    effort: low
+    thinking: ''
+    max_tokens: 64000
+    temperature: null
+  P2:
+    provider: gemini
+    model: gemini-3.6-flash
+    effort: ''
+    thinking: ''
+    max_tokens: 64000
+    temperature: null
+  P3:
+    provider: openai
+    model: shared-local
+    effort: ''
+    thinking: ''
+    max_tokens: 64000
+    temperature: null
+  P4:
+    provider: anthropic
+    model: claude-haiku-5-5
+    effort: medium
+    thinking: ''
+    max_tokens: 64000
+    temperature: null
+  P5:
+    provider: anthropic
+    model: claude-haiku-5-5
+    effort: low
+    thinking: ''
+    max_tokens: 6000
+    temperature: null
+local:
+  base_url: http://localhost:8000/v1
+  model: ''
+  json_mode: object
+  timeout: 900
+p2:
+  mode: auto
+  sample: 0.15
+openai:
+  base_url: http://192.168.1.37:8013/v1
+  api_key_env: SPARK_API_KEY
+  json_mode: object
+  timeout: 600
+embed:
+  provider: ollama
+  model: bge-m3
+  host: http://localhost:11434
+  prefix: ''
+prices: {}
