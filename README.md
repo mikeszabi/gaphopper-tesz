@@ -2,7 +2,7 @@
 
 MUNKA-KÖR → általános TESZ-nivalók (munkaminta × SZER-ELEM-fajta, 2–5 KÉSZ-ség-törzselemmel) → SZÍN-ezett változataik, a
 TESZ-SZÍN-ek (TESZ-nivaló × SZÍN, SZÍN = ⟨KÖZ-eg, HELY-zet⟩) → helyi neo4j. A tervezés indoklása:
-[docs/TESZ-nivaló es SZIN - granularitas.md](docs/TESZ-nivaló%20es%20SZIN%20-%20granularitas.md).
+[docs/TESZ-MAG es SZIN - granularitas.md](docs/TESZ-MAG%20es%20SZIN%20-%20granularitas.md).
 A feldolgozás lépései: E0 kinyerés, P1 felbontás, P2 bírálat, P3 egyesítés, P4 készséghorgonyzás és EQF, P5 tanúsítás.
 
 Ez a teljes beállítási referencia. A [futtatási segédlet](docs/Gaphopper%20TESZ%20–%20futtatási%20segédlet.md) a napi munkamenetet, a [CLAUDE.md](CLAUDE.md) a fejlesztési szabályokat írja le.
@@ -124,7 +124,7 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
    `kontextus_hu` mezőbe kerül (a MunkaKor–TESZ élen), a TESZ-nivalóhoz 2–5 legjellemzőbb KÉSZ-ség-törzselem (`kesz_ids`) tartozik.
    A P1 rendszerpromptjának gyorsítótárazott része a KÉSZ-ség-törzs és a TESZ-törzs (a gráf ugyanezzel a
    szótárverzióval készült, legtöbbet használt ≤80 TESZ-nivalója); illeszkedő törzs-TESZ-nivalónál a P1 csak a kódot írja
-   (`mag_ref`), a TESZ-nivaló mezőit a kód tölti ki, a P3 hívás nélkül oldja fel. Minden TESZ-nivalóhoz pontosan egy
+   (`nivalo_ref`), a TESZ-nivaló mezőit a kód tölti ki, a P3 hívás nélkül oldja fel. Minden TESZ-nivalóhoz pontosan egy
    ALAP-SZÍN változatot ad, további változatot csak az M2 (új vagy szigorúbb értékelési kritérium) és az M3
    (a munkakörben rendszeres) próba szerint, TESZ-nivalónként legfeljebb 3-at (összesen 8–18 TESZ-SZÍN); a
    változatnak nincs saját címkéje (G3). CORE TESZ-nivalón
@@ -158,7 +158,7 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
 3. **P2** – csak akkor fut, ha kell: szabályjelzésnél, és a minőség követésére egy véletlen mintán (alapból 15%,
    `GH_P2_MODE=auto|always|never`, `GH_P2_SAMPLE`). A bíráló a P1 tömörített, TESZ-nivalónként csoportosított nézetét
    kapja (indoklás, angol címke és definíció nélkül), és csak az eltéréseket adja vissza: FIX (változaton vagy
-   `mag_id`-vel a TESZ-nivalón), DROP, MERGE, SPLIT (változat vagy TESZ-nivaló), ADD (új TESZ-nivalóval is), REMAG (változatok egy TESZ-nivaló
+   `nivalo_id`-vel a TESZ-nivalón), DROP, MERGE, SPLIT (változat vagy TESZ-nivaló), ADD (új TESZ-nivalóval is), REMAG (változatok egy TESZ-nivaló
    alá), FOLD (változat kísérő SZÍN-né). A kód alkalmazza őket. Ha a szabályok utána is sérülnek, vagy a bíráló
    EXPERT-et mond → szakértői sor.
 4. **P3 + gráf** – két lépcsőben. *TESZ-nivaló-egyezés*: alias-találat (magyarul és angolul is) → hasonlósági keresés a

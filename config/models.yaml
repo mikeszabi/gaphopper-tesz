@@ -21,11 +21,11 @@ steps:
     max_tokens: 64000
     temperature: null
   P3:
-    provider: openai
-    model: shared-local
-    effort: ''
+    provider: anthropic
+    model: claude-haiku-5-5
+    effort: low
     thinking: ''
-    max_tokens: 64000
+    max_tokens: 16000
     temperature: null
   P4:
     provider: anthropic

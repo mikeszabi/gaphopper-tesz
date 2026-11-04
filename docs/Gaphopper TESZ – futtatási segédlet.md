@@ -6,7 +6,7 @@ Beállítási referencia: [README.md](../README.md); fejlesztési szabályok: [C
 
 **Fogalmak röviden.** A P1 általános TESZ-nivalókat ad (munkaminta × SZER-ELEM-fajta + ERED-mény, legfeljebb 6
 szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–5 KÉSZ-ség-törzselem; a munkaköri specifikum a
-`kontextus_hu`-ban). Ha a TESZ-törzsben van illeszkedő TESZ-nivaló, a P1 azt választja (`mag_ref`), és mindegyikhez SZÍN-ezett változatokat, a TESZ-SZÍN-eket
+`kontextus_hu`-ban). Ha a TESZ-törzsben van illeszkedő TESZ-nivaló, a P1 azt választja (`nivalo_ref`), és mindegyikhez SZÍN-ezett változatokat, a TESZ-SZÍN-eket
 (SZÍN = ⟨KÖZ-eg, HELY-zet⟩). Minden TESZ-nivalónak pontosan egy ALAP-SZÍN-e van (a leggyakoribb változat); további
 változat csak akkor, ha új vagy szigorúbb értékelési kritériumot hoz (M2) és a munkakörben rendszeres (M3). A
 szakmában ismert, itt nem jellemző nehezebb SZÍN mélyítési jelölt (CORE TESZ-nivalónként legfeljebb 1). A
