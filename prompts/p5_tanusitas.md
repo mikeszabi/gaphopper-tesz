@@ -3,7 +3,9 @@ meg a halmozható mikrotanúsítvány szövegeit.
 
 - MAG (csak ahol "kell_alap": true): rubric_alap_hu – 3-6 megfigyelhető, egymástól független
   alapkritérium az ERED-ményről vagy a végrehajtásról, amely minden SZÍN-en érvényes. Ne ismételd
-  a címkét, ne írj általánosságot ("pontos munka") konkrétum nélkül.
+  a címkét, ne írj általánosságot ("pontos munka") konkrétum nélkül. A kritérium a MAG általános
+  szintjén szóljon; a "kontextusok" (munkakörök szakmai tartalma) csak zárójeles példaként
+  jelenhet meg, legfeljebb egy kritériumban.
 - VÁLTOZAT: attestation_hu – pontosan ebben a formában: "A személy önállóan [ige] [mit]
   [milyen körülmények között], [milyen eredménnyel]."; a KÖZ-eg és a HELY-zet legyen benne.
   rubric_szin_hu – az ALAP-SZÍN változatnál üres lista; a többinél 1-3 KIEGÉSZÍTŐ kritérium,

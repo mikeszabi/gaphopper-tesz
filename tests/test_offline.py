@@ -39,13 +39,15 @@ def test_prompt_placeholders():
 
 def test_p1_fixture_valid_and_clean():
     p1 = P1Output.model_validate(p1_fixture())
-    assert len(p1.tesz_magok) == 14 and len(p1.tesz) == 17
+    assert len(p1.tesz_magok) == 11 and len(p1.tesz) == 14
     flags = rules.check(p1.tesz, [k.kor_id for k in p1.tesz_korok], "Health and care", magok=p1.tesz_magok)
     assert [f.rule for f in flags] == [], flags
     # a változat örökli a MAG mezőit, az ALAP-SZÍN a MAG címkéjét is
     c05, c05b = (next(t for t in p1.tesz if t.cand_id == c) for c in ("C05", "C05b"))
     assert c05.tesz_type == c05b.tesz_type == "EXECUTE" and c05.primary_szer == c05b.primary_szer
-    assert c05.label_hu == p1.tesz_magok[4].label_hu and c05b.label_hu.endswith("állapotromlás idején")
+    # G3: a változat címkéje mindig a MAG-é, a kontextus és a KÉSZ-ség a MAG-on
+    assert c05.label_hu == c05b.label_hu == p1.tesz_magok[4].label_hu
+    assert c05b.kontextus_hu == "osztályos gyógyszerelés" and p1.tesz_magok[4].kesz_ids == ["gh_c_28", "gh_c_29", "gh_c_139"]
 
 
 def test_schema_mag_rules():
@@ -58,11 +60,11 @@ def test_schema_mag_rules():
     with pytest.raises(Exception, match="R15"):
         P1Output.model_validate(d)
     d = p1_fixture()
-    d["tesz_magok"][7]["melyites_jeloltek"] = [{"kozeg": "KOZ_FIZIKAI", "helyzet": "HELY_KRITIKUS"}]  # SUPPORTING
+    d["tesz_magok"][8]["melyites_jeloltek"] = [{"kozeg": "KOZ_FIZIKAI", "helyzet": "HELY_KRITIKUS"}]  # SUPPORTING
     with pytest.raises(Exception, match="CORE"):
         P1Output.model_validate(d)
     d = p1_fixture()
-    d["tesz"] = [t for t in d["tesz"] if t["mag_id"] != "M14"]
+    d["tesz"] = [t for t in d["tesz"] if t["mag_id"] != "M11"]
     with pytest.raises(Exception, match="nincs változata"):
         P1Output.model_validate(d)
 
@@ -74,7 +76,7 @@ def test_same_szin_on_one_mag_is_one_tesz():
                       "helyzet": "HELY_RUTIN", "label_hu": "Gyógyszer beadása angol nyelvű betegnek",
                       "szin_kulonbseg_hu": "Idegen nyelvű kommunikáció a beadás közben.", "expected_eqf": 4})
     p1 = P1Output.model_validate(d)
-    assert "C05x" not in [t.cand_id for t in p1.tesz] and len(p1.tesz) == 17
+    assert "C05x" not in [t.cand_id for t in p1.tesz] and len(p1.tesz) == 14
     assert p1.link_warnings and "C05x" in p1.link_warnings[0]
     flags = rules.check(p1.tesz, [k.kor_id for k in p1.tesz_korok], "Health", magok=p1.tesz_magok)
     assert "R8" not in {f.rule for f in flags}
@@ -93,7 +95,7 @@ def test_legacy_p1_without_magok_still_loads():
         old.append(t | {k: v for k, v in m.items() if k not in ("mag_id", "melyites_jeloltek")})
     d["tesz"] = old
     p1 = P1Output.model_validate(d)
-    assert len(p1.tesz_magok) == 14 and all(t.mag_id.startswith("M_") and t.alap_szin for t in p1.tesz)
+    assert len(p1.tesz_magok) == 11 and all(t.mag_id.startswith("M_") and t.alap_szin for t in p1.tesz)
     assert rules.check(p1.tesz, None, "") is not None
 
 
@@ -125,14 +127,14 @@ def _flags(d, field=""):
 def test_rules_mag_szin():
     d = p1_fixture()
     # R11: két MAG azonos ⟨típus, meghatározó SZER-ELEM⟩ párral
-    d["tesz_magok"][13]["tesz_type"] = d["tesz_magok"][12]["tesz_type"]
-    d["tesz_magok"][13]["primary_szer"] = d["tesz_magok"][12]["primary_szer"]
+    d["tesz_magok"][10]["tesz_type"] = d["tesz_magok"][9]["tesz_type"]
+    d["tesz_magok"][10]["primary_szer"] = d["tesz_magok"][9]["primary_szer"]
     # R14: SZÍN-jelző a MAG címkéjében
-    d["tesz_magok"][0]["label_hu"] = "Beteg sürgősségi állapotfelmérése felvételkor felmérőlappal"
+    d["tesz_magok"][0]["label_hu"] = "Sürgősségi állapotfelmérés felmérőlappal"
     # R13: nem ALAP-SZÍN változat SZÍN-különbség nélkül
     next(t for t in d["tesz"] if t["cand_id"] == "C05b")["szin_kulonbseg_hu"] = "nehezebb"
     # R16: csak KÖZ-egben eltérő változat, azonos HELY-zettel és kísérő SZER-ELEM-ekkel
-    c12 = next(t for t in d["tesz"] if t["cand_id"] == "C12")
+    c12 = next(t for t in d["tesz"] if t["cand_id"] == "C10")
     d["tesz"].append(c12 | {"cand_id": "C12b", "alap_szin": False, "kozeg": "KOZ_SZERVEZETI",
                             "label_hu": "Ápolási dokumentáció vezetése papíron", "szin_kulonbseg_hu":
                             "Papíralapú vezetés, rendszerleállás idején, utólagos rögzítéssel."})
@@ -142,7 +144,7 @@ def test_rules_mag_szin():
                           "helyzet": h, "label_hu": f"Seb ellátása {h}", "szin_kulonbseg_hu":
                           "Szigorúbb értékelési feltétel ebben a helyzetben.", "expected_eqf": 5})
     f = _flags(d, "Health")
-    assert set(f["R11"].cand_ids) == {"M13", "M14"}
+    assert set(f["R11"].cand_ids) == {"M10", "M11"}
     assert f["R14"].cand_ids == ["M01"] and f["R13"].cand_ids == ["C05b"]
     assert f["R16"].cand_ids == ["C12b"] and f["R12"].cand_ids == ["M06"]
 
@@ -150,12 +152,12 @@ def test_rules_mag_szin():
 def test_rules_r1_r6_r7_on_right_level():
     d = p1_fixture()
     # 9 MAG, 12 változat: MAG-szám alatta, változatszám rendben
-    keep = {f"M{i:02d}" for i in range(1, 10)}
+    keep = {f"M{i:02d}" for i in range(1, 6)}
     d["tesz_magok"] = [m for m in d["tesz_magok"] if m["mag_id"] in keep]
     d["tesz"] = [t for t in d["tesz"] if t["mag_id"] in keep]
     p1 = P1Output.model_validate(d)
     r1 = [f.message for f in rules.check(p1.tesz, None, "", magok=p1.tesz_magok) if f.rule == "R1"]
-    assert any("TESZ-MAG" in m for m in r1) and len(p1.tesz) == 11
+    assert any("TESZ-MAG" in m for m in r1) and len(p1.tesz) == 7
     # R6 csak az ALAP-SZÍN-ekre: a nem ALAP-SZÍN kritikus változat nem számít bele
     d = p1_fixture()
     for m in d["tesz_magok"]:
@@ -483,24 +485,25 @@ def test_apply_p2_changes():
                                                         "helyzet": "HELY_PROBLEMA"}]},
         {"op": "ADD", "new": [new_t]},
         {"op": "FOLD", "cand_id": "C02b", "into": "C02", "as": "helyzet_secondary"},
-        {"op": "REMAG", "cand_ids": ["C14"], "mag_id": "M13"},
+        {"op": "REMAG", "cand_ids": ["C10"], "mag_id": "M11"},
         {"op": "ADD", "new_mag": [fx["tesz_magok"][7] | {"mag_id": "M21", "label_hu": "Beteg ágyba fektetése"}],
          "new": [{"cand_id": "C40", "mag_id": "M21", "kozeg": "KOZ_FIZIKAI", "helyzet": "HELY_RUTIN",
                   "expected_eqf": 3}]},
-        {"op": "DROP", "mag_id": "M10"}]})
+        {"op": "DROP", "mag_id": "M09"}]})
     magok, final, warn = apply_p2(p1.tesz_magok, p1.tesz, out.changes)
     ids = [t.cand_id for t in final]
     by = {t.cand_id: t for t in final}
     mids = [m.mag_id for m in magok]
     assert ids[0] == "C01" and final[0].helyzet == "HELY_RUTIN"
-    assert "C03" not in ids and "C04" not in ids and "C06" not in ids and "C02b" not in ids and "C10" not in ids
-    assert "M03" not in mids and "M04" not in mids and "M14" not in mids and "M10" not in mids  # kiürült MAG-ok
+    assert "C03" not in ids and "C04" not in ids and "C06" not in ids and "C02b" not in ids and "C09" not in ids
+    assert "M03" not in mids and "M04" not in mids and "M09" not in mids and "M10" not in mids  # kiürült MAG-ok
     assert ids[ids.index("C05b") + 1: ids.index("C05b") + 3] == ["C06a", "C06b"]
     assert by["C02"].helyzet_secondary == "HELY_VALTOZO"                   # FOLD
-    assert by["C14"].mag_id == "M13" and not by["C14"].alap_szin            # REMAG
-    assert by["C14"].tesz_type == "COORDINATE" and by["C14"].primary_szer.label_hu == "Feladatkiosztási terv"
+    assert by["C10"].mag_id == "M11" and not by["C10"].alap_szin            # REMAG
+    assert by["C10"].tesz_type == "COORDINATE" and by["C10"].primary_szer.label_hu == "Feladatkiosztási terv"
+    assert by["C10"].label_hu == "Napi feladatok kiosztása és felügyelete"   # G3: a MAG címkéje
     assert by["C40"].mag_id == "M21" and by["C40"].alap_szin and by["C40"].label_hu == "Beteg ágyba fektetése"
-    new_c = next(t for t in final if t.label_hu.startswith("Új, hozzáadott"))
+    new_c = next(t for t in final if (t.szin_kulonbseg_hu or "").startswith("Hiányos adatokból"))
     assert new_c.cand_id != "C02" and new_c.mag_id == "M01"                 # az ütköző C02 új azonosítót kap
     assert len(set(ids)) == len(ids)
     with pytest.raises(ValueError):
@@ -529,7 +532,7 @@ def test_p2_diff_error_triggers_retry(tmp_path):
     s.state_db = tmp_path / "state.sqlite"
     s.p2_mode = "always"
     answers = iter(['{"verdict": "FIXED", "changes": [{"op": "DROP", "cand_id": "C77"}]}',
-                    '{"verdict": "FIXED", "changes": [{"op": "DROP", "cand_id": "C14"}]}'])
+                    '{"verdict": "FIXED", "changes": [{"op": "DROP", "cand_id": "C11"}]}'])
     prompts = []
     p1_text = (FIX / "p1_nurse.json").read_text(encoding="utf-8")
     ctx = Context(s, with_graph=False, llm_override={
@@ -539,7 +542,7 @@ def test_p2_diff_error_triggers_retry(tmp_path):
     ctx.store.upsert_job(rec)
     process_job(ctx, rec["job_id"], until="p2")
     assert "C77" in prompts[1]  # a hibaüzenet a második kérésben
-    assert len(ctx.store.artifact(rec["job_id"], "P2")["final_tesz"]) == 16
+    assert len(ctx.store.artifact(rec["job_id"], "P2")["final_tesz"]) == 13
 
 
 def test_p2_skipped_when_rules_clean(tmp_path):
@@ -558,7 +561,7 @@ def test_p2_skipped_when_rules_clean(tmp_path):
     ctx.store.upsert_job(rec)
     assert process_job(ctx, rec["job_id"], until="p2") == "P2_ELFOGADVA"
     art = ctx.store.artifact(rec["job_id"], "P2")
-    assert art["verdict"] == "SKIPPED" and len(art["final_tesz"]) == 17 and len(art["final_magok"]) == 14
+    assert art["verdict"] == "SKIPPED" and len(art["final_tesz"]) == 14 and len(art["final_magok"]) == 11
     # szabályjelzésnél a P2 fut: rontsuk el a P1-et (minden EXECUTE -> R5)
     bad = p1_fixture()
     for m in bad["tesz_magok"]:
@@ -647,7 +650,7 @@ def test_write_graph_single_p3_call(tmp_path):
     # a FakeGraph törzseleme VERIFY / 'x', a jelölt nem az -> új MAG, szakértői átnézésre
     assert summary["magok"][0]["decision"] == "NEW" and summary["magok"][0]["via"] == "llm-elutasitva"
     assert any(r["kind"] == "mag" for r in summary["review"])
-    assert len(plan.links) == 17 and len(summary["magok"]) == 14
+    assert len(plan.links) == 14 and len(summary["magok"]) == 11
     assert plan.magok[m05["graph_id"]]["melyites"][0]["helyzet"] == "HELY_KRITIKUS"
     assert ctx.store.status(job["job_id"]) == "GRAFBAN"
     # a tesz_id a SZÍN-ből képzett: ugyanaz a MAG és SZÍN ugyanazt az id-t adja
@@ -690,11 +693,13 @@ def test_dry_run_writes_nothing(tmp_path):
                                                "P3": FakeLLM(_p3_same_first(calls))}, out_dir=tmp_path / "dry")
     assert out["ok"], out.get("error")
     assert not s.state_db.exists() and graph.plans == [] and len(calls) == 1
-    assert out["szamok"] == {"mag": 14, "tesz": 17, "core_mag": 11, "nem_alap": 3, "melyitesi_jelolt": 1}
-    assert out["magok"][0]["egyesites"] == "NEW" and out["p3_cases"] >= 14
+    assert out["szamok"] == {"mag": 11, "tesz": 14, "core_mag": 8, "nem_alap": 3, "melyitesi_jelolt": 1,
+                             "torzsbol": 0, "torzs_meret": 0}
+    assert len(out["new_torzs"]) == 11 and out["new_torzs"][0]["kesz_ids"] == ["gh_c_3", "gh_c_270", "gh_c_42"]
+    assert out["magok"][0]["egyesites"] == "NEW" and out["p3_cases"] >= 11
     assert [u["step"] for u in out["usage"]] == ["P1", "P3"]
     saved = json.loads((tmp_path / "dry" / "onet_29-1141.00.json").read_text(encoding="utf-8"))
-    assert saved["szamok"]["tesz"] == 17
+    assert saved["szamok"]["tesz"] == 14
     text = format_dry_run(out)
     assert "PRÓBAFUTÁS" in text and "C05b" in text and "mélyítési jelölt" in text
     # gráf nélkül az egyesítés kimarad, a többi lefut
@@ -880,3 +885,110 @@ def test_web_dry_run_toggle_and_results(tmp_path, monkeypatch):
     lst = web.dryrun_list()["runs"]
     assert lst[0]["job_id"] == "onet:1" and lst[0]["flags"] == ["R13"]
     assert web.dryrun_get("onet:1", brief=True)["szamok"]["mag"] == 12 and web.dryrun_get("x") is None
+
+
+# ---------------------------------------------------------------- v2: általános MAG, KÉSZ-ség- és MAG-törzs
+def _torzs_rec(mid="gh_mag_tanora", label="Tanóra vagy foglalkozás megtartása"):
+    return {"id": mid, "label_hu": label, "label_en": "Deliver a lesson or session", "outcome_hu": "Megtartott óra.",
+            "tesz_type": "SUPPORT_SERVE", "kesz_ids": ["gh_c_246", "gh_c_239"],
+            "primary_szer": {"label_hu": "Foglalkozásterv", "label_en": "Session plan", "kind": "PLAN",
+                             "role": "GUIDED_BY", "definition_hu": ""}}
+
+
+def test_kesz_ids_normalized_and_checked():
+    from gaphopper.config import kesz_torzs
+    from gaphopper.schemas import TeszMag
+
+    assert len(kesz_torzs()) == 275 and kesz_torzs()["gh_c_246"]["en"] == "Public speaking (technical)"
+    d = p1_fixture()["tesz_magok"][0] | {"kesz_ids": [3, "270", "gh_c_42", 3]}
+    assert TeszMag.model_validate(d).kesz_ids == ["gh_c_3", "gh_c_270", "gh_c_42"]
+    with pytest.raises(Exception, match="nincs a KÉSZ-ség-törzsben"):
+        TeszMag.model_validate(d | {"kesz_ids": [999]})
+    with pytest.raises(Exception):
+        TeszMag.model_validate(d | {"kesz_ids": [1, 2, 3, 4, 5]})
+
+
+def test_p1_system_has_torzs_and_two_cache_blocks(tmp_path):
+    from gaphopper.llm import CACHE_SPLIT, plain_system, system_blocks
+    from gaphopper.pipeline import Context
+
+    ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False)
+    ctx.extra_torzs = [_torzs_rec()]
+    sys_ = ctx.p1_system()
+    static, dynamic = sys_.split(CACHE_SPLIT)
+    assert "246|Public speaking (technical)|S1S" in static and static.startswith(prompt("p0_system")[:40])
+    assert dynamic.endswith("T01|Tanóra vagy foglalkozás megtartása|SUPPORT_SERVE")
+    blocks = system_blocks(sys_)
+    assert len(blocks) == 2 and all(b["cache_control"] == {"type": "ephemeral"} for b in blocks)
+    assert CACHE_SPLIT not in plain_system(sys_)
+
+
+def test_mag_ref_from_torzs_without_p3(tmp_path):
+    """A törzsből választott MAG (mag_ref) mezői a törzsből jönnek; az egyesítés hívás nélkül feloldja."""
+    from gaphopper.pipeline import Context, merge_plan
+
+    s = Settings(state_db=tmp_path / "s.sqlite")
+    s.embed_model = ""
+    d = p1_fixture()
+    d["tesz_magok"][8] = {"mag_id": "M09", "mag_ref": "T01", "kor_id": "K5", "relevance": "SUPPORTING",
+                          "kontextus_hu": "betegek és hozzátartozók"}
+    calls = []
+    ctx = Context(s, with_graph=False, llm_override={"P1": FakeLLM(lambda sy, u: json.dumps(d, ensure_ascii=False)),
+                                                     "P3": FakeLLM(_p3_same_first(calls))})
+    ctx.extra_torzs = [_torzs_rec()]
+    obj, _ = call_json(ctx.llm("P1"), ctx.p1_system(), "job", P1Output, pre=ctx.resolve_mag_refs)
+    m9 = obj.tesz_magok[8]
+    assert m9.mag_ref == "gh_mag_tanora" and m9.label_hu == "Tanóra vagy foglalkozás megtartása"
+    assert m9.kesz_ids == ["gh_c_246", "gh_c_239"] and m9.tesz_type == "SUPPORT_SERVE"
+    c09 = next(t for t in obj.tesz if t.mag_id == "M09")
+    assert c09.label_hu == m9.label_hu and c09.kontextus_hu == "betegek és hozzátartozók"
+    ctx.graph = FakeGraph()
+    plan, summary, _ = merge_plan(ctx, {"job_id": "x", "title": "Ápoló"}, obj.model_dump(), obj.tesz_magok, obj.tesz)
+    s9 = next(m for m in summary["magok"] if m["mag_id"] == "M09")
+    assert (s9["decision"], s9["via"], s9["graph_id"]) == ("SAME", "torzs", "gh_mag_tanora")
+    cases = json.loads(calls[0].split("ESETEK:\n", 1)[1].split("\n\nKIMENET", 1)[0])
+    assert all(c["candidate"].get("label_hu") != m9.label_hu for c in cases if c["type"] == "TESZ_MAG")
+    link = next(l for l in plan.links if l["props"]["mag_cand_id"] == "M09")
+    assert link["props"]["kontextus_hu"] == "betegek és hozzátartozók"
+    assert plan.magok["gh_mag_tanora"]["kesz_ids"] == ["gh_c_246", "gh_c_239"]
+    # ismeretlen kód: sémahiba (újrapróbálás a hibaüzenettel)
+    d["tesz_magok"][8]["mag_ref"] = "T99"
+    with pytest.raises(LLMError, match="ismeretlen mag_ref"):
+        call_json(FakeLLM(lambda *a: json.dumps(d)), "s", "u", P1Output, retries=0, pre=ctx.resolve_mag_refs)
+
+
+def test_rules_v2_generality():
+    d = p1_fixture()
+    d["tesz_magok"][0]["label_hu"] = "Ápolói állapotfelmérés a hallgatók körében"   # R17: célcsoport + munkakör
+    d["tesz_magok"][6]["kesz_ids"] = [28, 29]                                        # R18: M05 ~ M07? más típus
+    d["tesz_magok"][5]["kesz_ids"] = [28, 29, 24]                                    # R18: M05 + M06 EXECUTE
+    d["tesz_magok"][3]["kesz_ids"] = [113]                                           # R20
+    p1 = P1Output.model_validate(d)
+    f = {x.rule: x for x in rules.check(p1.tesz, None, "Health and care", magok=p1.tesz_magok,
+                                         job_title="Ápoló")}
+    assert f["R17"].cand_ids == ["M01"] and f["R20"].cand_ids == ["M04"]
+    assert set(f["R18"].cand_ids) == {"M05", "M06"} and "M07" not in f["R18"].cand_ids
+    assert "R19" not in f
+    # R19: nagy törzs mellett túl sok új MAG
+    f2 = {x.rule for x in rules.check(p1.tesz, None, "", magok=p1.tesz_magok, torzs_size=60)}
+    assert "R19" in f2
+    # R4: hosszú MAG-címke (G1: legfeljebb 6 szó)
+    d = p1_fixture()
+    d["tesz_magok"][1]["label_hu"] = "Életjelek mérése és rögzítése minden műszak elején és végén"
+    assert "R4" in {x.rule for x in rules.check(P1Output.model_validate(d).tesz, None, "",
+                                                 magok=P1Output.model_validate(d).tesz_magok)}
+
+
+def test_p2_fix_identity_drops_mag_ref():
+    from gaphopper.pipeline import apply_p2
+    from gaphopper.schemas import P2Output
+
+    p1 = _p1_obj()
+    mags = [m.model_copy(update={"mag_ref": "gh_mag_x"}) if m.mag_id == "M04" else m for m in p1.tesz_magok]
+    out = P2Output.model_validate({"verdict": "FIXED", "changes": [
+        {"op": "FIX", "mag_id": "M04", "set": {"label_hu": "Ellátási terv készítése és frissítése"}},
+        {"op": "FIX", "mag_id": "M05", "set": {"kontextus_hu": "intenzív osztály", "kesz_ids": [28, 29]}}]})
+    magok, final, _ = apply_p2(mags, p1.tesz, out.changes)
+    by = {m.mag_id: m for m in magok}
+    assert by["M04"].mag_ref is None and by["M05"].kesz_ids == ["gh_c_28", "gh_c_29"]
+    assert next(t for t in final if t.cand_id == "C05b").kontextus_hu == "intenzív osztály"

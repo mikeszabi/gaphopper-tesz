@@ -16,7 +16,15 @@ SZER_SZEREP = set(_V["szer_elem_szerep"])
 FREQUENCY = set(_V["frequency"])
 ALIAS_ERTEK = _V.get("alias_ertek") or {}
 # A MAG-ról öröklődő mezők: a változat (TESZ-nivaló) nem írja újra őket, a MAG a mérvadó.
-MAG_FIELDS = ("kor_id", "outcome_hu", "tesz_type", "tesz_type_runner_up", "primary_szer", "relevance")
+MAG_FIELDS = ("kor_id", "outcome_hu", "tesz_type", "tesz_type_runner_up", "primary_szer", "relevance", "kontextus_hu")
+# A MAG kilétét adó mezők: ha a bíráló ezeket javítja, a MAG már nem a törzs eleme (mag_ref elvész).
+MAG_IDENTITY = ("label_hu", "tesz_type", "primary_szer")
+
+
+def kesz_id(v) -> str:
+    """KÉSZ-ség-törzs azonosító: 12 | "12" | "gh_c_12" -> "gh_c_12"."""
+    t = str(v).strip()
+    return t if t.startswith("gh_c_") else f"gh_c_{int(t)}"
 
 
 def _alias(kind: str, value):
@@ -102,12 +110,20 @@ class TeszMag(_Base):
     primary_szer: SzerElem
     relevance: Literal["CORE", "SUPPORTING"] = "SUPPORTING"
     melyites_jeloltek: list[Melyites] = Field(default_factory=list, max_length=1)
+    # G2: 2–4 illeszkedő KÉSZ-ség-törzselem (gh_c_<n>); a P1 számmal is írhatja
+    kesz_ids: list[str] = Field(default_factory=list, max_length=4)
+    # a MAG-törzs eleme, ha a P1 onnan választott (ilyenkor a MAG mezői a törzsből jönnek)
+    mag_ref: Optional[str] = None
+    # munkakör-függő szakmai kontextus (szakterület, célcsoport, tantárgy): a MunkaKor–TESZ élre kerül
+    kontextus_hu: Optional[str] = None
 
     @model_validator(mode="before")
     @classmethod
     def _aliases(cls, data):
         if isinstance(data, dict):
             data = dict(data)
+            if "kesz" in data and "kesz_ids" not in data:
+                data["kesz_ids"] = data.pop("kesz")
             if "runner_up" in data and "tesz_type_runner_up" not in data:
                 data["tesz_type_runner_up"] = data.pop("runner_up")
             if "relevance" in data:
@@ -118,6 +134,24 @@ class TeszMag(_Base):
     @classmethod
     def _tt(cls, v):
         return _check(v, TESZ_TIPUS, "tesz_type")
+
+    @field_validator("kesz_ids", mode="before")
+    @classmethod
+    def _kesz(cls, v):
+        from .config import kesz_torzs
+
+        torzs = kesz_torzs()
+        out = []
+        for x in v or []:
+            try:
+                k = kesz_id(x)
+            except ValueError:
+                raise ValueError(f"kesz_ids: '{x}' nem KÉSZ-ség-törzs azonosító (szám vagy gh_c_<n>).")
+            if torzs and k not in torzs:
+                raise ValueError(f"kesz_ids: '{k}' nincs a KÉSZ-ség-törzsben (1–{len(torzs)}).")
+            if k not in out:
+                out.append(k)
+        return out
 
     @model_validator(mode="after")
     def _melyites_core(self):
@@ -157,6 +191,7 @@ class Tesz(_Base):
     helyzet: str
     helyzet_secondary: Optional[str] = None
     relevance: Literal["CORE", "SUPPORTING"] = "SUPPORTING"
+    kontextus_hu: Optional[str] = None
     frequency: Optional[str] = None
     expected_eqf: int = Field(ge=1, le=8)
     # egyetlen rövid mondat; régi eredményeknél szótár (type/szer/kozeg/helyzet)
@@ -212,12 +247,12 @@ class Tesz(_Base):
 
 
 def inherit(mag: TeszMag, t: Tesz) -> Tesz:
-    """A MAG mezőinek rámásolása a változatra (a MAG a mérvadó). A címke hiányában a MAG címkéje."""
+    """A MAG mezőinek rámásolása a változatra (a MAG a mérvadó).
+
+    G3 SZÍN-semlegesség: a változat címkéje mindig a MAG-é; a SZÍN-t a ⟨KÖZ-eg, HELY-zet⟩ és a
+    szin_kulonbseg_hu hordozza."""
     upd = {k: getattr(mag, k) for k in MAG_FIELDS}
-    if not t.label_hu:
-        upd["label_hu"] = mag.label_hu
-    if not t.label_en:
-        upd["label_en"] = mag.label_en if t.label_hu in ("", mag.label_hu) else ""
+    upd["label_hu"], upd["label_en"] = mag.label_hu, mag.label_en
     return t.model_copy(update=upd)
 
 

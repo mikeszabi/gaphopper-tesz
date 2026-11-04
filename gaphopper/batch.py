@@ -75,7 +75,9 @@ def submit(ctx: Context, step: str, job_ids: list[str] | None = None, limit: int
     if not ids:
         return []
     client = client or _client()
-    system = [{"type": "text", "text": ctx.system, "cache_control": {"type": "ephemeral"}}]
+    from .llm import system_blocks
+
+    system = system_blocks(ctx.p1_system() if step == "P1" else ctx.system)
     batch_ids = []
     for start in range(0, len(ids), max_per_batch):
         part = ids[start:start + max_per_batch]
@@ -137,7 +139,8 @@ def collect(ctx: Context, client=None) -> dict:
             usage = r.result.message.usage
             usage = usage.model_dump() if hasattr(usage, "model_dump") else {}
             try:
-                obj = SCHEMA[step].model_validate(extract_json(text))
+                data = extract_json(text)
+                obj = SCHEMA[step].model_validate(ctx.resolve_mag_refs(data) if step == "P1" else data)
                 if step == "P2":  # az eltérések alkalmazhatók-e
                     p1x = load_p1(ctx, jid)
                     apply_p2(p1x.tesz_magok, p1x.tesz, obj.changes)
@@ -177,6 +180,8 @@ def run_parallel(ctx: Context, step: str, job_ids: list[str] | None = None, limi
     llm = ctx.llm(step)
     cfg = getattr(ctx.settings, step.lower())
     prepared = {jid: _build(ctx, step, jid) for jid in ids}  # SQLite csak a fő szálon
+    if step == "P1":
+        ctx.p1_system()  # a MAG-törzs egyszer, a fő szálon (a futás minden munkakörének ugyanaz)
     stat = {"ok": 0, "hiba": 0}
 
     def work(jid: str):
@@ -184,7 +189,8 @@ def run_parallel(ctx: Context, step: str, job_ids: list[str] | None = None, limi
         user, extra = prepared[jid]
         check = (lambda o: apply_p2(extra["p1"].tesz_magok, extra["p1"].tesz, o.changes)) if step == "P2" else None
         try:
-            obj, _ = call_json(llm, ctx.system, user, SCHEMA[step],
+            obj, _ = call_json(llm, ctx.p1_system() if step == "P1" else ctx.system, user, SCHEMA[step],
+                               pre=ctx.resolve_mag_refs if step == "P1" else None,
                                log=lambda raw, ok, usage: logs.append((raw, ok, usage)), check=check)
             return jid, obj, None, logs
         except Exception as exc:

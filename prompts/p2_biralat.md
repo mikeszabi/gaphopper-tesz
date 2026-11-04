@@ -9,6 +9,10 @@ MINDEN MAG-RA ÉS VÁLTOZATRA:
   MAG alá (REMAG). Ha egy MAG változatainak ERED-ménye lényegében eltér, bontsd (SPLIT mag_id).
 - M2 változat-próba: ad-e a változat új vagy szigorúbb értékelési kritériumot? Ha nem, olvaszd
   az ALAP-SZÍN-be (FOLD).
+- G1-G4 általánosság: a MAG-címke 3-6 szó, munkakör-, szakterület-, célcsoport- és SZÍN-semleges
+  (a specifikum a kontextus_hu-ba: FIX mag_id); 2-4 illeszkedő KÉSZ-ség (kesz_ids sorszámok); azonos
+  típus és ERED-mény-fajta, nagy KÉSZ-ség-átfedés esetén egy MAG (REMAG a megmaradó MAG alá, a
+  fölösleges MAG változatai FOLD-dal vagy új SZÍN-ként). A célcsoport nem ok külön MAG-ra.
 
 A KÉSZLETRE:
 Q1 Lefedés: van-e rendszeres tevékenység MAG nélkül? Ha igen, ADD.
@@ -21,9 +25,11 @@ A SZABÁLYJELZÉSEKET (rule_flags) kötelező kezelned: javítsd, vagy a reason_
 
 CSAK AZ ELTÉRÉSEKET ADD VISSZA (changes); a változatlan elemeket ne ismételd:
 - FIX cand_id: változatmező javítása, "set": csak a javított mezők (pl. {"helyzet":"HELY_RUTIN"};
-  mag_id, kozeg, helyzet, szin_kulonbseg_hu, alap_szin, label_hu is).
+  mag_id, kozeg, helyzet, szin_kulonbseg_hu, alap_szin is; a változatnak nincs saját címkéje).
 - FIX mag_id (cand_id nélkül): MAG-mező javítása (label_hu, outcome_hu, tesz_type, primary_szer –
-  teljes objektummal –, relevance, melyites_jeloltek); minden változatára érvényes.
+  teljes objektummal –, relevance, kesz_ids, kontextus_hu, melyites_jeloltek); minden változatára
+  érvényes. A mag_ref-es (törzsből választott) MAG címkéjét, típusát és SZER-ELEM-ét ne írd át:
+  ha nem illik, inkább REMAG egy másik MAG alá vagy új MAG (ADD new_mag).
 - DROP cand_id vagy mag_id: általános minta, készség, ismétlés -> elhagyjuk.
 - MERGE cand_id -> "into": ERED-ménye és SZÍN-e azonos egy másikkal.
 - FOLD cand_id -> "into" + "as": "kozeg_secondary|helyzet_secondary": a változat csak kísérő SZÍN.

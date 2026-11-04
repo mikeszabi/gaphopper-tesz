@@ -27,6 +27,20 @@ class ManualStep(Exception):
         self.step, self.system, self.user = step, system, user
 
 
+# A rendszerprompt gyorsítótár-határa: előtte a statikus rész (P0 + KÉSZ-ség-törzs), utána a futásonként
+# változó MAG-törzs. Anthropicnál két cache-blokk lesz belőle, más szolgáltatónál egyszerű sortörés.
+CACHE_SPLIT = "\n<!--cache-->\n"
+
+
+def system_blocks(system: str) -> list[dict]:
+    parts = [p for p in system.split(CACHE_SPLIT) if p.strip()]
+    return [{"type": "text", "text": p, "cache_control": {"type": "ephemeral"}} for p in parts]
+
+
+def plain_system(system: str) -> str:
+    return system.replace(CACHE_SPLIT, "\n\n")
+
+
 _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 _THINK = re.compile(r"<think>.*?</think>", re.DOTALL)
 
@@ -77,7 +91,7 @@ class AnthropicLLM:
             model=self.cfg.model,
             max_tokens=self.cfg.max_tokens,
             # A rendszerprompt minden hívásban azonos: gyorsítótárazható.
-            system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
+            system=system_blocks(system),
             messages=[{"role": "user", "content": user}],
             **anthropic_extra(self.cfg),
         )
@@ -120,7 +134,7 @@ class GeminiLLM:
         from google.genai import types
 
         conf = types.GenerateContentConfig(
-            system_instruction=system,
+            system_instruction=plain_system(system),
             max_output_tokens=self.cfg.max_tokens,
             response_mime_type="application/json",
             **({"temperature": self.cfg.temperature} if self.cfg.temperature is not None else {}),
@@ -180,7 +194,7 @@ class LocalLLM:
     def complete(self, system: str, user: str) -> tuple[str, dict]:
         body: dict[str, Any] = {
             "model": self.cfg.model, "max_tokens": self.cfg.max_tokens,
-            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "messages": [{"role": "system", "content": plain_system(system)}, {"role": "user", "content": user}],
         }
         if self.cfg.temperature is not None:
             body["temperature"] = self.cfg.temperature
@@ -266,7 +280,7 @@ def get_llm(cfg: StepModel, step: str, answer_file: Path | None = None, settings
 
 def call_json(llm, system: str, user: str, schema: type[BaseModel], retries: int = 1,
               log: Callable[[str, bool, dict], None] | None = None,
-              check: Callable[[Any], Any] | None = None):
+              check: Callable[[Any], Any] | None = None, pre: Callable[[Any], Any] | None = None):
     """Hívás, JSON-kinyerés, sémaellenőrzés és (ha van) tartalmi ellenőrzés (check).
 
     Hiba esetén egyszer újrapróbál, a hibaüzenetet a promptba téve.
@@ -292,6 +306,8 @@ def call_json(llm, system: str, user: str, schema: type[BaseModel], retries: int
         usage = dict(usage or {}) | {"duration_ms": int((time.monotonic() - t0) * 1000)}
         try:
             data = extract_json(text)
+            if pre is not None and repair_data is None:
+                data = pre(data)
             if repair_data is not None:
                 from copy import deepcopy
                 from .schemas import P1RelevanceRepair

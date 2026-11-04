@@ -5,7 +5,7 @@
                             0. lépés: dokumentumokból jobs.jsonl (E0 prompt)
   import FÁJL               munkakörök beolvasása (.xlsx / .jsonl / .csv / .json)
   run [--job ID..] [--limit N] [--until p1|p2|graph] [--force] [--workers N]
-  run --dry-run --job ID.. [--input jobs.jsonl] [--workers N]
+  run --dry-run --job ID.. [--input jobs.jsonl] [--workers N | --chain] [--no-graph]
                             próbafutás: P1–P3 lefut, a gráf és a state.sqlite nem változik;
                             eredmény: runs/dryrun/<job>.json
   db-reset --yes            neo4j és state.sqlite ürítése (előtte mentés: runs/backup-<dátum>/)
@@ -134,15 +134,24 @@ def _dry_run(a):
     if missing:
         raise SystemExit(f"Ismeretlen munkakör: {', '.join(missing)}")
     graph = None
-    try:
-        from .graph import Graph
+    if not a.no_graph:
+        try:
+            from .graph import Graph
 
-        graph = Graph(s)
-        graph.driver.verify_connectivity()
-    except Exception as exc:  # gráf nélkül az egyesítés kimarad
-        print(f"A neo4j nem érhető el ({str(exc).splitlines()[0][:200]}); az egyesítés kimarad.", flush=True)
-        graph = None
+            graph = Graph(s)
+            graph.driver.verify_connectivity()
+        except Exception as exc:  # gráf nélkül az egyesítés kimarad
+            print(f"A neo4j nem érhető el ({str(exc).splitlines()[0][:200]}); az egyesítés kimarad.", flush=True)
+            graph = None
     try:
+        if a.chain:
+            # lánc: egymás után; a korábbi munkakörök új MAG-jai a következő MAG-törzsébe kerülnek
+            extra: list[dict] = []
+            for j in ids:
+                out = dry_run(recs[j], s, graph, extra_torzs=extra)
+                extra += out.get("new_torzs", [])
+                print(format_dry_run(out) + "\n", flush=True)
+            return
         with ThreadPoolExecutor(max_workers=max(1, a.workers)) as ex:
             for out in ex.map(lambda j: dry_run(recs[j], s, graph), ids):
                 print(format_dry_run(out) + "\n", flush=True)
@@ -415,6 +424,9 @@ def main(argv=None):
     s.add_argument("--dry-run", action="store_true",
                    help="próbafutás: LLM-lépések lefutnak, a gráf és a state.sqlite nem változik")
     s.add_argument("--input", help="próbafutásnál: a rekordok fájlból (.jsonl/.json/.csv/.xlsx)")
+    s.add_argument("--chain", action="store_true",
+                   help="próbafutás-lánc: a munkakörök egymás után, a korábbiak új MAG-jai a törzsbe kerülnek")
+    s.add_argument("--no-graph", action="store_true", help="próbafutás a neo4j olvasása nélkül (egyesítés nélkül)")
     s.set_defaults(fn=cmd_run)
     s = sub.add_parser("db-reset", help="neo4j és state.sqlite ürítése mentéssel")
     s.add_argument("--yes", action="store_true"); s.set_defaults(fn=cmd_db_reset)

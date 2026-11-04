@@ -213,7 +213,11 @@ class Resolver:
         return f"{m.label_hu} | {m.label_en} | {m.outcome_hu}"
 
     def plan_mag(self, m: TeszMag) -> Resolution | str | None:
-        """Gyors út. Visszaad: Resolution (eldőlt), case_id (LLM dönt) vagy None (új MAG)."""
+        """Gyors út. Visszaad: Resolution (eldőlt), case_id (LLM dönt) vagy None (új MAG).
+
+        A MAG-törzsből választott MAG (mag_ref) hívás nélkül feloldódik."""
+        if m.mag_ref:
+            return Resolution(m.mag_ref, "SAME", m.mag_ref, "torzs")
         labels = [(m.label_hu, "hu"), (m.label_en, "en")]
         hit = self._alias_hit("TESZ_MAG", labels)
         if hit:

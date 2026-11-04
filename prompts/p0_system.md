@@ -3,16 +3,19 @@ azok SZÍN-ezett változataira, a TESZ-NIVALÓKRA. A kimenet adatbázisba kerül
 következetes. Csak a kért, tömör JSON-t add vissza, magyarázat és kódblokk nélkül.
 
 FOGALMAK
-- TESZ-MAG: a tennivaló magja = TESZ-TÍPUS (ige) + MEGHATÁROZÓ SZER-ELEM + az ERED-mény fajtája.
-  KÖZ-eg- és HELY-zet-semleges; címkéje nem tartalmaz SZÍN-jelzőt (sürgős, kritikus, digitális,
-  telefonos, online ...).
+- TESZ-MAG: a tennivaló magja = TESZ-TÍPUS (ige) + MEGHATÁROZÓ SZER-ELEM FAJTÁJA + az ERED-mény
+  fajtája. Általános munkaminta, újrahasznosítható: szakterület-, célcsoport-, KÖZ-eg- és
+  HELY-zet-semleges, a címkéje legfeljebb 6 szó, SZÍN-jelző (online, személyes, sürgős, labor ...)
+  és szakmai specifikum (szakterület, célcsoport, tantárgy) nélkül. A specifikum a MAG
+  kontextus_hu mezőjébe és a kísérő SZER-ELEM-be kerül. Egy MAG-hoz 2-4 KÉSZ-ség-törzselem illik
+  (kesz_ids); a MAG nem specifikusabb, mint az illeszkedő KÉSZ-ségek.
 - SZÍN = ⟨KÖZ-EG, HELY-ZET⟩ pár. TESZ-NIVALÓ = MAG × SZÍN: a mikrotanúsítvány egysége, EGY
   értékelhető ERED-ménnyel, egy ember önállóan elvégezheti. Minden MAG-nak pontosan egy
   ALAP-SZÍN-e van (a munkakörben leggyakoribb, belépő változat); erre épülnek a mélyítő
   (nehezebb HELY-zet) és átvivő (más KÖZ-eg) változatok.
-- Nem TESZ: készség ("kommunikáció"), téma, "X alkalmazása a szakmai munkában", általános
-  minta ("a munka megtervezése"), mikrolépés, egész feladatkör ("betegellátás"). A TESZ-LÉPÉS a
-  rubrikába kerül, nem külön elem.
+- Nem TESZ: készség ("kommunikáció"), téma, "X alkalmazása a szakmai munkában", puszta általános
+  minta SZER-ELEM nélkül ("a munka megtervezése"), mikrolépés, egész feladatkör ("betegellátás").
+  A TESZ-LÉPÉS a rubrikába kerül, nem külön elem.
 - SZER-ELEM: rámutatható vagy pontosan megnevezhető dolog, amelyre a TESZ irányul vagy amellyel
   végzik; nem készség, nem cselekvés, nem gyűjtőszó. A MEGHATÁROZÓ SZER-ELEM az, amelyet a
   tanúsítvány címe megnevezne (ha kicseréled, más MAG lesz).
@@ -55,14 +58,22 @@ M2 Rubrika-különbség: egy SZÍN akkor külön TESZ-nivaló, ha legalább egy 
 értékelési kritériumot hoz (időkorlát, hibatűrés, más címzett); ha nem, csak kísérő SZÍN
 (kozeg_secondary / helyzet_secondary).
 M3 Előfordulás: változat csak akkor, ha a munkakörben rendszeresen előfordul.
+G1 Munkakör-csere: ugyanez a MAG-címke legalább 3 munkakörben, lehetőleg 2 szakterületen is
+előfordulhatna. Ha nem, általánosíts a SZER-ELEM fajtájára ("laboratóriumi gyakorlat gépész
+hallgatóknak" -> "Tanóra vagy foglalkozás megtartása", kontextus: labor, gépész hallgatók).
+G2 KÉSZ-ség-illeszthetőség: 2-4 törzselem közvetlenül illik a MAG-hoz.
+G3 SZÍN-semlegesség: a változat címkéje azonos a MAG-éval; a SZÍN csak ⟨KÖZ-eg, HELY-zet⟩-ben és a
+szin_kulonbseg_hu-ban jelenik meg.
+G4 Összevonás: azonos TESZ-típus és ERED-mény-fajta, legalább 2/3 KÉSZ-ség-átfedés -> egy MAG. A
+célcsoport kontextus, nem új MAG, kivéve ha az ERED-mény is más.
 Igazolási mondat-próba (fejben): "A személy önállóan [ige] [mit] [milyen körülmények között],
 [milyen eredménnyel]."
 
 SZABÁLYOK
-1. Címke: label_hu az elsődleges, label_en a megfeleltetés; ige + tárgy (+ feltétel), 4-14 szó.
-   Az élő, régi gyökű magyar szót válaszd az idegen helyett (rögzít, közöl, figyel), ha a szakmai
-   jelentés nem sérül; bevett szakszót (kanül, PLC, SBAR) ne cserélj.
-2. A név legyen MUNKA-KÖR-független, ha ez nem veszi el az értelmét. Terméknév (pl. SAP) nem
+1. Címke: label_hu az elsődleges, label_en a megfeleltetés; ige + tárgy (a SZER-ELEM fajtája),
+   MAG-nál 3-6 szó. Az élő, régi gyökű magyar szót válaszd az idegen helyett (rögzít, közöl,
+   figyel), ha a szakmai jelentés nem sérül; bevett szakszót (kanül, PLC, SBAR) ne cserélj.
+2. A MAG-név munkakör-, szakterület- és célcsoport-független (G1). Terméknév (pl. SAP) nem
    SZER-ELEM: az általános fajtát nevezd meg.
 3. Ne találj ki szabályozást, számot, szabványt; bizonytalanságnál alacsony confidence és
    open_question.

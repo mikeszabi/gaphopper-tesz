@@ -41,8 +41,35 @@ def _jelzo(label: str, words: list[str]) -> list[str]:
     return [w for w in words if re.search(r"(?<!\w)" + re.escape(w.lower()), low)]
 
 
+_STOP = {"and", "the", "for", "with", "és", "vagy", "egyéb", "general", "other", "szakember", "munkatárs",
+         "specialist", "worker", "assistant", "including"}
+
+
+def _job_words(*texts: str) -> list[str]:
+    """R17: a munkakör címéből és szakterületéből képzett szótövek (legalább 5 betűs szavak)."""
+    out = []
+    for t in texts:
+        for w in re.findall(r"\w+", (t or "").lower()):
+            if len(w) >= 5 and w not in _STOP and not w.isdigit():
+                out.append(w[:max(5, len(w) - 2)])
+    return sorted(set(out))
+
+
+def g4_pairs(magok: list[TeszMag], overlap: float) -> list[tuple[str, str]]:
+    """G4: azonos TESZ-típus és legalább `overlap` arányú KÉSZ-ség-átfedés (a kisebbik halmazhoz mérve)."""
+    out = []
+    for i, a in enumerate(magok):
+        for b in magok[i + 1:]:
+            if a.tesz_type != b.tesz_type or not a.kesz_ids or not b.kesz_ids:
+                continue
+            common = len(set(a.kesz_ids) & set(b.kesz_ids))
+            if common / min(len(a.kesz_ids), len(b.kesz_ids)) >= overlap:
+                out.append((a.mag_id, b.mag_id))
+    return out
+
+
 def check(tesz: list[Tesz], kor_ids: list[str] | None = None, job_field: str = "",
-          magok: list[TeszMag] | None = None) -> list[Flag]:
+          magok: list[TeszMag] | None = None, job_title: str = "", torzs_size: int = 0) -> list[Flag]:
     r = vocab()["rules"]
     pairs = vocab()["termeszetes_par"]
     if magok is None:
@@ -67,16 +94,17 @@ def check(tesz: list[Tesz], kor_ids: list[str] | None = None, job_field: str = "
     # R4 – címke hossza (MAG) és tiltott minták (MAG és változat)
     bad_len, bad_pat = [], []
     wmin = r.get("mag_label_words_min", r["label_words_min"])
+    wmax = r.get("mag_label_words_max", r["label_words_max"])
     for m in magok:
         words = len(m.label_hu.split())
-        if not wmin <= words <= r["label_words_max"]:
+        if not wmin <= words <= wmax:
             bad_len.append(m.mag_id)
     for x in list(magok) + [t for t in tesz if not t.alap_szin]:
         text = f"{x.label_hu} {x.label_en}".lower()
         if any(p in text for p in r["forbidden_label_patterns"]):
             bad_pat.append(getattr(x, "cand_id", None) or x.mag_id)
     if bad_len:
-        flags.append(Flag("R4", f"A MAG-címke hossza nem {wmin}–{r['label_words_max']} szó.", bad_len))
+        flags.append(Flag("R4", f"A MAG-címke hossza nem {wmin}–{wmax} szó (G1).", bad_len))
     if bad_pat:
         flags.append(Flag("R4", "Tiltott címkeminta (általános minta vagy álcázott készség).", bad_pat))
 
@@ -157,6 +185,31 @@ def check(tesz: list[Tesz], kor_ids: list[str] | None = None, job_field: str = "
     if kis:
         flags.append(Flag("R16", "Csak KÖZ-egben tér el az ALAP-SZÍN-től, a kísérő SZER-ELEM-ek azonosak: "
                                  "valószínű kísérő KÖZ-eg (FOLD).", kis))
+
+    # R17 – munkakör-, szakterület- vagy célcsoportszó a MAG-címkében (G1: a specifikum a kontextus_hu-ba)
+    words = [w.lower() for w in r.get("celcsoport_szavak", [])] + _job_words(job_title, job_field)
+    spec = [m.mag_id for m in magok if not m.mag_ref and _jelzo(f"{m.label_hu} {m.label_en}", words)]
+    if spec:
+        flags.append(Flag("R17", "Munkakör-, szakterület- vagy célcsoportszó a MAG-címkében: általánosíts a "
+                                 "SZER-ELEM fajtájára, a specifikum a kontextus_hu-ba kerül (G1).", spec))
+
+    # R18 – G4-összevonási jelölt: azonos típus és nagy KÉSZ-ség-átfedés
+    pairs = g4_pairs(magok, float(r.get("g4_kesz_overlap", 0.66)))
+    if pairs:
+        flags.append(Flag("R18", "Azonos TESZ-típus és legalább 2/3 KÉSZ-ség-átfedés: egy MAG (G4)? "
+                                 + ", ".join(f"{a}+{b}" for a, b in pairs), sorted({x for p in pairs for x in p})))
+
+    # R19 – nagy MAG-törzs mellett túl sok új MAG
+    if torzs_size >= r.get("r19_torzs_min", 50) and nm:
+        new = [m.mag_id for m in magok if not m.mag_ref]
+        if len(new) / nm > r.get("r19_new_share_max", 0.5):
+            flags.append(Flag("R19", f"{len(new)}/{nm} új MAG {torzs_size} elemű MAG-törzs mellett: válassz a "
+                                     "törzsből (mag_ref), ha illik.", new))
+
+    # R20 – kevés KÉSZ-ség-törzselem (G2)
+    few = [m.mag_id for m in magok if len(m.kesz_ids) < r.get("kesz_min", 2)]
+    if few:
+        flags.append(Flag("R20", f"{r.get('kesz_min', 2)}-nél kevesebb kesz_ids (G2: 2–4 illeszkedő KÉSZ-ség).", few))
     return flags
 
 

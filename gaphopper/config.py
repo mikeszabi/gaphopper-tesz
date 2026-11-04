@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PROMPT_DIR = ROOT / "prompts"
 VOCAB_PATH = ROOT / "config" / "vocab.yaml"
 MODELS_PATH = ROOT / "config" / "models.yaml"
+KESZ_PATH = ROOT / "config" / "kesz_torzs.yaml"
 
 STEPS = ["E0", "P1", "P2", "P3", "P4", "P5"]
 STEP_NAMES = {"E0": "kinyerés dokumentumból", "P1": "felbontás", "P2": "bírálat", "P3": "egyesítés",
@@ -89,6 +90,15 @@ def vocab() -> dict:
         return yaml.safe_load(fh)
 
 
+@lru_cache(maxsize=1)
+def kesz_torzs() -> dict[str, dict]:
+    """A KÉSZ-ség-törzs: gh_c_<n> -> {id, en, group, type}."""
+    if not KESZ_PATH.exists():
+        return {}
+    with open(KESZ_PATH, encoding="utf-8") as fh:
+        return {x["id"]: x for x in (yaml.safe_load(fh) or {}).get("items", [])}
+
+
 def prompt(name: str) -> str:
     return (PROMPT_DIR / f"{name}.md").read_text(encoding="utf-8")
 
@@ -100,6 +110,8 @@ def prompt_version() -> str:
         h.update(p.name.encode())
         h.update(p.read_bytes())
     h.update(VOCAB_PATH.read_bytes())
+    if KESZ_PATH.exists():
+        h.update(KESZ_PATH.read_bytes())
     return f"{vocab().get('version', 'v')}-{h.hexdigest()[:8]}"
 
 

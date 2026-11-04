@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import re
 
-from .config import Settings, vocab
+from .config import Settings, kesz_torzs, vocab
 from .normalize import alias_tag, norm_key
 
 LABELS = {"MUNKA_KOR": "MunkaKor", "TESZ": "TeszNivalo", "TESZ_MAG": "TeszMag", "SZER_ELEM": "SzerElem",
@@ -90,6 +90,10 @@ class Graph:
         kisz = sorted((r for r in rows if r["fok"] is not None), key=lambda r: r["fok"])
         self.run("UNWIND $pairs AS p MATCH (a:Helyzet {id: p[0]}), (b:Helyzet {id: p[1]}) MERGE (a)-[:MELYEBB]->(b)",
                  pairs=[[a["id"], b["id"]] for a, b in zip(kisz, kisz[1:])])
+        # KÉSZ-ség-törzs: rögzített Keszseg-csomópontok (gh_c_<n>), a MAG-ok IGENYEL éllel kötnek hozzájuk.
+        rows = [{"id": k, "en": x["en"], "group": x["group"], "type": x["type"]} for k, x in kesz_torzs().items()]
+        self.run("UNWIND $rows AS r MERGE (k:Keszseg {id: r.id}) SET k.label_en = r.en, k.label_hu = coalesce(k.label_hu, r.en), "
+                 "k.csoport = r.group, k.fajta = r.type, k.forras = 'GH_competency_list', k.status = 'TORZS'", rows=rows)
         # SZÍN: minden ⟨KÖZ-eg, HELY-zet⟩ pár rögzített csomópont.
         szin = [{"id": szin_id(k, h), "k": k, "h": h, "hu": f"{kx['hu']} / {hx['hu']}"}
                 for k, kx in v["kozeg"].items() for h, hx in v["helyzet"].items()]
@@ -153,6 +157,20 @@ class Graph:
             f"CALL db.index.vector.queryNodes('{VECTOR[lbl]}', $k, $vec) YIELD node, score "
             "RETURN node {.*, embedding: null} AS props, score", k=k, vec=vec)
 
+    def mag_torzs(self, gen: str, limit: int = 80) -> list[dict]:
+        """A P1 MAG-törzse: az adott szótárverzióval (gen) készült, legtöbb munkakörben használt MAG-ok."""
+        return self.run(
+            "MATCH (g:TeszMag {gen: $gen}) "
+            "OPTIONAL MATCH (g)<-[:MAGJA]-()<-[:TARTALMAZ_TESZT]-(m:MunkaKor) "
+            "WITH g, count(DISTINCT m) AS n ORDER BY n DESC, g.created_at LIMIT $limit "
+            "MATCH (g)-[:TIPUSA]->(ty), (g)-[i:IRANYUL]->(s:SzerElem) "
+            "OPTIONAL MATCH (g)-[:IGENYEL]->(k:Keszseg) "
+            "WITH g, n, ty, i, s, collect(k.id) AS kesz "
+            "RETURN g.id AS id, g.label_hu AS label_hu, g.label_en AS label_en, g.outcome_hu AS outcome_hu, "
+            "ty.id AS tesz_type, {label_hu: s.label_hu, label_en: coalesce(s.label_en, ''), kind: s.kind, "
+            "role: i.role, definition_hu: coalesce(s.definition_hu, '')} AS primary_szer, kesz AS kesz_ids, "
+            "n AS munkakor_db ORDER BY n DESC", gen=gen, limit=limit)
+
     def mag_context(self, mag_id: str) -> dict:
         res = self.run(
             "MATCH (g:TeszMag {id: $id}) "
@@ -196,6 +214,7 @@ class Graph:
         magok = [{"id": k, **v} for k, v in plan.magok.items()]
         mely = [{"mag": k, "szin": szin_id(x["kozeg"], x["helyzet"]), "indok": x.get("indok_hu", ""),
                  "job": plan.job["id"]} for k, v in plan.magok.items() for x in v.get("melyites", [])]
+        igenyel = [{"mag": k, "k": kid} for k, v in plan.magok.items() for kid in v.get("kesz_ids", [])]
         tesz = [{"id": k, **v} for k, v in plan.tesz.items()]
         kozeg = [{"t": t["id"], "k": k, "p": i == 0} for t in tesz for i, k in enumerate(t["kozeg"])]
         helyzet = [{"t": t["id"], "h": h, "p": i == 0} for t in tesz for i, h in enumerate(t["helyzet"])]
@@ -216,6 +235,8 @@ class Graph:
                    "MERGE (g)-[:TIPUSA]->(ty) MERGE (g)-[i:IRANYUL]->(s) SET i.role = r.role", rows=magok)
             tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (s:Szin {id: r.szin}) "
                    "MERGE (g)-[e:MELYITESI_JELOLT]->(s) SET e.indok_hu = r.indok, e.forras_munkakor = r.job", rows=mely)
+            tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (k:Keszseg {id: r.k}) MERGE (g)-[:IGENYEL]->(k)",
+                   rows=igenyel)
             tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (s:Szin {id: r.szin}) "
                    "MERGE (t:TeszNivalo {id: r.id}) ON CREATE SET t += r.props, t.created_at = datetime() "
                    "SET t.last_seen = datetime() MERGE (t)-[:MAGJA]->(g) MERGE (t)-[:SZINBEN]->(s)", rows=tesz)
@@ -259,7 +280,7 @@ class Graph:
             self.run(f"MATCH (a)-[r:{rel}]->(d:{lbl} {{id: $drop}}), (k:{lbl} {{id: $keep}}) "
                      f"MERGE (a)-[r2:{rel}]->(k) SET r2 += properties(r) DELETE r", keep=keep_id, drop=drop_id)
         for rel in ["TIPUSA", "IRANYUL", "HASZNAL", "KOZEGBEN_ZAJLIK", "HELYZETBEN_VEGZENDO", "FAJTAJA", "MAGJA",
-                    "SZINBEN", "MELYITESI_JELOLT"]:
+                    "SZINBEN", "MELYITESI_JELOLT", "IGENYEL"]:
             self.run(f"MATCH (d:{lbl} {{id: $drop}})-[r:{rel}]->(b), (k:{lbl} {{id: $keep}}) "
                      f"MERGE (k)-[r2:{rel}]->(b) SET r2 += properties(r) DELETE r", keep=keep_id, drop=drop_id)
             self.run(f"MATCH (a)-[r:{rel}]->(d:{lbl} {{id: $drop}}), (k:{lbl} {{id: $keep}}) "
@@ -287,8 +308,10 @@ class Graph:
             "WITH g, collect({id: t.id, label_hu: t.label_hu, kozeg: s.kozeg, helyzet: s.helyzet, "
             "  alap: t.alap_szin, szin_kulonbseg_hu: t.szin_kulonbseg_hu, kesz: t.attestation_hu IS NOT NULL}) AS v "
             "OPTIONAL MATCH (g)-[:TIPUSA]->(ty) OPTIONAL MATCH (g)-[:IRANYUL]->(sz:SzerElem) "
+            "OPTIONAL MATCH (g)<-[:MAGJA]-()<-[r:TARTALMAZ_TESZT]-() "
+            "WITH g, v, ty, sz, [x IN collect(DISTINCT r.kontextus_hu) WHERE x IS NOT NULL AND x <> ''][..4] AS ktx "
             "RETURN g.id AS id, g.label_hu AS label_hu, g.outcome_hu AS outcome_hu, ty.id AS tesz_type, "
-            "sz.label_hu AS primary_szer, g.rubric_alap_hu AS rubric_alap_hu, v AS valtozatok "
+            "sz.label_hu AS primary_szer, g.rubric_alap_hu AS rubric_alap_hu, ktx AS kontextusok, v AS valtozatok "
             "ORDER BY g.id LIMIT $limit", limit=limit)
 
     def set_certificates(self, magok: list[dict], valtozatok: list[dict], prompt_version: str) -> None:

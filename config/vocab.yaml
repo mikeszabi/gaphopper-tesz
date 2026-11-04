@@ -1,6 +1,6 @@
 # Gaphopper zárt szótárak – a kódok stabilak, a nevek változhatnak.
 # hu = jelenlegi magyar név, gyok = gyökös javaslat, en = angol megfeleltetés
-version: "2026-10-22-mag"
+version: "2026-11-04-mag2"
 
 tesz_tipus:
   PREPARE:          {hu: "előkészít",               gyok: "ELŐ-KÉSZ-ít",        en: "prepare"}
@@ -79,15 +79,27 @@ termeszetes_par:
 
 # Szabálykuszöbök (P2, determinisztikus). Kalibrálandók a referenciakészleten.
 rules:
-  mag_min: 10              # TESZ-MAG-ok száma munkakörönként
-  mag_max: 18
-  tesz_min: 12             # TESZ-nivalók (SZÍN-ezett változatok) száma
-  tesz_max: 25
-  core_min: 8              # CORE MAG-ok száma
-  core_max: 15
+  # v2 (2026-11-04): általánosított MAG = munkaminta × SZER-ELEM-fajta; kalibrálandók
+  mag_min: 6               # TESZ-MAG-ok száma munkakörönként
+  mag_max: 12
+  tesz_min: 8              # TESZ-nivalók (SZÍN-ezett változatok) száma
+  tesz_max: 18
+  core_min: 4              # CORE MAG-ok száma
+  core_max: 9
   variants_per_mag_max: 3  # R12
   mag_per_kor_min: 1       # R9: feladatkör MAG nélkül (kalibrálva 2 -> 1, 2026-10-22)
   szin_kulonbseg_words_min: 4  # R13: a nem ALAP-SZÍN változat indoklása legalább ennyi szó
+  mag_label_words_max: 6   # G1: a MAG-címke legfeljebb 6 szó (R4)
+  kesz_min: 2              # R20 / G2: MAG-onként legalább ennyi KÉSZ-ség-törzselem
+  kesz_max: 4
+  g4_kesz_overlap: 0.66    # R18 (≈ 2/3) / G4: azonos típus + legalább ekkora KÉSZ-ség-átfedés -> összevonási jelölt
+  mag_torzs_max: 80        # a P1 rendszerpromptjába kerülő MAG-törzs mérete
+  r19_torzs_min: 50        # R19: ha a törzs legalább ekkora ...
+  r19_new_share_max: 0.5   # ... és az új MAG-ok aránya efölött van
+  # R17: célcsoport-szavak a MAG-címkében (szótőre illesztve); a munkakör címe és szakterülete is ide számít
+  celcsoport_szavak: ["hallgató", "diák", "tanuló", "beteg", "páciens", "ügyfél", "vevő", "gyermek", "gyerek",
+                      "idős", "lakó", "utas", "vendég", "partnercég", "student", "pupil", "patient", "client",
+                      "customer", "child", "guest"]
   label_words_min: 4  # magyarul az összetett szavak miatt 4 is elég (változat-címke)
   mag_label_words_min: 3  # a SZÍN-semleges MAG-címke rövidebb (kalibrálva, 2026-10-22)
   label_words_max: 14
