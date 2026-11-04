@@ -189,9 +189,13 @@ def check(tesz: list[Tesz], kor_ids: list[str] | None = None, job_field: str = "
     # R17 – munkakör- vagy szakszó a MAG-címkében (G1: a specifikum a kontextus_hu-ba; az általános célcsoport
     # – hallgatók, betegek – maradhat)
     # (a szakterület angol mezőszavai túl általánosak – "health" –, ezért csak a munkakör címe számít)
-    words = [w.lower() for w in r.get("szak_szavak", [])] + _job_words(job_title)
-    spec = [m.mag_id for m in magok if not m.mag_ref and _jelzo(
-        f"{m.label_hu} {m.label_en} {m.primary_szer.label_hu} {m.primary_szer.label_en}", words)]
+    # A munkakörcím szavai csak a magyar címkén számítanak: az angol O*NET-címek szavai gyakori igék és
+    # főnevek ("developer" ~ "develop", "registered" ~ "register"), ezért az angol címkén téves találatot adnak.
+    szak = [w.lower() for w in r.get("szak_szavak", [])]
+    cim = _job_words(job_title)
+    spec = [m.mag_id for m in magok if not m.mag_ref and (
+        _jelzo(f"{m.label_hu} {m.label_en} {m.primary_szer.label_hu} {m.primary_szer.label_en}", szak)
+        or _jelzo(f"{m.label_hu} {m.primary_szer.label_hu}", cim))]
     if spec:
         flags.append(Flag("R17", "Munkakör- vagy szakszó (gépész, villamos ...) a MAG címkéjében vagy meghatározó "
                                  "SZER-ELEM-ében: általánosíts (gépész hallgatók -> hallgatók), a szak a "

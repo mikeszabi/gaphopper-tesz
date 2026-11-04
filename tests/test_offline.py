@@ -988,6 +988,32 @@ def test_rules_v2_generality():
                                                  magok=P1Output.model_validate(d).tesz_magok)}
 
 
+def test_r17_no_false_positives_from_english_titles():
+    """TOP10-ben talált téves R17-jelzések: angol munkakörcím-szavak az angol címkében, 'engineering'."""
+    d = p1_fixture()
+    d["tesz_magok"][9]["label_en"] = "Record in a register"
+    d["tesz_magok"][3]["label_en"] = "Develop and run tests"
+    d["tesz_magok"][4]["label_en"] = "Perform engineering calculations"
+    p1 = P1Output.model_validate(d)
+    for title in ("Registered nurse", "Software developer", "Electrical engineer"):
+        assert "R17" not in {x.rule for x in rules.check(p1.tesz, None, "", magok=p1.tesz_magok, job_title=title)}
+    d["tesz_magok"][10]["label_en"] = "Direct nursing staff work"     # szakszó az angol címkén: jelez
+    p1 = P1Output.model_validate(d)
+    assert [x.cand_ids for x in rules.check(p1.tesz, None, "", magok=p1.tesz_magok) if x.rule == "R17"] == [["M11"]]
+
+
+def test_p2_fix_melyites_as_text_is_dropped():
+    from gaphopper.pipeline import apply_p2
+    from gaphopper.schemas import P2Output
+
+    p1 = _p1_obj()
+    out = P2Output.model_validate({"verdict": "FIXED", "changes": [
+        {"op": "FIX", "mag_id": "M02", "set": {"melyites_jeloltek": "Kritikus leállás (HELY_KRITIKUS)",
+                                               "kontextus_hu": "gyártósor"}}]})
+    magok, _, warn = apply_p2(p1.tesz_magok, p1.tesz, out.changes)
+    assert magok[1].kontextus_hu == "gyártósor" and any("melyites_jeloltek" in w for w in warn)
+
+
 def test_p2_fix_identity_drops_mag_ref():
     from gaphopper.pipeline import apply_p2
     from gaphopper.schemas import P2Output

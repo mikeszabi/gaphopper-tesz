@@ -100,8 +100,9 @@ rules:
   # Az általános célcsoport (hallgatók, betegek, ügyfelek) maradhat; a szak szerinti bontás nem (2026-11-04,
   # felhasználói döntés: "gépész hallgatók" -> "hallgatók").
   szak_szavak: ["gépész", "villamos", "villany", "mechatronik", "informatik", "vegyész", "építész", "építő",
-                "közgazd", "jogász", "orvostan", "ápolói", "ápolási", "pedagóg", "mérnök", "mechanical",
-                "electrical", "civil engineering", "chemical", "nursing", "engineering"]
+                "közgazd", "jogász", "orvostan", "ápolói", "ápolási", "pedagóg", "mechanical",
+                "electrical", "civil engineering", "chemical", "nursing"]
+  # (a "mérnök/engineering" foglalkozási osztály, nem szak: TOP10-ben téves találatot adott, 2026-11-04)
   label_words_min: 4  # magyarul az összetett szavak miatt 4 is elég (változat-címke)
   mag_label_words_min: 2  # a SZÍN-semleges, általános MAG-címke rövid (v2 kalibrálva: "Tananyag összeállítása")
   label_words_max: 14

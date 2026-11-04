@@ -310,6 +310,10 @@ def apply_p2(p1_magok: list[TeszMag], p1_tesz: list[Tesz], changes: list[P2Chang
                 if not ch.mag_id:
                     raise ValueError("FIX: cand_id vagy mag_id kell.")
                 continue
+            if "melyites_jeloltek" in ch.set and not isinstance(ch.set["melyites_jeloltek"], list):
+                # a bíráló szövegként írta: a mélyítési jelölt nem kötelező mező, a javítás többi része áll
+                warnings.append(f"FIX {ch.mag_id}: a melyites_jeloltek nem lista, kimaradt.")
+                ch.set = {k: v for k, v in ch.set.items() if k != "melyites_jeloltek"}
             bad = set(ch.set) - _MAG_SET
             if bad:
                 raise ValueError(f"FIX {ch.mag_id}: ezek nem MAG-mezők: {sorted(bad)}; változatmezőt cand_id-vel javíts.")
