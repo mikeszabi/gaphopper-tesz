@@ -1,6 +1,6 @@
 # Gaphopper TESZ-felbontó
 
-MUNKA-KÖR → TESZ-MAG-ok (TESZ-típus + meghatározó SZER-ELEM + ERED-mény) → SZÍN-ezett változataik, a
+MUNKA-KÖR → általános TESZ-MAG-ok (munkaminta × SZER-ELEM-fajta, 2–4 KÉSZ-ség-törzselemmel) → SZÍN-ezett változataik, a
 TESZ-nivalók (MAG × SZÍN, SZÍN = ⟨KÖZ-eg, HELY-zet⟩) → helyi neo4j. A tervezés indoklása:
 [docs/TESZ-MAG es SZIN - granularitas.md](docs/TESZ-MAG%20es%20SZIN%20-%20granularitas.md).
 A feldolgozás lépései: E0 kinyerés, P1 felbontás, P2 bírálat, P3 egyesítés, P4 készséghorgonyzás és EQF, P5 tanúsítás.
@@ -10,12 +10,13 @@ Ez a teljes beállítási referencia. A [futtatási segédlet](docs/Gaphopper%20
 ```
 gaphopper-tesz/
 ├─ config/vocab.yaml       zárt szótárak (TESZ-típus, KÖZ-eg, HELY-zet, SZER-ELEM) + szabálykuszöbök
+├─ config/kesz_torzs.yaml  KÉSZ-ség-törzs: 275 elem (gh_c_<n>, GH_competency_list), Keszseg-csomópontként
 ├─ prompts/                E0 kinyerés, P0 rendszerprompt, P1 felbontás, P2 bírálat, P3 egyesítés, P4a/P4b
 ├─ gaphopper/              Python-csomag (CLI: python -m gaphopper)
 │   ├─ schemas.py          a promptkimenetek pydantic-sémái
 │   ├─ llm.py              Anthropic / Gemini / helyi OpenAI-kompatibilis (pl. Qwen a DGX Sparkon) / kézi / teszt
 │   ├─ report.py           tokenek, idő és költség a futásnaplóból
-│   ├─ rules.py            R1–R16 determinisztikus szabályok (MAG- és SZÍN-szinten)
+│   ├─ rules.py            R1–R20 determinisztikus szabályok (MAG- és SZÍN-szinten, G1–G4 általánosság)
 │   ├─ merge.py            P3: MAG-egyezés (alias → hasonlóság → kétes esetek egy LLM-hívásban),
 │   │                      SZÍN-egyezés determinisztikusan; az írandók egy WritePlan-be gyűlnek
 │   ├─ graph.py            neo4j-séma, kötegelt (UNWIND) írás egy tranzakcióban
@@ -118,9 +119,15 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
 
 ## 5. Mit csinál egy futás
 
-1. **P1** – a modell TESZ-MAG-okra bontja a munkakört (10–18 MAG, 8–15 CORE), és minden MAG-hoz pontosan egy
+1. **P1** – a modell általános TESZ-MAG-okra bontja a munkakört (v2: 6–12 MAG, 4–9 CORE). A MAG munkaminta ×
+   SZER-ELEM-fajta, legfeljebb 6 szó, szakterület-, célcsoport- és SZÍN-semleges (G1–G4); a szakmai specifikum a
+   `kontextus_hu` mezőbe kerül (a MunkaKor–TESZ élen), a MAG-hoz 2–4 KÉSZ-ség-törzselem (`kesz_ids`) tartozik.
+   A P1 rendszerpromptjának gyorsítótárazott része a KÉSZ-ség-törzs és a MAG-törzs (a gráf ugyanezzel a
+   szótárverzióval készült, legtöbbet használt ≤80 MAG-ja); illeszkedő törzs-MAG-nál a P1 csak a kódot írja
+   (`mag_ref`), a MAG mezőit a kód tölti ki, a P3 hívás nélkül oldja fel. Minden MAG-hoz pontosan egy
    ALAP-SZÍN változatot ad, további változatot csak az M2 (új vagy szigorúbb értékelési kritérium) és az M3
-   (a munkakörben rendszeres) próba szerint, MAG-onként legfeljebb 3-at (összesen 12–25 TESZ-nivaló). CORE MAG-on
+   (a munkakörben rendszeres) próba szerint, MAG-onként legfeljebb 3-at (összesen 8–18 TESZ-nivaló); a
+   változatnak nincs saját címkéje (G3). CORE MAG-on
    legfeljebb 1 mélyítési jelölt (a szakmában ismert, itt nem jellemző nehezebb SZÍN). A változat nem ismétli a
    MAG mezőit (`tesz_type`, `primary_szer`, `outcome_hu`, `relevance`, `kor_id`): a séma a MAG-ról tölti ki őket.
    Igazolási mondat, rubrika és indoklás nincs a kimenetben. Sémahibánál egyszer újrapróbál a hibaüzenettel; a
@@ -130,8 +137,8 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
 
    | Kód | Szint | Mit jelez |
    | --- | --- | --- |
-   | R1 | MAG + változat | MAG 10–18, TESZ-nivaló 12–25, CORE MAG 8–15 |
-   | R4 | MAG (+ változat mintái) | MAG-címke 3–14 szó, tiltott címkeminták |
+   | R1 | MAG + változat | MAG 6–12, TESZ-nivaló 8–18, CORE MAG 4–9 |
+   | R4 | MAG (+ változat mintái) | MAG-címke 3–6 szó (G1), tiltott címkeminták |
    | R5 | MAG | EXECUTE-arány > 30% |
    | R6 | ALAP-SZÍN | a HELY-zet a TESZ-típus „természetes párja” > 60% |
    | R7 | változat | Kritikus HELY-zet aránya (magas kockázatú szakterületen 40%, egyébként 25%) |
@@ -144,6 +151,10 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
    | R14 | MAG | SZÍN-jelző a MAG címkéjében (`szin_jelzok` szólista) |
    | R15 | séma | MAG-onként pontosan egy ALAP-SZÍN (a P1-nél sémahiba, a P2 után a kód javítja) |
    | R16 | változat | csak KÖZ-egben eltér, azonos kísérő SZER-ELEM-ekkel – valószínű kísérő KÖZ-eg |
+   | R17 | MAG | munkakör-, szakterület- vagy célcsoportszó a MAG-címkében (G1) |
+   | R18 | MAG | G4-összevonási jelölt: azonos TESZ-típus és ≥ 2/3 KÉSZ-ség-átfedés |
+   | R19 | MAG | ≥ 50 elemű MAG-törzs mellett az új MAG-ok aránya > 50% |
+   | R20 | MAG | 2-nél kevesebb `kesz_ids` (G2) |
 3. **P2** – csak akkor fut, ha kell: szabályjelzésnél, és a minőség követésére egy véletlen mintán (alapból 15%,
    `GH_P2_MODE=auto|always|never`, `GH_P2_SAMPLE`). A bíráló a P1 tömörített, MAG-onként csoportosított nézetét
    kapja (indoklás, angol címke és definíció nélkül), és csak az eltéréseket adja vissza: FIX (változaton vagy
@@ -191,8 +202,9 @@ A futás idempotens: a kész munkakör nem fut újra (`--force` kell hozzá), a 
 ## 5b. A gráf sémája (TESZ-MAG × SZÍN)
 
 ```
-(:TeszMag {id, label_hu, label_en, outcome_hu, aliases, embedding, status, rubric_alap_hu})
+(:TeszMag {id, label_hu, label_en, outcome_hu, aliases, embedding, status, gen, rubric_alap_hu})
    -[:TIPUSA]->(:TeszTipus)   -[:IRANYUL {role}]->(:SzerElem)          // a meghatározó SZER-ELEM a MAG-on
+   -[:IGENYEL]->(:Keszseg {id: "gh_c_<n>", label_en, csoport, fajta})  // 2–4 KÉSZ-ség-törzselem (G2)
 (:TeszNivalo {id, label_hu, alap_szin, szin_kulonbseg_hu, attestation_hu, rubric_szin_hu})
    -[:MAGJA]->(:TeszMag)   -[:SZINBEN]->(:Szin)
    -[:KOZEGBEN_ZAJLIK {primary}]->(:Kozeg)   -[:HELYZETBEN_VEGZENDO {primary}]->(:Helyzet)
@@ -200,7 +212,7 @@ A futás idempotens: a kész munkakör nem fut újra (`--force` kell hozzá), a 
 (:Szin {id: "KOZ_FIZIKAI|HELY_KRITIKUS"})-[:KOZEGE]->(:Kozeg), -[:HELYZETE]->(:Helyzet)   // 5 × 11 rögzített
 (:Helyzet {tengely, fok})-[:MELYEBB]->(:Helyzet)   // KISZ: TANULASI 0 → RUTIN 1 → VALTOZO 2 → PROBLEMA 3 → KRITIKUS 4
 (:TeszMag)-[:MELYITESI_JELOLT {indok_hu, forras_munkakor}]->(:Szin)
-(:MunkaKor)-[:TARTALMAZ_TESZT {relevance, frequency, expected_eqf, alap_szin, ...}]->(:TeszNivalo)
+(:MunkaKor)-[:TARTALMAZ_TESZT {relevance, frequency, expected_eqf, alap_szin, kontextus_hu, ...}]->(:TeszNivalo)
 ```
 
 Kilét: `mag_id = stable_id("gh_mag", tesz_type, primary_szer_id, label_hu)`,
@@ -214,6 +226,8 @@ lekérdezéssel megadja (példák a tervezési doksi 5.4 fejezetében és a fel�
 ```bash
 python -m gaphopper run --dry-run --job onet:29-1141.00            # a rekord a state.sqlite-ból (csak olvasva)
 python -m gaphopper run --dry-run --input data/job_100.jsonl --job onet:47-2111.00 --workers 3
+python -m gaphopper run --dry-run --chain --no-graph --job A --job B --job C   # lánc: a korábbi munkakörök
+                                     # új MAG-jai a következő MAG-törzsébe kerülnek (a közös MAG-ok mérése)
 ```
 
 A P1, a (szükség szerinti) P2 és az egyesítés P3-hívása lefut, de **sem a gráf, sem a `state.sqlite` nem

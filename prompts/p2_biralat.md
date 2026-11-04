@@ -9,8 +9,9 @@ MINDEN MAG-RA ÉS VÁLTOZATRA:
   MAG alá (REMAG). Ha egy MAG változatainak ERED-ménye lényegében eltér, bontsd (SPLIT mag_id).
 - M2 változat-próba: ad-e a változat új vagy szigorúbb értékelési kritériumot? Ha nem, olvaszd
   az ALAP-SZÍN-be (FOLD).
-- G1-G4 általánosság: a MAG-címke 3-6 szó, munkakör-, szakterület-, célcsoport- és SZÍN-semleges
-  (a specifikum a kontextus_hu-ba: FIX mag_id); 2-4 illeszkedő KÉSZ-ség (kesz_ids sorszámok); azonos
+- G1-G4 általánosság: a MAG-címke 2-6 szó, munkakör-, szakterület-, célcsoport- és SZÍN-semleges, a
+  label_en és a meghatározó SZER-ELEM is (a specifikum a kontextus_hu-ba: FIX mag_id, egyszerre
+  label_hu, label_en és szükség szerint primary_szer); 2-4 illeszkedő KÉSZ-ség (kesz_ids sorszámok); azonos
   típus és ERED-mény-fajta, nagy KÉSZ-ség-átfedés esetén egy MAG (REMAG a megmaradó MAG alá, a
   fölösleges MAG változatai FOLD-dal vagy új SZÍN-ként). A célcsoport nem ok külön MAG-ra.
 

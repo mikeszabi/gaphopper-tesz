@@ -7,7 +7,8 @@ FOGALMAK
   fajtája. Általános munkaminta, újrahasznosítható: szakterület-, célcsoport-, KÖZ-eg- és
   HELY-zet-semleges, a címkéje legfeljebb 6 szó, SZÍN-jelző (online, személyes, sürgős, labor ...)
   és szakmai specifikum (szakterület, célcsoport, tantárgy) nélkül. A specifikum a MAG
-  kontextus_hu mezőjébe és a kísérő SZER-ELEM-be kerül. Egy MAG-hoz 2-4 KÉSZ-ség-törzselem illik
+  kontextus_hu mezőjébe és a kísérő SZER-ELEM-be kerül. A meghatározó SZER-ELEM is fajta szintű
+  ("Nyilvántartás", nem "Betegdokumentáció"; "Előírás", nem "Higiénés előírás"). Egy MAG-hoz 2-4 KÉSZ-ség-törzselem illik
   (kesz_ids); a MAG nem specifikusabb, mint az illeszkedő KÉSZ-ségek.
 - SZÍN = ⟨KÖZ-EG, HELY-ZET⟩ pár. TESZ-NIVALÓ = MAG × SZÍN: a mikrotanúsítvány egysége, EGY
   értékelhető ERED-ménnyel, egy ember önállóan elvégezheti. Minden MAG-nak pontosan egy

@@ -1,8 +1,9 @@
 # Gaphopper TESZ-felbontó – útmutató Claude Code-nak
 
 ## Cél
-MUNKA-KÖR-ök felbontása TESZ-MAG-okra (TESZ-típus + meghatározó SZER-ELEM + ERED-mény; KÖZ-eg- és
-HELY-zet-semleges) és azok SZÍN-ezett változataira, a TESZ-nivalókra (MAG × SZÍN ⟨KÖZ-eg, HELY-zet⟩; egy
+MUNKA-KÖR-ök felbontása általános TESZ-MAG-okra (v2: munkaminta × SZER-ELEM-fajta + ERED-mény; legfeljebb 6
+szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–4 KÉSZ-ség-törzselem a `config/kesz_torzs.yaml`-ból;
+a munkaköri specifikum a `kontextus_hu`-ba) és azok SZÍN-ezett változataira, a TESZ-nivalókra (MAG × SZÍN ⟨KÖZ-eg, HELY-zet⟩; egy
 TESZ-nivaló = egy mikrotanúsítvány), majd betöltés a helyi neo4j-be. Minden MAG-nak pontosan egy ALAP-SZÍN-e
 van; további változat csak az M2 (új/szigorúbb kritérium) és M3 (rendszeres) próbával. A tervezés:
 `docs/TESZ-MAG es SZIN - granularitas.md` (7. fejezet: a felhasználó döntései, kötelezők).
@@ -58,7 +59,10 @@ Kézi módban az `extract` a `runs/manual/extract/<fájlnév>/` mappába írja a
   változatot a séma tölti ki (`schemas.link_magok`). A változat kiléte a gráfban a ⟨MAG, KÖZ-eg, HELY-zet⟩.
 - A P3 LLM csak MAG- és SZER-ELEM-egyezésről dönt; a SZÍN-egyezés determinisztikus (`merge.py`).
 - Gráfírás csak `WritePlan` + `graph.write_plan()` úton (UNWIND, egy tranzakció); soronkénti lekérdezést ne vezess be.
-- Szabályok: R1–R16 (`rules.py`), küszöbök a `vocab.yaml` `rules` részében; a zárt listák egyértelmű
+- A P1 rendszerpromptja: P0 + KÉSZ-ség-törzs | MAG-törzs (`llm.CACHE_SPLIT` két cache-blokk); törzs-MAG-nál a
+  P1 csak `mag_ref`-et ír (`Context.resolve_mag_refs`), a P3 hívás nélkül oldja fel. A törzs csak az aktuális
+  szótárverzióval (`TeszMag.gen`) készült MAG-okból áll.
+- Szabályok: R1–R20 (`rules.py`; G1–G4: R4, R17, R18, R20; törzshasználat: R19), küszöbök a `vocab.yaml` `rules` részében; a zárt listák egyértelmű
   eltérései az `alias_ertek` táblában (új tételt csak egyértelmű megfeleltetésnél vegyél fel).
 - Ne hozz létre külön csomópontot szinonimáknak: a nevek az elem `aliases` tulajdonságába kerülnek.
 - A magyar név az elsődleges, az angol a megfeleltetés; régi gyökű magyar szót válassz az idegen helyett.

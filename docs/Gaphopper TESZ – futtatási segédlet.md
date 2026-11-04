@@ -4,8 +4,9 @@ Frissítve: 2026. október 22. (TESZ-MAG × SZÍN modell, próbafutás)
 
 Beállítási referencia: [README.md](../README.md); fejlesztési szabályok: [CLAUDE.md](../CLAUDE.md).
 
-**Fogalmak röviden.** A P1 TESZ-MAG-okat ad (TESZ-típus + meghatározó SZER-ELEM + ERED-mény; KÖZ-eg- és
-HELY-zet-semleges, a címkéje SZÍN-jelző nélküli), és mindegyikhez SZÍN-ezett változatokat, a TESZ-nivalókat
+**Fogalmak röviden.** A P1 általános TESZ-MAG-okat ad (munkaminta × SZER-ELEM-fajta + ERED-mény, legfeljebb 6
+szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–4 KÉSZ-ség-törzselem; a munkaköri specifikum a
+`kontextus_hu`-ban). Ha a MAG-törzsben van illeszkedő MAG, a P1 azt választja (`mag_ref`), és mindegyikhez SZÍN-ezett változatokat, a TESZ-nivalókat
 (SZÍN = ⟨KÖZ-eg, HELY-zet⟩). Minden MAG-nak pontosan egy ALAP-SZÍN-e van (a leggyakoribb változat); további
 változat csak akkor, ha új vagy szigorúbb értékelési kritériumot hoz (M2) és a munkakörben rendszeres (M3). A
 szakmában ismert, itt nem jellemző nehezebb SZÍN mélyítési jelölt (CORE MAG-onként legfeljebb 1). A
@@ -116,8 +117,11 @@ python -m gaphopper show --job onet:29-1141.00 | less
 
 Az `--until p2` a felbontást és a bírálatot a `state.sqlite`-ba menti, a gráfba még nem ír. Nézd meg munkakörönként:
 
-- [ ] 10–18 MAG (8–15 CORE), 12–25 TESZ-nivaló, MAG-onként legfeljebb 3 változat, 4–8 TESZ-kör
-- [ ] a MAG-címke SZÍN-semleges (nincs benne „sürgős”, „digitális”, „telefonos” …), a változat címkéje MAG + SZÍN-jelző
+- [ ] 6–12 MAG (4–9 CORE), 8–18 TESZ-nivaló, MAG-onként legfeljebb 3 változat, 3–6 TESZ-kör
+- [ ] G1: a MAG-címke legfeljebb 6 szó, munkakör-, szakterület-, célcsoport- és SZÍN-semleges; a specifikum a `kontextus_hu`-ban
+- [ ] G2: MAG-onként 2–4 `kesz_ids` a KÉSZ-ség-törzsből; G4: nincs két azonos típusú, nagy KÉSZ-ség-átfedésű MAG
+- [ ] G3: a változatnak nincs saját címkéje; a SZÍN a KÖZ-eg/HELY-zet mezőben és a `szin_kulonbseg_hu`-ban
+- [ ] lánc-próbafutásnál (`--chain`) a későbbi munkakörök a törzsből választanak (`[törzs]` jelölés)
 - [ ] M1: két MAG nem csak KÖZ-egben vagy HELY-zetben tér el (különben egy MAG két változata)
 - [ ] M2: minden nem ALAP-SZÍN változat `szin_kulonbseg_hu`-ja új vagy szigorúbb kritériumot nevez meg
 - [ ] tanítás → `HELY_TANITO`; a `HELY_TANULASI` a személy saját betanulása
@@ -180,7 +184,7 @@ python -m gaphopper review --approve <qid>
 python -m gaphopper review --reject <qid>
 ```
 
-Szakértőhöz kerül, ha a bírálat után is sérül egy szabály (R1–R16; a táblázat a README 5. fejezetében), ha a bíráló EXPERT-et mond, vagy ha a P3 nem biztos egy egyesítésben. A 100 munkakör után nézd meg a neo4j Browserben:
+Szakértőhöz kerül, ha a bírálat után is sérül egy szabály (R1–R20; a táblázat a README 5. fejezetében), ha a bíráló EXPERT-et mond, vagy ha a P3 nem biztos egy egyesítésben. A 100 munkakör után nézd meg a neo4j Browserben:
 
 ```cypher
 // munkakörönként hány MAG, TESZ-nivaló és CORE MAG

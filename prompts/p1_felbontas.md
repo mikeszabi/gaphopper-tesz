@@ -6,11 +6,14 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
    munkaidő-aránnyal (összesen 90-110%). A feladatkör rendező szint, nem TESZ.
 2. TESZ-MAG-OK: összesen 6-12 MAG (ebből 4-9 CORE), feladatkörönként 1-3. Forrás: tasks,
    description, requirements, conditions és a szakma ismert gyakorlata a locale-ban.
-   a) TÖRZS ELŐBB: ha a MAG-TÖRZS valamelyik eleme illik (azonos munkaminta és ERED-mény), azt
-      válaszd: {"mag_id","mag_ref":"T07","kor_id","relevance","kontextus_hu"} – a többi MAG-mezőt
-      ne írd ki. Újat csak akkor alkoss, ha egyik sem illik.
-   b) ÚJ MAG: munkamintából, a SZER-ELEM fajtájával (G1-G4); label_hu 3-6 szó, szakterület,
-      célcsoport és SZÍN nélkül; tesz_type (az ERED-mény fajtája szerint) és runner_up;
+   a) TÖRZS ELŐBB: ha a MAG-TÖRZS valamelyik eleme illik (azonos TESZ-típus, munkaminta és
+      ERED-mény-fajta), azt KELL választanod akkor is, ha a szakterület vagy a célcsoport más (pl.
+      ápolási és szerelési nyilvántartás rögzítése = ugyanaz a DOCUMENT-MAG; higiéniai és
+      villamos biztonsági előírás betartása = ugyanaz a COMPLY-MAG); a különbség a kontextus_hu.
+      Alak: {"mag_id","mag_ref":"T07","kor_id","relevance","kontextus_hu"} – a többi MAG-mezőt ne
+      írd ki. Újat csak akkor alkoss, ha egyik sem illik.
+   b) ÚJ MAG: munkamintából, a SZER-ELEM fajtájával (G1-G4); label_hu 2-6 szó, label_en is,
+      szakterület, célcsoport és SZÍN nélkül (a primary_szer is fajta szintű); tesz_type (az ERED-mény fajtája szerint) és runner_up;
       primary_szer (a fajta, definíció egy rövid mondat); outcome_hu (a közös ERED-mény egy
       mondatban, minőségi küszöbbel); relevance (CORE, ha a munkakör nélküle nem az, ami);
       kesz_ids: 2-4 sorszám a KÉSZ-SÉG-TÖRZSből (G2).

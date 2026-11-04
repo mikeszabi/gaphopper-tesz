@@ -101,7 +101,7 @@ rules:
                       "idős", "lakó", "utas", "vendég", "partnercég", "student", "pupil", "patient", "client",
                       "customer", "child", "guest"]
   label_words_min: 4  # magyarul az összetett szavak miatt 4 is elég (változat-címke)
-  mag_label_words_min: 3  # a SZÍN-semleges MAG-címke rövidebb (kalibrálva, 2026-10-22)
+  mag_label_words_min: 2  # a SZÍN-semleges, általános MAG-címke rövid (v2 kalibrálva: "Tananyag összeállítása")
   label_words_max: 14
   execute_max_share: 0.40  # a MAG-okra számolva (kalibrálva 0.30 -> 0.40, 2026-10-22: villanyszerelő 33–36%)
   natural_pair_max_share: 0.60
