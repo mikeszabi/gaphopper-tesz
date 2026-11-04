@@ -145,7 +145,7 @@ def _dry_run(a):
             graph = None
     try:
         if a.chain:
-            # lánc: egymás után; a korábbi munkakörök új MAG-jai a következő MAG-törzsébe kerülnek
+            # lánc: egymás után; a korábbi munkakörök új TESZ-nivalói a következő TESZ-törzsébe kerülnek
             extra: list[dict] = []
             for j in ids:
                 out = dry_run(recs[j], s, graph, extra_torzs=extra)
@@ -265,7 +265,7 @@ def cmd_embed(a):
             print("Többnyelvű modellnél az első két pár jóval hasonlóbb, mint a harmadik.")
         else:
             total = 0
-            for et in ("MUNKA_KOR", "TESZ_MAG", "SZER_ELEM", "KESZSEG"):
+            for et in ("MUNKA_KOR", "TESZ_NIVALO", "SZER_ELEM", "KESZSEG"):
                 rows = ctx.graph.missing_embeddings(et, a.limit)
                 for r in rows:
                     text = " | ".join(x for x in (r["label_hu"], r["label_en"], r["extra"]) if x)
@@ -425,7 +425,7 @@ def main(argv=None):
                    help="próbafutás: LLM-lépések lefutnak, a gráf és a state.sqlite nem változik")
     s.add_argument("--input", help="próbafutásnál: a rekordok fájlból (.jsonl/.json/.csv/.xlsx)")
     s.add_argument("--chain", action="store_true",
-                   help="próbafutás-lánc: a munkakörök egymás után, a korábbiak új MAG-jai a törzsbe kerülnek")
+                   help="próbafutás-lánc: a munkakörök egymás után, a korábbiak új TESZ-nivalói a törzsbe kerülnek")
     s.add_argument("--no-graph", action="store_true", help="próbafutás a neo4j olvasása nélkül (egyesítés nélkül)")
     s.set_defaults(fn=cmd_run)
     s = sub.add_parser("db-reset", help="neo4j és state.sqlite ürítése mentéssel")
@@ -455,7 +455,7 @@ def main(argv=None):
     s = sub.add_parser("show"); s.add_argument("--job", required=True)
     s.add_argument("--max-chars", type=int, default=20000); s.set_defaults(fn=cmd_show)
     s = sub.add_parser("certify"); s.add_argument("--limit", type=int, default=1000)
-    s.add_argument("--chunk", type=int, default=6, help="MAG-ok hívásonként"); s.set_defaults(fn=cmd_certify)
+    s.add_argument("--chunk", type=int, default=6, help="TESZ-nivalók hívásonként"); s.set_defaults(fn=cmd_certify)
     s = sub.add_parser("report"); s.add_argument("--job", action="append")
     s.add_argument("--by", default="prompt_version,step"); s.set_defaults(fn=cmd_report)
     s = sub.add_parser("models"); s.add_argument("--check-local", action="store_true"); s.set_defaults(fn=cmd_models)

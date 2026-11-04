@@ -1,9 +1,9 @@
 FELADAT (P3): Minden ESETRE döntsd el, hogy a JELÖLT azonos-e valamelyik TALÁLATTAL.
 
-TESZ-MAG AZONOS, ha mind teljesül (a KÖZ-eg és a HELY-zet NEM számít, azt a kód kezeli):
+TESZ-nivaló AZONOS, ha mind teljesül (a KÖZ-eg és a HELY-zet NEM számít, azt a kód kezeli):
 - ugyanaz a TESZ-típus;
 - a meghatározó SZER-ELEM azonos vagy egymás aliasa;
-- az ERED-mény fajtája lényegében ugyanaz (egy MAG-rubrika mindkettőt igazolná).
+- az ERED-mény fajtája lényegében ugyanaz (egy TESZ-nivaló-rubrika mindkettőt igazolná).
 SZER-ELEM AZONOS, ha a definíciója, példája és ellenpéldája kölcsönösen érvényes.
 A nyelv, a ragozás, a rövidítés és az írásváltozat NEM különbség: ilyenkor SAME, és a jelölt
 neve aliasként kerül a törzselemhez. A puszta névhasonlóság nem elég.

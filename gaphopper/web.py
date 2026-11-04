@@ -32,45 +32,45 @@ REC_EXT = {".jsonl", ".json", ".csv", ".xlsx"}
 
 PHASES = [  # a felületen látható fázisok sorrendben
     {"key": "E0", "name": "Kinyerés", "about": "munkakör kiolvasása dokumentumból (csak dokumentumból jött rekordnál)"},
-    {"key": "P1", "name": "Felbontás", "about": "TESZ-MAG-ok és SZÍN-ezett változataik (TESZ-nivalók)"},
+    {"key": "P1", "name": "Felbontás", "about": "TESZ-nivalók és SZÍN-ezett változataik (TESZ-SZÍN-ek)"},
     {"key": "P2", "name": "Bírálat", "about": "független ellenőrzés; auto módban csak jelzésnél vagy mintában"},
-    {"key": "P3", "name": "Gráfba írás", "about": "MAG-egyesítés (P3), SZÍN-egyezés a kódban, írás a neo4j-be"},
-    {"key": "P5", "name": "Tanúsítás", "about": "MAG-rubrika, változatonként igazolás és SZÍN-rubrika"},
+    {"key": "P3", "name": "Gráfba írás", "about": "TESZ-nivaló-egyesítés (P3), SZÍN-egyezés a kódban, írás a neo4j-be"},
+    {"key": "P5", "name": "Tanúsítás", "about": "TESZ-nivaló-rubrika, változatonként igazolás és SZÍN-rubrika"},
 ]
 PROMPT_STEP = {  # a felület ebben a sorrendben mutatja
     "p0_system": ("P1, P2, P4, P5", "közös rendszerprompt: fogalmak, zárt listák, szabályok"),
     "e0_system": ("E0", "kinyerés: rendszerprompt"),
     "e0_kinyeres": ("E0", "kinyerés: munkakörök egy dokumentumrészletből"),
-    "p1_felbontas": ("P1", "munkakör felbontása TESZ-MAG-okra és SZÍN-ezett változatokra"),
+    "p1_felbontas": ("P1", "munkakör felbontása TESZ-nivalókra és SZÍN-ezett változatokra"),
     "p2_biralat": ("P2", "bírálat, csak az eltéréseket adja vissza"),
     "p3_system": ("P3", "az egyesítő rövid rendszerpromptja"),
-    "p3_egyesites": ("P3", "a kétes MAG- és SZER-ELEM-egyesítések, egy hívásban"),
+    "p3_egyesites": ("P3", "a kétes TESZ-nivaló- és SZER-ELEM-egyesítések, egy hívásban"),
     "p4a_keszseg": ("P4", "KÉSZ-ség-horgonyzás"),
     "p4b_eqf": ("P4", "EQF-szintleírók"),
-    "p5_tanusitas": ("P5", "MAG-rubrika és változatonként igazolás + SZÍN-rubrika"),
+    "p5_tanusitas": ("P5", "TESZ-nivaló-rubrika és változatonként igazolás + SZÍN-rubrika"),
     "vocab": ("mind", "zárt szótárak és szabálykuszöbök (config/vocab.yaml)"),
 }
 DECISION_HU = {"NEW": "új elem", "SAME": "már megvolt, összekapcsolva", "ALIAS": "már megvolt (név alapján)",
                "VARIANT": "új változat egy meglévőhöz", "NARROWER": "szűkebb elem", "BROADER": "tágabb, meglévő elem"}
 CYPHER = {
     "Csomópontok típus szerint": "MATCH (n) RETURN labels(n)[0] AS tipus, count(*) AS db ORDER BY db DESC",
-    "Legtöbb munkakörben szereplő TESZ-MAG": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(:TeszNivalo)-[:MAGJA]->(g:TeszMag) "
+    "Legtöbb munkakörben szereplő TESZ-nivaló": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(:TeszSzin)-[:SZINEZI]->(g:TeszNivalo) "
                                              "RETURN g.id AS id, g.label_hu AS mag, count(DISTINCT m) AS munkakor_db "
                                              "ORDER BY munkakor_db DESC LIMIT 50",
-    "MAG-ok mélyítési létrája": "MATCH (g:TeszMag)<-[:MAGJA]-(t:TeszNivalo)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h:Helyzet) "
+    "TESZ-nivalók mélyítési létrája": "MATCH (g:TeszNivalo)<-[:SZINEZI]-(t:TeszSzin)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h:Helyzet) "
                                 "WITH g, collect(h.id + ' (' + coalesce(toString(h.fok), h.tengely) + ')') AS szinek, "
                                 "count(t) AS v WHERE v > 1 RETURN g.label_hu AS mag, v AS valtozat, szinek "
                                 "ORDER BY v DESC LIMIT 100",
-    "Mélyítési jelöltek": "MATCH (g:TeszMag)-[e:MELYITESI_JELOLT]->(h:Helyzet) "
+    "Mélyítési jelöltek": "MATCH (g:TeszNivalo)-[e:MELYITESI_JELOLT]->(h:Helyzet) "
                           "RETURN g.label_hu AS mag, e.kozeg + '|' + h.id AS szin, e.indok_hu AS indok, "
                           "e.forras_munkakor AS munkakor",
     "SZER-ELEM-ek használat szerint": "MATCH (x)-[:IRANYUL|HASZNAL]->(s:SzerElem) "
                                       "RETURN s.id AS id, s.label_hu AS szer_elem, count(x) AS hasznalat "
                                       "ORDER BY hasznalat DESC LIMIT 100",
-    "TESZ-típus × SZÍN": "MATCH (:MunkaKor)-[:TARTALMAZ_TESZT]->(t)-[:MAGJA]->(:TeszMag)-[:TIPUSA]->(ty), "
+    "TESZ-típus × SZÍN": "MATCH (:MunkaKor)-[:TARTALMAZ_TESZT]->(t)-[:SZINEZI]->(:TeszNivalo)-[:TIPUSA]->(ty), "
                          "(t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k), (t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h) "
                          "RETURN ty.id AS tipus, k.id + '|' + h.id AS szin, count(*) AS db ORDER BY db DESC",
-    "MAG-ok SZÍN-jei (TESZ-nivalók)": "MATCH (g:TeszMag)<-[:MAGJA]-(t:TeszNivalo), "
+    "TESZ-nivalók SZÍN-jei (TESZ-SZÍN-ek)": "MATCH (g:TeszNivalo)<-[:SZINEZI]-(t:TeszSzin), "
                                       "(t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k), (t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h) "
                                       "OPTIONAL MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t) "
                                       "RETURN g.label_hu AS mag, k.label_hu + ' / ' + h.label_hu AS szin, "
@@ -131,12 +131,12 @@ def _art_index(S: Store) -> dict[str, dict[str, dict]]:
         "          WHEN 'P1_ERR' THEN json_extract(json, '$.error') "
         "          WHEN 'P2_ERR' THEN json_extract(json, '$.error') "
         "          WHEN 'P3_ERR' THEN json_extract(json, '$.error') END AS info, "
-        "CASE step WHEN 'P1' THEN json_array_length(json, '$.tesz') "
-        "          WHEN 'P2' THEN json_array_length(json, '$.final_tesz') "
-        "          WHEN 'P3' THEN json_array_length(json, '$.tesz') END AS n, "
-        "CASE step WHEN 'P1' THEN json_array_length(json, '$.tesz_magok') "
-        "          WHEN 'P2' THEN json_array_length(json, '$.final_magok') "
-        "          WHEN 'P3' THEN json_array_length(json, '$.magok') END AS nm, "
+        "CASE step WHEN 'P1' THEN json_array_length(json, '$.szinek') "
+        "          WHEN 'P2' THEN json_array_length(json, '$.final_szinek') "
+        "          WHEN 'P3' THEN json_array_length(json, '$.szinek') END AS n, "
+        "CASE step WHEN 'P1' THEN json_array_length(json, '$.nivalok') "
+        "          WHEN 'P2' THEN json_array_length(json, '$.final_nivalok') "
+        "          WHEN 'P3' THEN json_array_length(json, '$.nivalok') END AS nm, "
         "CASE WHEN step='P3' THEN json_extract(json, '$.job_id') END AS graph_id, "
         "CASE WHEN step='P3' THEN json_extract(json, '$.p3_cases') END AS cases "
         "FROM artifacts").fetchall()
@@ -147,7 +147,7 @@ def _art_index(S: Store) -> dict[str, dict[str, dict]]:
 
 
 def _graph_counts() -> dict[str, dict] | None:
-    rows = GRAPH.read("MATCH (m:MunkaKor) OPTIONAL MATCH (m)-[:TARTALMAZ_TESZT]->(t:TeszNivalo) "
+    rows = GRAPH.read("MATCH (m:MunkaKor) OPTIONAL MATCH (m)-[:TARTALMAZ_TESZT]->(t:TeszSzin) "
                       "RETURN m.id AS id, count(t) AS n, "
                       "sum(CASE WHEN t.attestation_hu IS NOT NULL THEN 1 ELSE 0 END) AS r",
                       limit=10 ** 7)
@@ -155,8 +155,8 @@ def _graph_counts() -> dict[str, dict] | None:
 
 
 def _mag_text(a: dict, what: str) -> str:
-    """'12 MAG / 17 TESZ-nivaló ...' (régi, MAG nélküli eredménynél csak a TESZ-szám)."""
-    return (f"{a['nm']} MAG / {a['n']} TESZ-nivaló {what}" if a.get("nm") else f"{a['n']} TESZ {what}")
+    """'12 TESZ-nivaló / 17 TESZ-SZÍN ...' (régi, TESZ-nivaló nélküli eredménynél csak a TESZ-szám)."""
+    return (f"{a['nm']} TESZ-nivaló / {a['n']} TESZ-SZÍN {what}" if a.get("nm") else f"{a['n']} TESZ {what}")
 
 
 def display_status(status: str) -> str:
@@ -218,11 +218,11 @@ def phases(status: str, note: str, rec: dict, arts: dict, gc: dict | None) -> tu
         g = gc[gid]
         db = {"state": "in", "text": f"{g['n']} TESZ a gráfban", "n": g["n"], "graph_id": gid}
         if g["n"] and g["r"] == g["n"]:
-            ph["P5"] = {"state": "done", "text": f"mind a {g['n']} TESZ-nivalónak van igazolása"}
+            ph["P5"] = {"state": "done", "text": f"mind a {g['n']} TESZ-SZÍN-nek van igazolása"}
         elif g["r"]:
-            ph["P5"] = {"state": "part", "text": f"{g['r']} / {g['n']} TESZ-nivalónak van igazolása"}
+            ph["P5"] = {"state": "part", "text": f"{g['r']} / {g['n']} TESZ-SZÍN-nek van igazolása"}
         else:
-            ph["P5"] = {"state": "wait", "text": "még egy TESZ-nivalónak sincs igazolása"}
+            ph["P5"] = {"state": "wait", "text": "még egy TESZ-SZÍN-nek sincs igazolása"}
         if fresh:
             db["text"] += " (régi futásból; az újrafuttatás felülírja)"
     else:
@@ -306,7 +306,7 @@ def _usage_by_step(S: Store, job_id: str) -> dict[str, dict]:
 
 
 def _tesz_brief(t: dict) -> dict:
-    return {"cand_id": t.get("cand_id"), "mag_id": t.get("mag_id"), "alap_szin": t.get("alap_szin", True),
+    return {"cand_id": t.get("cand_id"), "nivalo_id": t.get("nivalo_id"), "alap_szin": t.get("alap_szin", True),
             "szin_kulonbseg_hu": t.get("szin_kulonbseg_hu"), "label_hu": t.get("label_hu"), "tesz_type": t.get("tesz_type"),
             "szer_elem": (t.get("primary_szer") or {}).get("label_hu"), "kozeg": t.get("kozeg"),
             "helyzet": t.get("helyzet"), "relevance": t.get("relevance"), "eqf": t.get("expected_eqf"),
@@ -324,16 +324,16 @@ def job_detail(S: Store, job_id: str) -> dict:
     usage = _usage_by_step(S, job_id)
     p1, p2, p3 = arts.get("P1"), arts.get("P2"), arts.get("P3")
     # Mi került a gráfba: a végleges lista soronként, a P3 döntésével együtt
-    final = (p2 or {}).get("final_tesz") or (p1 or {}).get("tesz") or []
-    magok = [{k: m.get(k) for k in ("mag_id", "kor_id", "label_hu", "tesz_type", "relevance", "melyites_jeloltek")}
+    final = (p2 or {}).get("final_szinek") or (p1 or {}).get("szinek") or []
+    magok = [{k: m.get(k) for k in ("nivalo_id", "kor_id", "label_hu", "tesz_type", "relevance", "melyites_jeloltek")}
              | {"szer_elem": (m.get("primary_szer") or {}).get("label_hu")}
-             for m in ((p2 or {}).get("final_magok") or (p1 or {}).get("tesz_magok") or [])]
-    decided = {x["cand_id"]: x for x in (p3 or {}).get("tesz", [])}
+             for m in ((p2 or {}).get("final_nivalok") or (p1 or {}).get("nivalok") or [])]
+    decided = {x["cand_id"]: x for x in (p3 or {}).get("szinek", [])}
     graph_ids = None
     gid = (p3 or {}).get("job_id") or job_id
     g_rows = GRAPH.read(
-        "MATCH (m:MunkaKor {id: $id})-[r:TARTALMAZ_TESZT]->(t:TeszNivalo) "
-        "OPTIONAL MATCH (t)-[:MAGJA]->(g:TeszMag) OPTIONAL MATCH (g)-[:TIPUSA]->(ty) "
+        "MATCH (m:MunkaKor {id: $id})-[r:TARTALMAZ_TESZT]->(t:TeszSzin) "
+        "OPTIONAL MATCH (t)-[:SZINEZI]->(g:TeszNivalo) OPTIONAL MATCH (g)-[:TIPUSA]->(ty) "
         "OPTIONAL MATCH (other:MunkaKor)-[:TARTALMAZ_TESZT]->(t) "
         "OPTIONAL MATCH (t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k) OPTIONAL MATCH (t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h) "
         "WITH t, r, g, ty, k, h, count(DISTINCT other) AS munkakor_db "
@@ -358,7 +358,7 @@ def job_detail(S: Store, job_id: str) -> dict:
         keep = {t.get("cand_id") for t in final}
         dropped = [_tesz_brief(t) | {"reason": next((c.get("reason_hu") for c in p2.get("changes", [])
                                                       if c.get("cand_id") == t.get("cand_id")), "")}
-                   for t in p1.get("tesz", []) if t.get("cand_id") not in keep]
+                   for t in p1.get("szinek", []) if t.get("cand_id") not in keep]
     queue = [dict(q) | {"payload": json.loads(q["payload_json"])} for q in S.queue() if q["job_id"] == job_id]
     for q in queue:
         q.pop("payload_json", None)
@@ -368,7 +368,7 @@ def job_detail(S: Store, job_id: str) -> dict:
         "approval_tasks": [t | {"log": tasks.tail(t["id"], 15) if t["status"] in ("hiba", "megszakadt") else ""}
                            for t in tasks.tasks() if (t.get("args") or [""])[0] == "review"
                            and job_id in (t.get("targets") or [])],
-        "usage": usage, "tesz": tesz, "magok": magok, "dropped": dropped, "dryrun": dryrun_get(job_id, brief=True), "graph": g_rows, "graph_ok": g_rows is not None,
+        "usage": usage, "szinek": tesz, "nivalok": magok, "dropped": dropped, "dryrun": dryrun_get(job_id, brief=True), "graph": g_rows, "graph_ok": g_rows is not None,
         "graph_id": gid, "queue": queue,
         "p1": None if not p1 else {"label": p1.get("job_label_hu"), "purpose": p1.get("purpose_hu", ""),
                                    "at": p1["_at"], "pv": p1["_pv"]},
@@ -396,10 +396,10 @@ def _art_index_one(S: Store, job_id: str) -> dict:
         "CASE step WHEN 'P2' THEN json_extract(json, '$.p2_reason') WHEN 'P1_ERR' THEN json_extract(json, '$.error') "
         "          WHEN 'P2_ERR' THEN json_extract(json, '$.error') "
         "          WHEN 'P3_ERR' THEN json_extract(json, '$.error') END AS info, "
-        "CASE step WHEN 'P1' THEN json_array_length(json, '$.tesz') WHEN 'P2' THEN json_array_length(json, '$.final_tesz') "
-        "          WHEN 'P3' THEN json_array_length(json, '$.tesz') END AS n, "
-        "CASE step WHEN 'P1' THEN json_array_length(json, '$.tesz_magok') WHEN 'P2' THEN json_array_length(json, '$.final_magok') "
-        "          WHEN 'P3' THEN json_array_length(json, '$.magok') END AS nm, "
+        "CASE step WHEN 'P1' THEN json_array_length(json, '$.szinek') WHEN 'P2' THEN json_array_length(json, '$.final_szinek') "
+        "          WHEN 'P3' THEN json_array_length(json, '$.szinek') END AS n, "
+        "CASE step WHEN 'P1' THEN json_array_length(json, '$.nivalok') WHEN 'P2' THEN json_array_length(json, '$.final_nivalok') "
+        "          WHEN 'P3' THEN json_array_length(json, '$.nivalok') END AS nm, "
         "CASE WHEN step='P3' THEN json_extract(json, '$.job_id') END AS graph_id, "
         "CASE WHEN step='P3' THEN json_extract(json, '$.p3_cases') END AS cases "
         "FROM artifacts WHERE job_id=?", (job_id,)).fetchall()
@@ -444,7 +444,7 @@ def db_state(S: Store) -> dict:
         return out
     out["labels"] = labels
     out["rels"] = GRAPH.read("MATCH ()-[r]->() RETURN type(r) AS kapcsolat, count(*) AS db ORDER BY db DESC")
-    out["no_rubric"] = GRAPH.read("MATCH (t:TeszNivalo) WHERE t.attestation_hu IS NULL "
+    out["no_rubric"] = GRAPH.read("MATCH (t:TeszSzin) WHERE t.attestation_hu IS NULL "
                                   "RETURN count(t) AS db")[0]["db"]
     rows, _ = job_rows(S)
     out["compare"] = {

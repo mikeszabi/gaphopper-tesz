@@ -444,3 +444,20 @@ KÖZ-eg és a HELY-zet kombinációja. A TESZ-nivaló (az elnevezés marad) a �
 ALAP-SZÍN pedig munkakörönkénti, ezért csak a `TARTALMAZ_TESZT` élen van. A mélyítési jelölt
 `(:TeszMag)-[:MELYITESI_JELOLT {kozeg}]->(:Helyzet)`, a SZÍN-horgony `HORGONYOZ {szin}` a Kozeg és a Helyzet felé.
 Ez az 5.1 fejezet `Szin`-csomópontos javaslatát váltja ki.
+
+## 10. Elnevezés (2026-11-04, felhasználói döntés)
+
+Az érthetőség kedvéért a fogalmak neve megváltozott; a fenti fejezetek a korábbi neveket használják.
+
+| Korábban | Most | neo4j | P1/P2 JSON |
+|---|---|---|---|
+| TESZ-MAG (MAG) | **TESZ-nivaló**: az általános, újrahasznosítható tennivaló | `TeszNivalo` | `nivalok`, `nivalo_id`, `nivalo_ref` |
+| TESZ-nivaló (SZÍN-ezett változat) | **TESZ-SZÍN**: a TESZ-nivaló egy ⟨KÖZ-eg, HELY-zet⟩ példánya, a mikrotanúsítvány egysége | `TeszSzin` | `szinek` |
+| `MAGJA` él | `SZINEZI` („a SZÍN színezi a tennivalót”) | `(TeszSzin)-[:SZINEZI]->(TeszNivalo)` | – |
+| MAG-törzs | TESZ-törzs | – | `nivalo_ref: "T07"` |
+| REMAG | MOVE (TESZ-SZÍN-ek másik TESZ-nivaló alá) | – | `{"op":"MOVE"}` |
+
+A TESZ-SZÍN csomópont rövid megjelenítési nevet kap (`szin: "Társas / Kritikus"`), ez a neo4j Browser felirata. A
+`szin_kulonbseg_hu` munkakörfüggő (ehhez a munkakör ALAP-SZÍN-éhez képest mitől nehezebb), ezért az ALAP-jelöléssel
+együtt a `TARTALMAZ_TESZT` élre került; a P5 a munkakörök szövegeiből írja a SZÍN-rubrikát. A régi mezőnevű
+P1-eredmények (`tesz_magok`, `tesz`, `mag_id`, `mag_ref`) továbbra is betölthetők.

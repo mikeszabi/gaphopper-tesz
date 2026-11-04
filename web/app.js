@@ -312,7 +312,7 @@ async function refreshDrawer(force = false) {
   if (!force && sig === drawerSig) return;
   drawerSig = sig;
   const el = $("#drawer"); const scroll = el.scrollTop; el.hidden = false;
-  const names = { E0: "Kinyerés dokumentumból", P1: "Felbontás TESZ-nivalókra", P2: "Bírálat", P3: "Egyesítés és gráfba írás", P5: "Tanúsítás (igazolás, rubrika)" };
+  const names = { E0: "Kinyerés dokumentumból", P1: "Felbontás TESZ-SZÍN-ekre", P2: "Bírálat", P3: "Egyesítés és gráfba írás", P5: "Tanúsítás (igazolás, rubrika)" };
   const useMeta = (k) => {
     const u = d.usage[k]; if (!u) return "";
     return `<div class="meta">${esc(u.model)} · ${u.calls} hívás${u.calls !== u.ok ? ` (${u.calls - u.ok} sikertelen)` : ""} ·
@@ -334,19 +334,19 @@ async function refreshDrawer(force = false) {
   const teszRow = (t) => `<tr><td>${t.alap_szin ? "●" : "○"} <b>${esc(t.label_hu)}</b><div class="muted small">${esc(t.kozeg)} / ${esc(t.helyzet)} · EQF ${esc(t.eqf)}${t.alap_szin ? " · ALAP-SZÍN" : " · " + esc(t.szin_kulonbseg_hu || "")}</div></td>
     <td class="ph">${t.in_graph === true ? pill("in", "bekerült") : t.in_graph === null ? pill("unknown") : pill("out", "nincs benne")}
     ${t.decision ? `<span class="cell">${esc(t.decision)}</span>` : ""}${t.graph_id ? `<span class="cell mono">${esc(t.graph_id)}</span>` : ""}</td></tr>`;
-  const magHead = (m) => `<tr class="mag"><td colspan="2"><b>${esc(m.mag_id)} · ${esc(m.label_hu)}</b><div class="muted small">${esc(m.tesz_type)} · ‹${esc(m.szer_elem)}› · ${esc(m.relevance)} · ${esc(m.kor_id || "")}
+  const magHead = (m) => `<tr class="mag"><td colspan="2"><b>${esc(m.nivalo_id)} · ${esc(m.label_hu)}</b><div class="muted small">${esc(m.tesz_type)} · ‹${esc(m.szer_elem)}› · ${esc(m.relevance)} · ${esc(m.kor_id || "")}
     ${(m.melyites_jeloltek || []).map((x) => ` · ◇ mélyítési jelölt: ${esc(x.kozeg)}/${esc(x.helyzet)}`).join("")}</div></td></tr>`;
-  const tesz = (d.magok && d.magok.length)
-    ? d.magok.map((m) => magHead(m) + d.tesz.filter((t) => t.mag_id === m.mag_id).map(teszRow).join("")).join("")
-    : d.tesz.map(teszRow).join("");
+  const tesz = (d.nivalok && d.nivalok.length)
+    ? d.nivalok.map((m) => magHead(m) + d.szinek.filter((t) => t.nivalo_id === m.nivalo_id).map(teszRow).join("")).join("")
+    : d.szinek.map(teszRow).join("");
   const dr = d.dryrun;
   const dryHtml = !dr ? "" : `<details ${ui.openDry ? "open" : ""} id="dryd"><summary>Próbafutás eredménye (${esc((dr.file_time || "").replace("T", " "))}) – ${dr.ok
-      ? `${dr.szamok.mag} MAG / ${dr.szamok.tesz} TESZ-nivaló, ${dr.szamok.melyitesi_jelolt} mélyítési jelölt` : "hiba"} · ${fmt(dr.total.input)} be / ${fmt(dr.total.output)} ki token · ${usd(dr.total.koltseg_usd)} · ${dr.total.ido_mp} mp</summary>
+      ? `${dr.szamok.nivalo} TESZ-SZÍN / ${dr.szamok.szin} TESZ-SZÍN, ${dr.szamok.melyitesi_jelolt} mélyítési jelölt` : "hiba"} · ${fmt(dr.total.input)} be / ${fmt(dr.total.output)} ki token · ${usd(dr.total.koltseg_usd)} · ${dr.total.ido_mp} mp</summary>
     ${dr.ok ? "" : `<pre>${esc(dr.error || "")}</pre>`}
     <p class="small">${(dr.rule_flags || []).length ? (dr.rule_flags || []).map((f) => `⚑ ${esc(f.rule)}: ${esc(f.message)}`).join("<br>") : "Szabályjelzés nincs."}</p>
-    ${dr.ok ? `<table><thead><tr><th>MAG / változat</th><th>SZÍN</th><th>egyesítés</th></tr></thead><tbody>${dr.magok.map((m) =>
-      `<tr class="mag"><td><b>${esc(m.mag_id)} · ${esc(m.label_hu)}</b><div class="muted small">${esc(m.tesz_type)} · ‹${esc(m.primary_szer)}› · ${esc(m.relevance)}</div></td><td></td><td class="small">${esc(m.egyesites || "")}</td></tr>`
-      + m.valtozatok.map((v) => `<tr><td>${v.alap_szin ? "●" : "○"} ${esc(v.alap_szin ? "ALAP-SZÍN" : v.label_hu)}<div class="muted small">${esc(v.szin_kulonbseg_hu || "")}</div></td><td class="small mono">${esc(v.kozeg)}/${esc(v.helyzet)}</td><td class="small">${esc(v.egyesites || "")}</td></tr>`).join("")
+    ${dr.ok ? `<table><thead><tr><th>TESZ-SZÍN / TESZ-SZÍN</th><th>SZÍN</th><th>egyesítés</th></tr></thead><tbody>${dr.nivalok.map((m) =>
+      `<tr class="mag"><td><b>${esc(m.nivalo_id)} · ${esc(m.label_hu)}</b><div class="muted small">${esc(m.tesz_type)} · ‹${esc(m.primary_szer)}› · ${esc(m.relevance)}</div></td><td></td><td class="small">${esc(m.egyesites || "")}</td></tr>`
+      + m.szinek.map((v) => `<tr><td>${v.alap_szin ? "●" : "○"} ${esc(v.alap_szin ? "ALAP-SZÍN" : v.label_hu)}<div class="muted small">${esc(v.szin_kulonbseg_hu || "")}</div></td><td class="small mono">${esc(v.kozeg)}/${esc(v.helyzet)}</td><td class="small">${esc(v.egyesites || "")}</td></tr>`).join("")
       + (m.melyites_jeloltek || []).map((x) => `<tr><td class="small">◇ mélyítési jelölt: ${esc(x.indok_hu || "")}</td><td class="small mono">${esc(x.kozeg)}/${esc(x.helyzet)}</td><td></td></tr>`).join("")).join("")}</tbody></table>` : ""}
     <table><thead><tr><th>Lépés</th><th>Modell</th><th>Bemenet</th><th>Kimenet</th><th>Idő</th><th>Költség</th></tr></thead><tbody>${(dr.usage || []).map((u) =>
       `<tr><td>${esc(u.step)}</td><td class="small">${esc(u.model)}</td><td>${fmt(u.input + u.cache_read + u.cache_write)}</td><td>${fmt(u.output)}</td><td>${u.ido_mp.toFixed(1)} mp</td><td>${usd(u.koltseg_usd)}</td></tr>`).join("")}</tbody></table></details>`;
@@ -374,7 +374,7 @@ async function refreshDrawer(force = false) {
     <h2>Mi került az adatbázisba?</h2>
     <p>${graphHead} ${d.db.graph_id && d.db.graph_id !== d.job_id ? `<span class="muted small">a gráfban ezen az azonosítón: <span class="mono">${esc(d.db.graph_id)}</span></span>` : ""}</p>
     ${dryHtml}
-    ${d.tesz.length ? `<table><thead><tr><th>Végleges TESZ-MAG-ok és változataik (● ALAP-SZÍN, ○ mélyítő/átvivő)</th><th>A gráfban</th></tr></thead><tbody>${tesz}${dropped}</tbody></table>`
+    ${d.szinek.length ? `<table><thead><tr><th>Végleges TESZ-SZÍN-ek és TESZ-SZÍN-eik (● ALAP-SZÍN, ○ mélyítő/átvivő)</th><th>A gráfban</th></tr></thead><tbody>${tesz}${dropped}</tbody></table>`
       : '<p class="muted">Még nincs végleges TESZ-lista (a felbontás nem futott le).</p>'}
     ${d.graph && d.graph.length ? `<details><summary>A gráf jelenlegi tartalma ennél a munkakörnél (${d.graph.length})</summary><table><thead><tr><th>TESZ</th><th>típus</th><th>rubrika</th><th>munkakör</th></tr></thead><tbody>
       ${d.graph.map((g) => `<tr><td>${esc(g.label_hu)}<div class="mono small muted">${esc(g.id)}</div></td><td class="small">${esc(g.tesz_type)}</td><td>${g.rubrika ? pill("done", g.rubrika + " pont") : pill("wait", "nincs")}</td><td class="small">${g.munkakor_db}</td></tr>`).join("")}</tbody></table></details>` : ""}

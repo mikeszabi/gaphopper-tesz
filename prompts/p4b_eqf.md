@@ -1,4 +1,4 @@
-FELADAT (P4b): Írd le, hogyan néz ki az alábbi TESZ-nivaló elvégzése különböző
+FELADAT (P4b): Írd le, hogyan néz ki az alábbi TESZ-SZÍN elvégzése különböző
 EQF-szinteken. Csak azokat a szinteket add meg, amelyeken ez a TESZ reálisan előfordul.
 
 EQF-PILLÉREK: TUD-ás (ismeretek mélysége), KÉSZ-ség (műveletek összetettsége),

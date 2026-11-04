@@ -143,7 +143,7 @@ def collect(ctx: Context, client=None) -> dict:
                 obj = SCHEMA[step].model_validate(ctx.resolve_mag_refs(data) if step == "P1" else data)
                 if step == "P2":  # az eltérések alkalmazhatók-e
                     p1x = load_p1(ctx, jid)
-                    apply_p2(p1x.tesz_magok, p1x.tesz, obj.changes)
+                    apply_p2(p1x.nivalok, p1x.szinek, obj.changes)
             except Exception as exc:  # séma-, JSON- vagy eltéréshiba
                 ctx.store.log(jid, step, "anthropic-batch", cfg.model, ctx.pv, "", text, False, usage)
                 record_error(ctx, jid, step, str(exc)[:3000], BACK_TO[step])
@@ -181,13 +181,13 @@ def run_parallel(ctx: Context, step: str, job_ids: list[str] | None = None, limi
     cfg = getattr(ctx.settings, step.lower())
     prepared = {jid: _build(ctx, step, jid) for jid in ids}  # SQLite csak a fő szálon
     if step == "P1":
-        ctx.p1_system()  # a MAG-törzs egyszer, a fő szálon (a futás minden munkakörének ugyanaz)
+        ctx.p1_system()  # a TESZ-törzs egyszer, a fő szálon (a futás minden munkakörének ugyanaz)
     stat = {"ok": 0, "hiba": 0}
 
     def work(jid: str):
         logs: list = []
         user, extra = prepared[jid]
-        check = (lambda o: apply_p2(extra["p1"].tesz_magok, extra["p1"].tesz, o.changes)) if step == "P2" else None
+        check = (lambda o: apply_p2(extra["p1"].nivalok, extra["p1"].szinek, o.changes)) if step == "P2" else None
         try:
             obj, _ = call_json(llm, ctx.p1_system() if step == "P1" else ctx.system, user, SCHEMA[step],
                                pre=ctx.resolve_mag_refs if step == "P1" else None,

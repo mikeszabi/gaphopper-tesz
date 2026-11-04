@@ -40,159 +40,6 @@
    "time_share_pct": 15
   }
  ],
- "tesz": [
-  {
-   "cand_id": "C01",
-   "mag_id": "M01",
-   "alap_szin": true,
-   "kozeg": "KOZ_TARSAS",
-   "helyzet": "HELY_RUTIN",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C02",
-   "mag_id": "M02",
-   "alap_szin": true,
-   "kozeg": "KOZ_FIZIKAI",
-   "helyzet": "HELY_RUTIN",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8,
-   "secondary_szer": [
-    {
-     "label_hu": "Hőmérő",
-     "label_en": "Thermometer",
-     "kind": "TOOL",
-     "role": "USES"
-    }
-   ]
-  },
-  {
-   "cand_id": "C02b",
-   "mag_id": "M02",
-   "alap_szin": false,
-   "kozeg": "KOZ_FIZIKAI",
-   "helyzet": "HELY_VALTOZO",
-   "szin_kulonbseg_hu": "Sűrített mérési rend és eltérésnél azonnali ismételt mérés.",
-   "frequency": "DAILY",
-   "expected_eqf": 4,
-   "confidence": 0.7
-  },
-  {
-   "cand_id": "C03",
-   "mag_id": "M03",
-   "alap_szin": true,
-   "kozeg": "KOZ_TARSAS",
-   "helyzet": "HELY_KRITIKUS",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C04",
-   "mag_id": "M04",
-   "alap_szin": true,
-   "kozeg": "KOZ_SZERVEZETI",
-   "helyzet": "HELY_DONTESI",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C05",
-   "mag_id": "M05",
-   "alap_szin": true,
-   "kozeg": "KOZ_FIZIKAI",
-   "helyzet": "HELY_RUTIN",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C05b",
-   "mag_id": "M05",
-   "alap_szin": false,
-   "kozeg": "KOZ_FIZIKAI",
-   "helyzet": "HELY_VALTOZO",
-   "szin_kulonbseg_hu": "Változó paraméterek mellett ismételt dózisellenőrzés és azonnali orvosi visszacsatolás.",
-   "frequency": "WEEKLY",
-   "expected_eqf": 5,
-   "confidence": 0.75
-  },
-  {
-   "cand_id": "C06",
-   "mag_id": "M06",
-   "alap_szin": true,
-   "kozeg": "KOZ_FIZIKAI",
-   "helyzet": "HELY_RUTIN",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C07",
-   "mag_id": "M07",
-   "alap_szin": true,
-   "kozeg": "KOZ_FIZIKAI",
-   "helyzet": "HELY_RUTIN",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C08",
-   "mag_id": "M08",
-   "alap_szin": true,
-   "kozeg": "KOZ_TARSAS",
-   "helyzet": "HELY_EGYUTTMUKODESI",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C08b",
-   "mag_id": "M08",
-   "alap_szin": false,
-   "kozeg": "KOZ_TARSAS",
-   "helyzet": "HELY_KRITIKUS",
-   "szin_kulonbseg_hu": "Időnyomás alatt hiánytalan, ellenőrzött átadás a fogadó egység felé.",
-   "frequency": "WEEKLY",
-   "expected_eqf": 5,
-   "confidence": 0.7
-  },
-  {
-   "cand_id": "C09",
-   "mag_id": "M09",
-   "alap_szin": true,
-   "kozeg": "KOZ_TARSAS",
-   "helyzet": "HELY_TANITO",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C10",
-   "mag_id": "M10",
-   "alap_szin": true,
-   "kozeg": "KOZ_DIGITALIS",
-   "helyzet": "HELY_RUTIN",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  },
-  {
-   "cand_id": "C11",
-   "mag_id": "M11",
-   "alap_szin": true,
-   "kozeg": "KOZ_SZERVEZETI",
-   "helyzet": "HELY_IRANYITASI",
-   "frequency": "DAILY",
-   "expected_eqf": 5,
-   "confidence": 0.8
-  }
- ],
  "skill_mentions": [
   {
    "text": "empátia",
@@ -201,9 +48,8 @@
    ]
   }
  ],
- "tesz_magok": [
+ "nivalok": [
   {
-   "mag_id": "M01",
    "kor_id": "K1",
    "label_hu": "Állapot strukturált felmérése",
    "label_en": "Structured condition assessment",
@@ -222,10 +68,10 @@
     270,
     42
    ],
-   "kontextus_hu": "felvételkor, ápolási felmérőlappal"
+   "kontextus_hu": "felvételkor, ápolási felmérőlappal",
+   "nivalo_id": "M01"
   },
   {
-   "mag_id": "M02",
    "kor_id": "K1",
    "label_hu": "Életjelek mérése és rögzítése",
    "label_en": "Measure and record vital signs",
@@ -244,10 +90,10 @@
     139,
     22
    ],
-   "kontextus_hu": "műszakonként, fekvőbeteg-osztály"
+   "kontextus_hu": "műszakonként, fekvőbeteg-osztály",
+   "nivalo_id": "M02"
   },
   {
-   "mag_id": "M03",
    "kor_id": "K1",
    "label_hu": "Állapotromlás felismerése és jelzése",
    "label_en": "Recognise and escalate deterioration",
@@ -266,10 +112,10 @@
     7,
     249
    ],
-   "kontextus_hu": "kórházi osztály, orvos riasztása"
+   "kontextus_hu": "kórházi osztály, orvos riasztása",
+   "nivalo_id": "M03"
   },
   {
-   "mag_id": "M04",
    "kor_id": "K1",
    "label_hu": "Ellátási terv készítése",
    "label_en": "Prepare a care plan",
@@ -288,10 +134,10 @@
     9,
     198
    ],
-   "kontextus_hu": "ápolási terv"
+   "kontextus_hu": "ápolási terv",
+   "nivalo_id": "M04"
   },
   {
-   "mag_id": "M05",
    "kor_id": "K3",
    "label_hu": "Gyógyszer beadása rendelés szerint",
    "label_en": "Administer medication as ordered",
@@ -317,10 +163,10 @@
      "helyzet": "HELY_KRITIKUS",
      "indok_hu": "Újraélesztés alatti gyógyszerelés, osztályos ápolónál ritka."
     }
-   ]
+   ],
+   "nivalo_id": "M05"
   },
   {
-   "mag_id": "M06",
    "kor_id": "K3",
    "label_hu": "Seb ellátása előírt technikával",
    "label_en": "Wound care with prescribed technique",
@@ -339,10 +185,10 @@
     32,
     23
    ],
-   "kontextus_hu": "kötéscsere"
+   "kontextus_hu": "kötéscsere",
+   "nivalo_id": "M06"
   },
   {
-   "mag_id": "M07",
    "kor_id": "K3",
    "label_hu": "Fertőzésmegelőzési előírások alkalmazása",
    "label_en": "Apply infection-control rules",
@@ -361,10 +207,10 @@
     30,
     140
    ],
-   "kontextus_hu": "ápolási beavatkozások"
+   "kontextus_hu": "ápolási beavatkozások",
+   "nivalo_id": "M07"
   },
   {
-   "mag_id": "M08",
    "kor_id": "K5",
    "label_hu": "Strukturált átadás műszakváltáskor",
    "label_en": "Structured shift handover",
@@ -383,10 +229,10 @@
     238,
     139
    ],
-   "kontextus_hu": "SBAR szerint"
+   "kontextus_hu": "SBAR szerint",
+   "nivalo_id": "M08"
   },
   {
-   "mag_id": "M09",
    "kor_id": "K5",
    "label_hu": "Tájékoztatás és öngondozásra tanítás",
    "label_en": "Inform and teach self-care",
@@ -405,10 +251,10 @@
     269,
     163
    ],
-   "kontextus_hu": "betegek és hozzátartozók"
+   "kontextus_hu": "betegek és hozzátartozók",
+   "nivalo_id": "M09"
   },
   {
-   "mag_id": "M10",
    "kor_id": "K6",
    "label_hu": "Dokumentáció vezetése nyilvántartó rendszerben",
    "label_en": "Keep records in a record system",
@@ -427,10 +273,10 @@
     138,
     40
    ],
-   "kontextus_hu": "elektronikus betegdokumentáció"
+   "kontextus_hu": "elektronikus betegdokumentáció",
+   "nivalo_id": "M10"
   },
   {
-   "mag_id": "M11",
    "kor_id": "K6",
    "label_hu": "Napi feladatok kiosztása és felügyelete",
    "label_en": "Allocate and supervise daily tasks",
@@ -449,7 +295,161 @@
     118,
     254
    ],
-   "kontextus_hu": "ápolási asszisztensek"
+   "kontextus_hu": "ápolási asszisztensek",
+   "nivalo_id": "M11"
+  }
+ ],
+ "szinek": [
+  {
+   "cand_id": "C01",
+   "alap_szin": true,
+   "kozeg": "KOZ_TARSAS",
+   "helyzet": "HELY_RUTIN",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M01"
+  },
+  {
+   "cand_id": "C02",
+   "alap_szin": true,
+   "kozeg": "KOZ_FIZIKAI",
+   "helyzet": "HELY_RUTIN",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "secondary_szer": [
+    {
+     "label_hu": "Hőmérő",
+     "label_en": "Thermometer",
+     "kind": "TOOL",
+     "role": "USES"
+    }
+   ],
+   "nivalo_id": "M02"
+  },
+  {
+   "cand_id": "C02b",
+   "alap_szin": false,
+   "kozeg": "KOZ_FIZIKAI",
+   "helyzet": "HELY_VALTOZO",
+   "szin_kulonbseg_hu": "Sűrített mérési rend és eltérésnél azonnali ismételt mérés.",
+   "frequency": "DAILY",
+   "expected_eqf": 4,
+   "confidence": 0.7,
+   "nivalo_id": "M02"
+  },
+  {
+   "cand_id": "C03",
+   "alap_szin": true,
+   "kozeg": "KOZ_TARSAS",
+   "helyzet": "HELY_KRITIKUS",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M03"
+  },
+  {
+   "cand_id": "C04",
+   "alap_szin": true,
+   "kozeg": "KOZ_SZERVEZETI",
+   "helyzet": "HELY_DONTESI",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M04"
+  },
+  {
+   "cand_id": "C05",
+   "alap_szin": true,
+   "kozeg": "KOZ_FIZIKAI",
+   "helyzet": "HELY_RUTIN",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M05"
+  },
+  {
+   "cand_id": "C05b",
+   "alap_szin": false,
+   "kozeg": "KOZ_FIZIKAI",
+   "helyzet": "HELY_VALTOZO",
+   "szin_kulonbseg_hu": "Változó paraméterek mellett ismételt dózisellenőrzés és azonnali orvosi visszacsatolás.",
+   "frequency": "WEEKLY",
+   "expected_eqf": 5,
+   "confidence": 0.75,
+   "nivalo_id": "M05"
+  },
+  {
+   "cand_id": "C06",
+   "alap_szin": true,
+   "kozeg": "KOZ_FIZIKAI",
+   "helyzet": "HELY_RUTIN",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M06"
+  },
+  {
+   "cand_id": "C07",
+   "alap_szin": true,
+   "kozeg": "KOZ_FIZIKAI",
+   "helyzet": "HELY_RUTIN",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M07"
+  },
+  {
+   "cand_id": "C08",
+   "alap_szin": true,
+   "kozeg": "KOZ_TARSAS",
+   "helyzet": "HELY_EGYUTTMUKODESI",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M08"
+  },
+  {
+   "cand_id": "C08b",
+   "alap_szin": false,
+   "kozeg": "KOZ_TARSAS",
+   "helyzet": "HELY_KRITIKUS",
+   "szin_kulonbseg_hu": "Időnyomás alatt hiánytalan, ellenőrzött átadás a fogadó egység felé.",
+   "frequency": "WEEKLY",
+   "expected_eqf": 5,
+   "confidence": 0.7,
+   "nivalo_id": "M08"
+  },
+  {
+   "cand_id": "C09",
+   "alap_szin": true,
+   "kozeg": "KOZ_TARSAS",
+   "helyzet": "HELY_TANITO",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M09"
+  },
+  {
+   "cand_id": "C10",
+   "alap_szin": true,
+   "kozeg": "KOZ_DIGITALIS",
+   "helyzet": "HELY_RUTIN",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M10"
+  },
+  {
+   "cand_id": "C11",
+   "alap_szin": true,
+   "kozeg": "KOZ_SZERVEZETI",
+   "helyzet": "HELY_IRANYITASI",
+   "frequency": "DAILY",
+   "expected_eqf": 5,
+   "confidence": 0.8,
+   "nivalo_id": "M11"
   }
  ]
 }

@@ -1,12 +1,12 @@
 # Gaphopper TESZ-felbontó – útmutató Claude Code-nak
 
 ## Cél
-MUNKA-KÖR-ök felbontása általános TESZ-MAG-okra (v2: munkaminta × SZER-ELEM-fajta + ERED-mény; legfeljebb 6
+MUNKA-KÖR-ök felbontása általános TESZ-nivalókra (v2: munkaminta × SZER-ELEM-fajta + ERED-mény; legfeljebb 6
 szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–5 KÉSZ-ség-törzselem a `config/kesz_torzs.yaml`-ból (a gráfban súlyozva: hány munkakör igényli);
-a munkaköri specifikum a `kontextus_hu`-ba) és azok SZÍN-ezett változataira, a TESZ-nivalókra (MAG × SZÍN ⟨KÖZ-eg, HELY-zet⟩; egy
-TESZ-nivaló = egy mikrotanúsítvány), majd betöltés a helyi neo4j-be. Minden MAG-nak pontosan egy ALAP-SZÍN-e
+a munkaköri specifikum a `kontextus_hu`-ba) és azok SZÍN-ezett változataira, a TESZ-SZÍN-ekre (TESZ-nivaló × SZÍN ⟨KÖZ-eg, HELY-zet⟩; egy
+TESZ-SZÍN = egy mikrotanúsítvány), majd betöltés a helyi neo4j-be. Minden TESZ-nivalónak pontosan egy ALAP-SZÍN-e
 van; további változat csak az M2 (új/szigorúbb kritérium) és M3 (rendszeres) próbával. A tervezés:
-`docs/TESZ-MAG es SZIN - granularitas.md` (7. fejezet: a felhasználó döntései, kötelezők).
+`docs/TESZ-nivaló es SZIN - granularitas.md` (7. fejezet: a felhasználó döntései, kötelezők).
 A szakmai szabályok forrása a `prompts/p0_system.md` és a `config/vocab.yaml`; ezeket ne írd át
 kérés nélkül, mert minden változás új `prompt_version`-t és újrafuttatást jelent.
 
@@ -35,7 +35,7 @@ a Futás oldal naplózott tokeneket és becsült API-költséget mutat. Kulcsér
 - `python -m gaphopper stats`, `anchors`, `p4a --type ... --value ...`
 - `python -m gaphopper onet-tasks <Task Statements> [--ratings <Task Ratings>]` – O*NET-feladatlisták a `tasks` mezőbe
 - `python -m gaphopper embed check|backfill` – helyi Ollama beágyazás próbája, hiányzó vektorok pótlása
-- `python -m gaphopper certify` – P5: MAG-rubrika (`rubric_alap_hu`), változatonként igazolás + SZÍN-rubrika (`rubric_szin_hu`)
+- `python -m gaphopper certify` – P5: TESZ-nivaló-rubrika (`rubric_alap_hu`), változatonként igazolás + SZÍN-rubrika (`rubric_szin_hu`)
 - `python -m gaphopper report` – tokenek, idő, költség promptverziónként; `models` – érvényes modellbeállítás
 - `python -m gaphopper ui` – webes felület (http://localhost:8765; `gaphopper/web.py` + `web/`)
 - tesztek: `python -m pytest -q`
@@ -43,7 +43,7 @@ a Futás oldal naplózott tokeneket és becsült API-költséget mutat. Kulcsér
 ## Kézi mód (amikor te vagy a modell)
 Ha `GH_PROVIDER=manual`, a `run` a `runs/manual/<job>/` mappába írja a promptot.
 1. Olvasd el a `P1_system.md` és `P1_user.md` fájlt, és pontosan a kért JSON-sémában válaszolj
-   (`tesz_magok` + `tesz`; a változat nem ismétli a MAG mezőit).
+   (`tesz_magok` + `tesz`; a változat nem ismétli a TESZ-nivaló mezőit).
 2. Mentsd a választ `runs/manual/<job>/P1_answer.json` néven.
 3. `python -m gaphopper manual-submit --job <id> --step P1 --file runs/manual/<job>/P1_answer.json`
 4. Ugyanígy a P2-vel (ha a szabályok jeleznek vagy mintába esik). A P2-nél légy szigorú, független bíráló:
@@ -55,13 +55,13 @@ Kézi módban az `extract` a `runs/manual/extract/<fájlnév>/` mappába írja a
 újra ugyanazt az `extract` parancsot. Csak a szövegben szereplő adatot gyűjtsd ki, ne egészítsd ki.
 
 ## Szabályok munka közben
-- MAG-szintű mezők (`tesz_type`, `primary_szer`, `outcome_hu`, `relevance`, `kor_id`) csak a MAG-on élnek; a
-  változatot a séma tölti ki (`schemas.link_magok`). A változat kiléte a gráfban a ⟨MAG, KÖZ-eg, HELY-zet⟩.
-- A P3 LLM csak MAG- és SZER-ELEM-egyezésről dönt; a SZÍN-egyezés determinisztikus (`merge.py`).
+- TESZ-nivaló-szintű mezők (`tesz_type`, `primary_szer`, `outcome_hu`, `relevance`, `kor_id`) csak a TESZ-nivalón élnek; a
+  változatot a séma tölti ki (`schemas.link_magok`). A változat kiléte a gráfban a ⟨TESZ-nivaló, KÖZ-eg, HELY-zet⟩.
+- A P3 LLM csak TESZ-nivaló- és SZER-ELEM-egyezésről dönt; a SZÍN-egyezés determinisztikus (`merge.py`).
 - Gráfírás csak `WritePlan` + `graph.write_plan()` úton (UNWIND, egy tranzakció); soronkénti lekérdezést ne vezess be.
-- A P1 rendszerpromptja: P0 + KÉSZ-ség-törzs | MAG-törzs (`llm.CACHE_SPLIT` két cache-blokk); törzs-MAG-nál a
+- A P1 rendszerpromptja: P0 + KÉSZ-ség-törzs | TESZ-törzs (`llm.CACHE_SPLIT` két cache-blokk); törzs-TESZ-nivalónál a
   P1 csak `mag_ref`-et ír (`Context.resolve_mag_refs`), a P3 hívás nélkül oldja fel. A törzs csak az aktuális
-  szótárverzióval (`TeszMag.gen`) készült MAG-okból áll.
+  szótárverzióval (`TeszMag.gen`) készült TESZ-nivalókból áll.
 - Szabályok: R1–R20 (`rules.py`; G1–G4: R4, R17, R18, R20; törzshasználat: R19), küszöbök a `vocab.yaml` `rules` részében; a zárt listák egyértelmű
   eltérései az `alias_ertek` táblában (új tételt csak egyértelmű megfeleltetésnél vegyél fel).
 - Ne hozz létre külön csomópontot szinonimáknak: a nevek az elem `aliases` tulajdonságába kerülnek.

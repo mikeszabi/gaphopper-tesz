@@ -28,7 +28,7 @@ class ManualStep(Exception):
 
 
 # A rendszerprompt gyorsítótár-határa: előtte a statikus rész (P0 + KÉSZ-ség-törzs), utána a futásonként
-# változó MAG-törzs. Anthropicnál két cache-blokk lesz belőle, más szolgáltatónál egyszerű sortörés.
+# változó TESZ-törzs. Anthropicnál két cache-blokk lesz belőle, más szolgáltatónál egyszerű sortörés.
 CACHE_SPLIT = "\n<!--cache-->\n"
 
 
@@ -291,7 +291,7 @@ def call_json(llm, system: str, user: str, schema: type[BaseModel], retries: int
     last_err = ""
     repair_data = None
     repair_indices = set()
-    repair_coll = "tesz"
+    repair_coll = "szinek"
     for attempt in range(retries + 1):
         t0 = time.monotonic()
         old_schema = getattr(llm, "schema", None)
@@ -335,12 +335,12 @@ def call_json(llm, system: str, user: str, schema: type[BaseModel], retries: int
             if (attempt < retries and repair_data is None and schema is P1Output and errors
                     and len({e["loc"][0] for e in errors}) == 1
                     and all(e["type"] == "literal_error" and len(e["loc"]) == 3
-                            and e["loc"][0] in ("tesz", "tesz_magok") and isinstance(e["loc"][1], int)
+                            and e["loc"][0] in ("szinek", "nivalok") and isinstance(e["loc"][1], int)
                             and e["loc"][2] == "relevance" for e in errors)):
                 repair_data = data
                 repair_coll = errors[0]["loc"][0]
                 repair_indices = {e["loc"][1] for e in errors}
-                items = [{"index": i, "tesz": data[repair_coll][i]} for i in sorted(repair_indices)]
+                items = [{"index": i, "szinek": data[repair_coll][i]} for i in sorted(repair_indices)]
                 prompt = (
                     "P1 célzott mezőjavítás. A relevance kizárólag CORE vagy SUPPORTING lehet. "
                     "CORE: a munkakör lényegéhez tartozik; SUPPORTING: támogató/járulékos. "

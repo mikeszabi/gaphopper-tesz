@@ -1,16 +1,16 @@
 # Gaphopper TESZ – futtatási segédlet
 
-Frissítve: 2026. október 22. (TESZ-MAG × SZÍN modell, próbafutás)
+Frissítve: 2026. október 22. (TESZ-nivaló × SZÍN modell, próbafutás)
 
 Beállítási referencia: [README.md](../README.md); fejlesztési szabályok: [CLAUDE.md](../CLAUDE.md).
 
-**Fogalmak röviden.** A P1 általános TESZ-MAG-okat ad (munkaminta × SZER-ELEM-fajta + ERED-mény, legfeljebb 6
+**Fogalmak röviden.** A P1 általános TESZ-nivalókat ad (munkaminta × SZER-ELEM-fajta + ERED-mény, legfeljebb 6
 szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–5 KÉSZ-ség-törzselem; a munkaköri specifikum a
-`kontextus_hu`-ban). Ha a MAG-törzsben van illeszkedő MAG, a P1 azt választja (`mag_ref`), és mindegyikhez SZÍN-ezett változatokat, a TESZ-nivalókat
-(SZÍN = ⟨KÖZ-eg, HELY-zet⟩). Minden MAG-nak pontosan egy ALAP-SZÍN-e van (a leggyakoribb változat); további
+`kontextus_hu`-ban). Ha a TESZ-törzsben van illeszkedő TESZ-nivaló, a P1 azt választja (`mag_ref`), és mindegyikhez SZÍN-ezett változatokat, a TESZ-SZÍN-eket
+(SZÍN = ⟨KÖZ-eg, HELY-zet⟩). Minden TESZ-nivalónak pontosan egy ALAP-SZÍN-e van (a leggyakoribb változat); további
 változat csak akkor, ha új vagy szigorúbb értékelési kritériumot hoz (M2) és a munkakörben rendszeres (M3). A
-szakmában ismert, itt nem jellemző nehezebb SZÍN mélyítési jelölt (CORE MAG-onként legfeljebb 1). A
-mikrotanúsítvány egysége a TESZ-nivaló; a rubrikája MAG-rubrika + SZÍN-rubrika. Részletek: README 5–5d.
+szakmában ismert, itt nem jellemző nehezebb SZÍN mélyítési jelölt (CORE TESZ-nivalónként legfeljebb 1). A
+mikrotanúsítvány egysége a TESZ-SZÍN; a rubrikája TESZ-nivaló-rubrika + SZÍN-rubrika. Részletek: README 5–5d.
 
 A Top 100 munkakör feldolgozása hat lépés: előkészítés, próbafutás 3 munkakörön, tömeges futtatás, szakértői átnézés, KÉSZ-ségek, végül ellenőrzés. Minden parancs a `gaphopper-tesz` mappából indul, bekapcsolt virtuális környezettel.
 
@@ -117,12 +117,12 @@ python -m gaphopper show --job onet:29-1141.00 | less
 
 Az `--until p2` a felbontást és a bírálatot a `state.sqlite`-ba menti, a gráfba még nem ír. Nézd meg munkakörönként:
 
-- [ ] 6–12 MAG (4–9 CORE), 8–18 TESZ-nivaló, MAG-onként legfeljebb 3 változat, 3–6 TESZ-kör
-- [ ] G1: a MAG-címke legfeljebb 6 szó, munkakör-, szakterület-, célcsoport- és SZÍN-semleges; a specifikum a `kontextus_hu`-ban
-- [ ] G2: MAG-onként 2–5 legjellemzőbb `kesz_ids` a KÉSZ-ség-törzsből; G4: nincs két azonos típusú, nagy KÉSZ-ség-átfedésű MAG
+- [ ] 6–12 TESZ-nivaló (4–9 CORE), 8–18 TESZ-SZÍN, TESZ-nivalónként legfeljebb 3 változat, 3–6 TESZ-kör
+- [ ] G1: a TESZ-nivaló-címke legfeljebb 6 szó, munkakör-, szakterület-, célcsoport- és SZÍN-semleges; a specifikum a `kontextus_hu`-ban
+- [ ] G2: TESZ-nivalónként 2–5 legjellemzőbb `kesz_ids` a KÉSZ-ség-törzsből; G4: nincs két azonos típusú, nagy KÉSZ-ség-átfedésű TESZ-nivaló
 - [ ] G3: a változatnak nincs saját címkéje; a SZÍN a KÖZ-eg/HELY-zet mezőben és a `szin_kulonbseg_hu`-ban
 - [ ] lánc-próbafutásnál (`--chain`) a későbbi munkakörök a törzsből választanak (`[törzs]` jelölés)
-- [ ] M1: két MAG nem csak KÖZ-egben vagy HELY-zetben tér el (különben egy MAG két változata)
+- [ ] M1: két TESZ-nivaló nem csak KÖZ-egben vagy HELY-zetben tér el (különben egy TESZ-nivaló két változata)
 - [ ] M2: minden nem ALAP-SZÍN változat `szin_kulonbseg_hu`-ja új vagy szigorúbb kritériumot nevez meg
 - [ ] tanítás → `HELY_TANITO`; a `HELY_TANULASI` a személy saját betanulása
 - [ ] a címkék munkakör-specifikusak, nem általános minták („dokumentálás”)
@@ -187,17 +187,17 @@ python -m gaphopper review --reject <qid>
 Szakértőhöz kerül, ha a bírálat után is sérül egy szabály (R1–R20; a táblázat a README 5. fejezetében), ha a bíráló EXPERT-et mond, vagy ha a P3 nem biztos egy egyesítésben. A 100 munkakör után nézd meg a neo4j Browserben:
 
 ```cypher
-// munkakörönként hány MAG, TESZ-nivaló és CORE MAG
+// munkakörönként hány TESZ-nivaló, TESZ-SZÍN és CORE TESZ-nivaló
 MATCH (m:MunkaKor)-[r:TARTALMAZ_TESZT]->(t)-[:MAGJA]->(g)
 RETURN m.label_hu, count(DISTINCT g) AS mag, count(t) AS tesz,
        count(DISTINCT CASE r.relevance WHEN 'CORE' THEN g END) AS core_mag ORDER BY mag;
 
-// több munkakörben ismétlődő MAG-ok: itt látszik, működik-e az egyesítés
+// több munkakörben ismétlődő TESZ-nivalók: itt látszik, működik-e az egyesítés
 MATCH (g:TeszMag)<-[:MAGJA]-()<-[:TARTALMAZ_TESZT]-(m)
 WITH g, collect(DISTINCT m.label_hu) AS mk WHERE size(mk) > 1
 RETURN g.label_hu, mk ORDER BY size(mk) DESC LIMIT 50;
 
-// egy MAG mélyítési létrája
+// egy TESZ-nivaló mélyítési létrája
 MATCH (g:TeszMag {id: $mag})<-[:MAGJA]-(t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h)
 RETURN t.label_hu, h.id, h.fok ORDER BY h.tengely, h.fok;
 
@@ -205,7 +205,7 @@ RETURN t.label_hu, h.id, h.fok ORDER BY h.tengely, h.fok;
 MATCH (s:SzerElem)<-[:IRANYUL]-(g:TeszMag) RETURN s.label_hu, count(g) AS n ORDER BY n DESC LIMIT 30;
 ```
 
-A küszöbök (`GH_SIM_HI=0.92`, `GH_SIM_LO=0.70`) kiinduló értékek. Ezek a MAG-egyezésre vonatkoznak; a SZÍN-egyezés determinisztikus. Ha sok a láthatóan azonos, de külön maradt MAG, csökkentsd a `GH_SIM_HI`-t; ha a rendszer különböző TESZ-eket vont össze, növeld.
+A küszöbök (`GH_SIM_HI=0.92`, `GH_SIM_LO=0.70`) kiinduló értékek. Ezek a TESZ-nivaló-egyezésre vonatkoznak; a SZÍN-egyezés determinisztikus. Ha sok a láthatóan azonos, de külön maradt TESZ-nivaló, csökkentsd a `GH_SIM_HI`-t; ha a rendszer különböző TESZ-eket vont össze, növeld.
 
 ## 6. KÉSZ-ségek (P4a)
 
@@ -229,7 +229,7 @@ python -m gaphopper init
 python -m gaphopper import data/job_100.jsonl
 python -m gaphopper run --dry-run --job <3 referencia-munkakör>   # kalibráció
 python -m gaphopper run --workers 8
-python -m gaphopper certify          # P5: MAG-rubrika + változatonként igazolás és SZÍN-rubrika
+python -m gaphopper certify          # P5: TESZ-nivaló-rubrika + változatonként igazolás és SZÍN-rubrika
 ```
 
 A `db-reset` a neo4j-t Cypherrel üríti; a Docker-kötet mappáját ne töröld fájlrendszerből.

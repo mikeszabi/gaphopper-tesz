@@ -1,4 +1,4 @@
-FELADAT (P4a): Az alábbi TESZ-nivalók közös HORGONYA: {{anchor_type}} = {{anchor_value}}.
+FELADAT (P4a): Az alábbi TESZ-SZÍN-ek közös HORGONYA: {{anchor_type}} = {{anchor_value}}.
 Azonosítsd azokat a KÉSZ-SÉGEKET, amelyeket ez a horgony kíván meg.
 
 DEFINÍCIÓK
@@ -22,7 +22,7 @@ MINDEN KÉSZ-SÉGHEZ:
 - aspects: mely SZÍN-ekben érvényes (KÖZ-eg × HELY-zet párok)
 - erosseg: KAPU | SULYOS | TAMASZ | HELYZETI | POTOLHATO
 - viselkedes_hu: 1-3 megfigyelhető viselkedési jel
-- covered_tesz_ids: mely TESZ-nivalókban érvényes
+- covered_tesz_ids: mely TESZ-SZÍN-ekben érvényes
 - external_ref: külső katalógus-megfelelő, ha a megadott találatok között van (kitalálni tilos)
 
 BEMENET: TESZ-EK: {{anchor_tesz_list_json}}  KÉSZ-SÉG-TÖRZS TALÁLATAI: {{skill_candidates_json}}

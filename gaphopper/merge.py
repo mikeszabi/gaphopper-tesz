@@ -1,9 +1,9 @@
-"""P3 – egyesítés két lépcsőben: MAG-egyezés (LLM a kétes sávban), SZÍN-egyezés (determinisztikus).
+"""P3 – egyesítés két lépcsőben: TESZ-nivaló-egyezés (LLM a kétes sávban), SZÍN-egyezés (determinisztikus).
 
-1. SZER-ELEM és TESZ-MAG: alias-találat -> hasonlósági keresés -> küszöbök -> egy P3-hívás a kétes
-   esetekre munkakörönként. A MAG-egyezésben a KÖZ-eg és a HELY-zet nem számít.
-2. TESZ-nivaló (változat): a kilét stable_id(gh_tesz, mag_id, kozeg, helyzet); ha a MAG-on már van
-   ilyen SZÍN, SAME, különben új változat ugyanazon MAG alatt. Ehhez nem kell LLM.
+1. SZER-ELEM és TESZ-nivaló: alias-találat -> hasonlósági keresés -> küszöbök -> egy P3-hívás a kétes
+   esetekre munkakörönként. A TESZ-nivaló-egyezésben a KÖZ-eg és a HELY-zet nem számít.
+2. TESZ-SZÍN (változat): a kilét stable_id(gh_tesz, nivalo_id, kozeg, helyzet); ha a TESZ-nivalón már van
+   ilyen SZÍN, SAME, különben új változat ugyanazon TESZ-nivaló alatt. Ehhez nem kell LLM.
 
 A Resolver semmit nem ír: az írandókat összegyűjti (WritePlan), a pipeline egy tranzakcióban,
 UNWIND-del kötegelve írja ki (próbafutásnál pedig sehogy).
@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from .config import prompt, render
 from .llm import ManualLLM, call_json
 from .normalize import detect_lang, norm_key, stable_id
-from .schemas import P3Decision, P3Output, SzerElem, Tesz, TeszMag
+from .schemas import P3Decision, P3Output, SzerElem, TeszSzin, TeszNivalo
 
 
 @dataclass
@@ -44,9 +44,9 @@ class WritePlan:
     job: dict = field(default_factory=dict)                  # {id, props}
     szer: dict[str, dict] = field(default_factory=dict)      # új SZER-ELEM: id -> props (+embedding)
     szer_broader: list[dict] = field(default_factory=list)   # {a, b}
-    magok: dict[str, dict] = field(default_factory=dict)     # TESZ-MAG: id -> {props, new, tesz_type, primary, melyites}
-    tesz: dict[str, dict] = field(default_factory=dict)      # TESZ-nivaló: id -> {...}
-    links: list[dict] = field(default_factory=list)          # MunkaKor -> TeszNivalo
+    nivalok: dict[str, dict] = field(default_factory=dict)   # TESZ-SZÍN: id -> {props, new, tesz_type, primary, melyites}
+    szinek: dict[str, dict] = field(default_factory=dict)    # TESZ-SZÍN: id -> {...}
+    links: list[dict] = field(default_factory=list)          # MunkaKor -> TeszSzin
     aliases: dict[tuple[str, str], list] = field(default_factory=dict)  # (típus, id) -> [(szöveg, nyelv)]
     alias_index: list[tuple] = field(default_factory=list)   # SQLite alias-index sorai
 
@@ -80,7 +80,7 @@ class Resolver:
 
     def _context(self, entity_id: str) -> dict:
         if entity_id not in self._contexts:
-            self._contexts[entity_id] = self.ctx.graph.mag_context(entity_id)
+            self._contexts[entity_id] = self.ctx.graph.nivalo_context(entity_id)
         return self._contexts[entity_id]
 
     # ---------------------------------------------------------------- közös
@@ -207,22 +207,22 @@ class Resolver:
         self.plan.alias("SZER_ELEM", sid, [(s.label_hu, "hu"), (s.label_en, "en")], via)
         return Resolution(sid, "NEW", None, via)
 
-    # ---------------------------------------------------------------- TESZ-MAG
+    # ---------------------------------------------------------------- TESZ-nivaló
     @staticmethod
-    def mag_text(m: TeszMag) -> str:
+    def nivalo_text(m: TeszNivalo) -> str:
         return f"{m.label_hu} | {m.label_en} | {m.outcome_hu}"
 
-    def plan_mag(self, m: TeszMag) -> Resolution | str | None:
-        """Gyors út. Visszaad: Resolution (eldőlt), case_id (LLM dönt) vagy None (új MAG).
+    def plan_nivalo(self, m: TeszNivalo) -> Resolution | str | None:
+        """Gyors út. Visszaad: Resolution (eldőlt), case_id (LLM dönt) vagy None (új TESZ-nivaló).
 
-        A MAG-törzsből választott MAG (mag_ref) hívás nélkül feloldódik."""
-        if m.mag_ref:
-            return Resolution(m.mag_ref, "SAME", m.mag_ref, "torzs")
+        A TESZ-törzsből választott TESZ-nivaló (nivalo_ref) hívás nélkül feloldódik."""
+        if m.nivalo_ref:
+            return Resolution(m.nivalo_ref, "SAME", m.nivalo_ref, "torzs")
         labels = [(m.label_hu, "hu"), (m.label_en, "en")]
-        hit = self._alias_hit("TESZ_MAG", labels)
+        hit = self._alias_hit("TESZ_NIVALO", labels)
         if hit:
             return Resolution(hit, "ALIAS", hit, "alias")
-        cands, is_vec = self._candidates("TESZ_MAG", self.mag_text(m))
+        cands, is_vec = self._candidates("TESZ_NIVALO", self.nivalo_text(m))
         if not cands or (is_vec and cands[0]["score"] < self.ctx.settings.sim_lo):
             return None
         primary = self._szer.get(self._szer_key(m.primary_szer))
@@ -239,9 +239,9 @@ class Resolver:
                              "outcome_hu": c["props"].get("outcome_hu"), "tesz_type": cx.get("tesz_type"),
                              "primary_szer": cx.get("primary_szer_label"), "score": round(c["score"], 3)})
         cand = m.model_dump(include={"label_hu", "outcome_hu", "tesz_type"}) | {"primary_szer": m.primary_szer.label_hu}
-        return self._add_case("M", "TESZ_MAG", cand, enriched)
+        return self._add_case("N", "TESZ_NIVALO", cand, enriched)
 
-    def mag(self, m: TeszMag, planned: Resolution | str | None, primary_szer_id: str) -> Resolution:
+    def mag(self, m: TeszNivalo, planned: Resolution | str | None, primary_szer_id: str) -> Resolution:
         new_id = stable_id("gh_mag", m.tesz_type, primary_szer_id, m.label_hu)
         if isinstance(planned, Resolution):
             return planned
@@ -251,8 +251,8 @@ class Resolver:
         if ans is None:
             return Resolution(new_id, "NEW", None, "manual", needs_review=True)
         if ans.decision in ("SAME", "BROADER") and ans.target_id:
-            # M1-őr: a MAG kiléte a TESZ-típus és a meghatározó SZER-ELEM; ha a törzselemé más, az LLM SAME
-            # döntését nem fogadjuk el (új MAG, szakértői átnézésre).
+            # M1-őr: a TESZ-nivaló kiléte a TESZ-típus és a meghatározó SZER-ELEM; ha a törzselemé más, az LLM SAME
+            # döntését nem fogadjuk el (új TESZ-nivaló, szakértői átnézésre).
             cx = self._context(ans.target_id)
             if cx.get("tesz_type") != m.tesz_type or (cx.get("primary_szer_id") or primary_szer_id) != primary_szer_id:
                 return Resolution(new_id, "NEW", ans.target_id, "llm-elutasitva", needs_review=True)
@@ -260,10 +260,10 @@ class Resolver:
             return Resolution(ans.target_id, "SAME", ans.target_id, "llm", ans.confidence < 0.6, extra)
         return Resolution(new_id, "NEW", None, "llm", ans.confidence < 0.6)
 
-    # ---------------------------------------------------------------- TESZ-nivaló (SZÍN)
+    # ---------------------------------------------------------------- TESZ-SZÍN (SZÍN)
     @staticmethod
-    def tesz_id(mag_id: str, t: Tesz) -> str:
-        return stable_id("gh_tesz", mag_id, t.kozeg, t.helyzet)
+    def tesz_id(nivalo_id: str, t: TeszSzin) -> str:
+        return stable_id("gh_tesz", nivalo_id, t.kozeg, t.helyzet)
 
     # ---------------------------------------------------------------- MUNKA-KÖR
     def resolve_job(self, job: dict, p1_meta: dict) -> str:

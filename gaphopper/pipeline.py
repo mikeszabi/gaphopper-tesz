@@ -1,6 +1,6 @@
 """A feldolgozási sor: P1 felbontás -> P2 bírálat -> P3 egyesítés és gráfba írás; P4a horgonyzás.
 
-A P1 TESZ-MAG-okat és SZÍN-ezett változatokat (TESZ-nivalókat) ad; a bírálat és a gráfba írás
+A P1 TESZ-nivalókat és SZÍN-ezett változatokat (TESZ-SZÍN-eket) ad; a bírálat és a gráfba írás
 mindkét szinten dolgozik. Próbafutás (dry_run): az LLM-lépések lefutnak, a gráf csak olvasott, a
 state.sqlite érintetlen.
 """
@@ -17,8 +17,8 @@ from .embed import get_embedder
 from .llm import CACHE_SPLIT, LLMError, ManualStep, call_json, get_llm
 from .merge import Resolver
 from .normalize import norm_key, stable_id
-from .schemas import (MAG_FIELDS, MAG_IDENTITY, P1Output, P2Change, P2Output, P4aOutput, P5MagOutput, Tesz, TeszMag,
-                      link_magok)
+from .schemas import (NIVALO_FIELDS, NIVALO_IDENTITY, P1Output, P2Change, P2Output, P4aOutput, P5NivaloOutput, TeszSzin, TeszNivalo,
+                      link_nivalok)
 from .store import Store
 
 MANUAL_DIR = ROOT / "runs" / "manual"
@@ -41,47 +41,47 @@ class Context:
         self.answer_files = answer_files or {}
         self.llm_override = llm_override or {}
         self.current_job: str | None = None
-        self.extra_torzs: list[dict] = []   # próbafutás-láncban a korábbi munkakörök új MAG-jai
+        self.extra_torzs: list[dict] = []   # próbafutás-láncban a korábbi munkakörök új TESZ-nivalói
         self._torzs: dict[str, dict] | None = None
 
-    # ---------------------------------------------------------------- MAG-törzs (a P1 rendszerpromptjában)
-    def mag_torzs(self, refresh: bool = False) -> dict[str, dict]:
-        """Rövid kód (T01..) -> törzs-MAG. A gráf legtöbbet használt, ezzel a szótárverzióval készült
-        MAG-jai (legfeljebb rules.mag_torzs_max), és próbafutás-láncban a korábbi munkakörök MAG-jai."""
+    # ---------------------------------------------------------------- TESZ-törzs (a P1 rendszerpromptjában)
+    def tesz_torzs(self, refresh: bool = False) -> dict[str, dict]:
+        """Rövid kód (T01..) -> törzs-TESZ-nivaló. A gráf legtöbbet használt, ezzel a szótárverzióval készült
+        TESZ-nivalói (legfeljebb rules.mag_torzs_max), és próbafutás-láncban a korábbi munkakörök TESZ-nivalói."""
         if self._torzs is None or refresh:
             limit = int(vocab()["rules"].get("mag_torzs_max", 80))
             rows = []
-            if self.graph is not None and hasattr(self.graph, "mag_torzs"):
-                rows = self.graph.mag_torzs(vocab().get("version", ""), limit)
+            if self.graph is not None and hasattr(self.graph, "tesz_torzs"):
+                rows = self.graph.tesz_torzs(vocab().get("version", ""), limit)
             seen = {r["id"] for r in rows}
             rows += [r for r in self.extra_torzs if r["id"] not in seen]
             self._torzs = {f"T{i + 1:02d}": r for i, r in enumerate(rows[:limit])}
         return self._torzs
 
     def p1_system(self) -> str:
-        """P0 + KÉSZ-ség-törzs (statikus, gyorsítótárazott) | MAG-törzs (futásonként)."""
+        """P0 + KÉSZ-ség-törzs (statikus, gyorsítótárazott) | TESZ-törzs (futásonként)."""
         kesz = "\n".join(f"{k[5:]}|{x['en']}|{x['group']}{x['type']}" for k, x in kesz_torzs().items())
-        torzs = self.mag_torzs()
+        torzs = self.tesz_torzs()
         mags = "\n".join(f"{c}|{r['label_hu']}|{r['tesz_type']}" for c, r in torzs.items()) or "(még üres)"
         return (self.system + "\n\nKÉSZ-SÉG-TÖRZS (a kesz_ids-be a sorszám kerül; sorszám|név|csoport+típus, "
                 "K = tudás, S = készség, A = képesség):\n" + kesz + CACHE_SPLIT
-                + "MAG-TÖRZS (a mag_ref-be a kód kerül; kód|címke|TESZ-típus):\n" + mags)
+                + "TESZ-TÖRZS (a nivalo_ref-be a kód kerül; kód|címke|TESZ-típus):\n" + mags)
 
     def resolve_mag_refs(self, data):
-        """P1-válasz előfeldolgozása: a mag_ref-es MAG mezői a törzsből (a modellnek nem kell kiírnia)."""
+        """P1-válasz előfeldolgozása: a nivalo_ref-es TESZ-nivaló mezői a törzsből (a modellnek nem kell kiírnia)."""
         if not isinstance(data, dict):
             return data
-        torzs = self.mag_torzs()
+        torzs = self.tesz_torzs()
         by_id = {r["id"]: r for r in torzs.values()}
-        for m in data.get("tesz_magok") or []:
-            ref = m.get("mag_ref") if isinstance(m, dict) else None
+        for m in data.get("nivalok") or []:
+            ref = m.get("nivalo_ref") if isinstance(m, dict) else None
             if not ref:
                 continue
             r = torzs.get(ref) or by_id.get(ref)
             if r is None:
-                raise ValueError(f"{m.get('mag_id')}: ismeretlen mag_ref '{ref}'; a MAG-törzs kódjai: "
-                                 f"{', '.join(list(torzs)[:3])}…{list(torzs)[-1] if torzs else ''} – vagy írj új MAG-ot.")
-            m["mag_ref"] = r["id"]
+                raise ValueError(f"{m.get('nivalo_id')}: ismeretlen nivalo_ref '{ref}'; a TESZ-törzs kódjai: "
+                                 f"{', '.join(list(torzs)[:3])}…{list(torzs)[-1] if torzs else ''} – vagy írj új TESZ-nivalót.")
+            m["nivalo_ref"] = r["id"]
             for k in ("label_hu", "label_en", "outcome_hu", "tesz_type", "primary_szer"):
                 m[k] = r.get(k) if r.get(k) is not None else m.get(k)
             if not m.get("kesz_ids"):
@@ -125,14 +125,14 @@ def _sampled(job_id: str, share: float) -> bool:
 
 
 def check_rules(p1: P1Output, job: dict, magok=None, tesz=None, torzs_size: int = 0) -> list:
-    return rules.check(p1.tesz if tesz is None else tesz, [k.kor_id for k in p1.tesz_korok], job.get("field", ""),
-                       magok=p1.tesz_magok if magok is None else magok, job_title=job.get("title", ""),
+    return rules.check(p1.szinek if tesz is None else tesz, [k.kor_id for k in p1.tesz_korok], job.get("field", ""),
+                       magok=p1.nivalok if magok is None else magok, job_title=job.get("title", ""),
                        torzs_size=torzs_size)
 
 
 def p2_needed(ctx: Context, job: dict, p1: P1Output) -> tuple[bool, str, list]:
     """Kell-e bírálat? auto módban csak szabályjelzésnél és a véletlen mintán."""
-    flags = check_rules(p1, job, torzs_size=len(ctx.mag_torzs()))
+    flags = check_rules(p1, job, torzs_size=len(ctx.tesz_torzs()))
     mode = ctx.settings.p2_mode
     if mode == "always":
         return True, "mindig", flags
@@ -155,8 +155,8 @@ def finish_p1(ctx: Context, job: dict, obj: P1Output) -> P1Output:
         return obj
     # A bírálat kimarad: a P1 lista a végleges.
     art = {"verdict": "SKIPPED", "p2_reason": reason, "changes": [], "warnings": obj.link_warnings,
-           "final_magok": [m.model_dump() for m in obj.tesz_magok],
-           "final_tesz": [t.model_dump() for t in obj.tesz],
+           "final_nivalok": [m.model_dump() for m in obj.nivalok],
+           "final_szinek": [t.model_dump() for t in obj.szinek],
            "rule_flags_before": [f.as_dict() for f in flags], "rule_flags_after": [f.as_dict() for f in flags]}
     ctx.store.save_artifact(job["job_id"], "P2", art, ctx.pv)
     if rules.needs_expert(flags):
@@ -185,8 +185,8 @@ def run_p1(ctx: Context, job: dict) -> P1Output:
 
 
 def p2_view(p1: P1Output) -> dict:
-    """A P1 tömörített nézete a bírálónak: MAG-onként csoportosítva, indoklás, angol címke, definíció és
-    alapértékek nélkül; a változat nem ismétli a MAG mezőit."""
+    """A P1 tömörített nézete a bírálónak: TESZ-nivalónként csoportosítva, indoklás, angol címke, definíció és
+    alapértékek nélkül; a változat nem ismétli a TESZ-nivaló mezőit."""
     def szer(s, full=False):
         d = {"label_hu": s.label_hu, "kind": s.kind, "role": s.role}
         if full and s.definition_hu:
@@ -194,17 +194,17 @@ def p2_view(p1: P1Output) -> dict:
         return d
 
     magok = []
-    for m in p1.tesz_magok:
-        d = {"mag_id": m.mag_id, "kor_id": m.kor_id, "label_hu": m.label_hu, "outcome_hu": m.outcome_hu,
+    for m in p1.nivalok:
+        d = {"nivalo_id": m.nivalo_id, "kor_id": m.kor_id, "label_hu": m.label_hu, "outcome_hu": m.outcome_hu,
              "tesz_type": m.tesz_type, "runner_up": m.tesz_type_runner_up, "primary_szer": szer(m.primary_szer, True),
              "relevance": m.relevance,
              "kesz": [f"{k[5:]} {kesz_torzs().get(k, {}).get('en', '')}" for k in m.kesz_ids],
-             "kontextus_hu": m.kontextus_hu, "mag_ref": m.mag_ref}
+             "kontextus_hu": m.kontextus_hu, "nivalo_ref": m.nivalo_ref}
         if m.melyites_jeloltek:
             d["melyites_jeloltek"] = [x.model_dump() for x in m.melyites_jeloltek]
         v = []
-        for t in p1.tesz:
-            if t.mag_id != m.mag_id:
+        for t in p1.szinek:
+            if t.nivalo_id != m.nivalo_id:
                 continue
             x = {"cand_id": t.cand_id}
             if not t.alap_szin:
@@ -220,9 +220,9 @@ def p2_view(p1: P1Output) -> dict:
             if t.open_question:
                 x["open_question"] = t.open_question
             v.append({k: val for k, val in x.items() if val is not None})
-        d["v"] = v
+        d["szinek"] = v
         magok.append({k: val for k, val in d.items() if val is not None})
-    return {"tesz_korok": [k.model_dump() for k in p1.tesz_korok], "tesz_magok": magok}
+    return {"tesz_korok": [k.model_dump() for k in p1.tesz_korok], "nivalok": magok}
 
 
 def _json(obj) -> str:
@@ -230,7 +230,7 @@ def _json(obj) -> str:
 
 
 def build_p2(ctx: Context, job: dict, p1: P1Output) -> tuple[str, list]:
-    flags = check_rules(p1, job, torzs_size=len(ctx.mag_torzs()))
+    flags = check_rules(p1, job, torzs_size=len(ctx.tesz_torzs()))
     user = render(prompt("p2_biralat"),
                   job_record_json=_json(job),
                   p1_json=_json(p2_view(p1)),
@@ -239,22 +239,22 @@ def build_p2(ctx: Context, job: dict, p1: P1Output) -> tuple[str, list]:
     return user + _retry_note(ctx, job["job_id"], "P2"), flags
 
 
-_MAG_SET = set(TeszMag.model_fields) | {"runner_up"}
+_NIVALO_SET = set(TeszNivalo.model_fields) | {"runner_up"}
 
 
-def apply_p2(p1_magok: list[TeszMag], p1_tesz: list[Tesz], changes: list[P2Change]
-             ) -> tuple[list[TeszMag], list[Tesz], list[str]]:
-    """A bírálat eltéréseinek alkalmazása a P1 MAG- és változatlistájára.
+def apply_p2(p1_magok: list[TeszNivalo], p1_tesz: list[TeszSzin], changes: list[P2Change]
+             ) -> tuple[list[TeszNivalo], list[TeszSzin], list[str]]:
+    """A bírálat eltéréseinek alkalmazása a P1 TESZ-nivaló- és változatlistájára.
 
-    Hibás eltérésnél ValueError (újrapróbálás). A végén az R15 (egy ALAP-SZÍN MAG-onként) javítva,
-    a változat nélküli MAG-ok elhagyva – ezekről figyelmeztetés szól.
+    Hibás eltérésnél ValueError (újrapróbálás). A végén az R15 (egy ALAP-SZÍN TESZ-nivalónként) javítva,
+    a változat nélküli TESZ-nivalók elhagyva – ezekről figyelmeztetés szól.
     """
-    if p1_tesz and any(t.mag_id is None for t in p1_tesz):  # régi eredmény: egyelemű MAG-ok
-        p1_magok, p1_tesz, _ = link_magok(list(p1_magok), list(p1_tesz), strict=False)
+    if p1_tesz and any(t.nivalo_id is None for t in p1_tesz):  # régi eredmény: egyelemű TESZ-nivalók
+        p1_magok, p1_tesz, _ = link_nivalok(list(p1_magok), list(p1_tesz), strict=False)
     order = [t.cand_id for t in p1_tesz]
-    items: dict[str, dict] = {t.cand_id: t.model_dump(exclude=set(MAG_FIELDS)) for t in p1_tesz}
-    mag_order = [m.mag_id for m in p1_magok]
-    mags: dict[str, dict] = {m.mag_id: m.model_dump() for m in p1_magok}
+    items: dict[str, dict] = {t.cand_id: t.model_dump(exclude=set(NIVALO_FIELDS)) for t in p1_tesz}
+    mag_order = [m.nivalo_id for m in p1_magok]
+    mags: dict[str, dict] = {m.nivalo_id: m.model_dump() for m in p1_magok}
     warnings: list[str] = []
     used = set(order)
     used_m = set(mag_order)
@@ -281,74 +281,74 @@ def apply_p2(p1_magok: list[TeszMag], p1_tesz: list[Tesz], changes: list[P2Chang
         if mid in mags:
             return True
         if mid in mag_order:
-            warnings.append(f"{op} {mid}: a MAG már nincs a listában.")
+            warnings.append(f"{op} {mid}: a TESZ-nivaló már nincs a listában.")
             return False
-        raise ValueError(f"{op}: ismeretlen mag_id '{mid}'. Csak a meglévő vagy most hozzáadott mag_id-kre hivatkozz.")
+        raise ValueError(f"{op}: ismeretlen nivalo_id '{mid}'. Csak a meglévő vagy most hozzáadott nivalo_id-kre hivatkozz.")
 
     def add_new(ch: P2Change, pos: int, drop_mag: str | None = None) -> None:
         remap: dict[str, str] = {}
-        for m in ch.new_mag:
+        for m in ch.new_nivalo:
             d = m.model_dump()
-            d["mag_id"] = remap[m.mag_id] = fresh_id(m.mag_id, used_m, "M")
-            mags[d["mag_id"]] = d
-            mag_order.append(d["mag_id"])
+            d["nivalo_id"] = remap[m.nivalo_id] = fresh_id(m.nivalo_id, used_m, "N")
+            mags[d["nivalo_id"]] = d
+            mag_order.append(d["nivalo_id"])
         if not ch.new:
             raise ValueError(f"{ch.op}: a 'new' lista üres; add meg a teljes új változatokat.")
         for k, t in enumerate(ch.new):
-            d = t.model_dump(exclude=set(MAG_FIELDS))
-            d["mag_id"] = remap.get(d.get("mag_id"), d.get("mag_id"))
-            if d["mag_id"] not in mags or d["mag_id"] == drop_mag:
-                raise ValueError(f"{ch.op}: a(z) {t.cand_id} változat mag_id-je ('{d['mag_id']}') nem létező MAG; "
-                                 "adj meg new_mag-ot vagy egy meglévő mag_id-t.")
+            d = t.model_dump(exclude=set(NIVALO_FIELDS))
+            d["nivalo_id"] = remap.get(d.get("nivalo_id"), d.get("nivalo_id"))
+            if d["nivalo_id"] not in mags or d["nivalo_id"] == drop_mag:
+                raise ValueError(f"{ch.op}: a(z) {t.cand_id} változat nivalo_id-je ('{d['nivalo_id']}') nem létező TESZ-nivaló; "
+                                 "adj meg new_nivalo-ot vagy egy meglévő nivalo_id-t.")
             d["cand_id"] = fresh_id(d.get("cand_id", ""), used, "C")
             items[d["cand_id"]] = d
             order.insert(pos + k, d["cand_id"])
 
     for ch in changes:
         if ch.op == "FIX" and not ch.cand_id:
-            if not ch.mag_id or not need_mag(ch.mag_id, "FIX"):
-                if not ch.mag_id:
-                    raise ValueError("FIX: cand_id vagy mag_id kell.")
+            if not ch.nivalo_id or not need_mag(ch.nivalo_id, "FIX"):
+                if not ch.nivalo_id:
+                    raise ValueError("FIX: cand_id vagy nivalo_id kell.")
                 continue
             if "melyites_jeloltek" in ch.set and not isinstance(ch.set["melyites_jeloltek"], list):
                 # a bíráló szövegként írta: a mélyítési jelölt nem kötelező mező, a javítás többi része áll
-                warnings.append(f"FIX {ch.mag_id}: a melyites_jeloltek nem lista, kimaradt.")
+                warnings.append(f"FIX {ch.nivalo_id}: a melyites_jeloltek nem lista, kimaradt.")
                 ch.set = {k: v for k, v in ch.set.items() if k != "melyites_jeloltek"}
-            bad = set(ch.set) - _MAG_SET
+            bad = set(ch.set) - _NIVALO_SET
             if bad:
-                raise ValueError(f"FIX {ch.mag_id}: ezek nem MAG-mezők: {sorted(bad)}; változatmezőt cand_id-vel javíts.")
-            merged = mags[ch.mag_id] | {k: v for k, v in ch.set.items() if k != "mag_id"}
-            if set(ch.set) & set(MAG_IDENTITY) and "mag_ref" not in ch.set:
-                merged["mag_ref"] = None  # a kilét változott: már nem a törzs eleme
+                raise ValueError(f"FIX {ch.nivalo_id}: ezek nem TESZ-nivaló-mezők: {sorted(bad)}; változatmezőt cand_id-vel javíts.")
+            merged = mags[ch.nivalo_id] | {k: v for k, v in ch.set.items() if k != "nivalo_id"}
+            if set(ch.set) & set(NIVALO_IDENTITY) and "nivalo_ref" not in ch.set:
+                merged["nivalo_ref"] = None  # a kilét változott: már nem a törzs eleme
             try:
-                mags[ch.mag_id] = TeszMag.model_validate(merged).model_dump()
+                mags[ch.nivalo_id] = TeszNivalo.model_validate(merged).model_dump()
             except Exception as exc:
-                raise ValueError(f"FIX {ch.mag_id}: a javított MAG nem érvényes: {exc}")
+                raise ValueError(f"FIX {ch.nivalo_id}: a javított TESZ-nivaló nem érvényes: {exc}")
         elif ch.op == "FIX":
             if not need(ch.cand_id, "FIX"):
                 continue
-            mag_part = {k: v for k, v in ch.set.items() if k in MAG_FIELDS}
-            if mag_part:  # a bíráló változaton javított MAG-mezőt: a MAG-ra vonatkozik
-                mid = ch.set.get("mag_id", items[ch.cand_id]["mag_id"])
+            mag_part = {k: v for k, v in ch.set.items() if k in NIVALO_FIELDS}
+            if mag_part:  # a bíráló változaton javított TESZ-nivaló-mezőt: a TESZ-nivalóra vonatkozik
+                mid = ch.set.get("nivalo_id", items[ch.cand_id]["nivalo_id"])
                 if need_mag(mid, "FIX"):
                     try:
-                        mags[mid] = TeszMag.model_validate(mags[mid] | mag_part).model_dump()
+                        mags[mid] = TeszNivalo.model_validate(mags[mid] | mag_part).model_dump()
                     except Exception as exc:
-                        raise ValueError(f"FIX {ch.cand_id}: a javított MAG ({mid}) nem érvényes: {exc}")
-                    warnings.append(f"FIX {ch.cand_id}: {sorted(mag_part)} a(z) {mid} MAG-on javítva.")
-            merged = items[ch.cand_id] | {k: v for k, v in ch.set.items() if k != "cand_id" and k not in MAG_FIELDS}
-            if merged.get("mag_id") not in mags:
-                raise ValueError(f"FIX {ch.cand_id}: ismeretlen mag_id '{merged.get('mag_id')}'.")
+                        raise ValueError(f"FIX {ch.cand_id}: a javított TESZ-nivaló ({mid}) nem érvényes: {exc}")
+                    warnings.append(f"FIX {ch.cand_id}: {sorted(mag_part)} a(z) {mid} TESZ-nivalón javítva.")
+            merged = items[ch.cand_id] | {k: v for k, v in ch.set.items() if k != "cand_id" and k not in NIVALO_FIELDS}
+            if merged.get("nivalo_id") not in mags:
+                raise ValueError(f"FIX {ch.cand_id}: ismeretlen nivalo_id '{merged.get('nivalo_id')}'.")
             try:
-                items[ch.cand_id] = Tesz.model_validate(merged).model_dump(exclude=set(MAG_FIELDS))
+                items[ch.cand_id] = TeszSzin.model_validate(merged).model_dump(exclude=set(NIVALO_FIELDS))
             except Exception as exc:
                 raise ValueError(f"FIX {ch.cand_id}: a javított változat nem érvényes: {exc}")
         elif ch.op == "DROP" and not ch.cand_id:
-            if not ch.mag_id:
-                raise ValueError("DROP: cand_id vagy mag_id kell.")
-            if need_mag(ch.mag_id, "DROP"):
-                mags.pop(ch.mag_id)
-                for c in [c for c, d in items.items() if d["mag_id"] == ch.mag_id]:
+            if not ch.nivalo_id:
+                raise ValueError("DROP: cand_id vagy nivalo_id kell.")
+            if need_mag(ch.nivalo_id, "DROP"):
+                mags.pop(ch.nivalo_id)
+                for c in [c for c, d in items.items() if d["nivalo_id"] == ch.nivalo_id]:
                     items.pop(c)
         elif ch.op == "DROP":
             if need(ch.cand_id, "DROP"):
@@ -373,31 +373,31 @@ def apply_p2(p1_magok: list[TeszMag], p1_tesz: list[Tesz], changes: list[P2Chang
                     if tgt.get("helyzet_secondary") and tgt["helyzet_secondary"] != gone["helyzet"]:
                         warnings.append(f"FOLD {ch.cand_id}: {ch.into} másodlagos HELY-zete felülírva.")
                     tgt["helyzet_secondary"] = gone["helyzet"]
-        elif ch.op == "REMAG":
+        elif ch.op == "MOVE":
             ids = ch.cand_ids or ([ch.cand_id] if ch.cand_id else [])
-            if not ids or not ch.mag_id:
-                raise ValueError("REMAG: cand_ids és mag_id kell.")
-            if not need_mag(ch.mag_id, "REMAG"):
+            if not ids or not ch.nivalo_id:
+                raise ValueError("MOVE: cand_ids és nivalo_id kell.")
+            if not need_mag(ch.nivalo_id, "MOVE"):
                 continue
             for c in ids:
-                if not need(c, "REMAG"):
+                if not need(c, "MOVE"):
                     continue
-                if items[c]["mag_id"] != ch.mag_id:
-                    items[c]["mag_id"] = ch.mag_id
-                    items[c]["alap_szin"] = False  # a cél MAG ALAP-SZÍN-e marad (R15 javítja, ha nincs)
+                if items[c]["nivalo_id"] != ch.nivalo_id:
+                    items[c]["nivalo_id"] = ch.nivalo_id
+                    items[c]["alap_szin"] = False  # a cél TESZ-nivaló ALAP-SZÍN-e marad (R15 javítja, ha nincs)
         elif ch.op == "SPLIT" and not ch.cand_id:
-            if not ch.mag_id:
-                raise ValueError("SPLIT: cand_id vagy mag_id kell.")
-            if not need_mag(ch.mag_id, "SPLIT"):
+            if not ch.nivalo_id:
+                raise ValueError("SPLIT: cand_id vagy nivalo_id kell.")
+            if not need_mag(ch.nivalo_id, "SPLIT"):
                 continue
-            if not ch.new_mag:
-                raise ValueError(f"SPLIT {ch.mag_id}: a 'new_mag' lista üres; add meg az új MAG-okat.")
-            old = [c for c in order if c in items and items[c]["mag_id"] == ch.mag_id]
+            if not ch.new_nivalo:
+                raise ValueError(f"SPLIT {ch.nivalo_id}: a 'new_nivalo' lista üres; add meg az új TESZ-nivalókat.")
+            old = [c for c in order if c in items and items[c]["nivalo_id"] == ch.nivalo_id]
             pos = order.index(old[0]) if old else len(order)
             for c in old:
                 items.pop(c)
-            add_new(ch, pos, drop_mag=ch.mag_id)
-            mags.pop(ch.mag_id, None)
+            add_new(ch, pos, drop_mag=ch.nivalo_id)
+            mags.pop(ch.nivalo_id, None)
         elif ch.op in ("SPLIT", "ADD"):
             if ch.op == "SPLIT" and not need(ch.cand_id, "SPLIT"):
                 continue
@@ -405,19 +405,19 @@ def apply_p2(p1_magok: list[TeszMag], p1_tesz: list[Tesz], changes: list[P2Chang
             if ch.op == "SPLIT":
                 items.pop(ch.cand_id)
             add_new(ch, pos)
-    magok = [TeszMag.model_validate(mags[m]) for m in mag_order if m in mags]
-    tesz = [Tesz.model_validate(items[c]) for c in order if c in items]
+    magok = [TeszNivalo.model_validate(mags[m]) for m in mag_order if m in mags]
+    tesz = [TeszSzin.model_validate(items[c]) for c in order if c in items]
     if not tesz:
-        raise ValueError("A javítások után egyetlen TESZ-nivaló sem maradt.")
-    magok, tesz, w2 = link_magok(magok, tesz, strict=False)
+        raise ValueError("A javítások után egyetlen TESZ-SZÍN sem maradt.")
+    magok, tesz, w2 = link_nivalok(magok, tesz, strict=False)
     return magok, tesz, warnings + w2
 
 
 def finish_p2(ctx: Context, job: dict, p1: P1Output, obj: P2Output, flags: list) -> dict:
-    magok, final, warnings = apply_p2(p1.tesz_magok, p1.tesz, obj.changes)
-    flags2 = check_rules(p1, job, magok, final, torzs_size=len(ctx.mag_torzs()))
-    art = obj.model_dump() | {"final_magok": [m.model_dump() for m in magok],
-                              "final_tesz": [t.model_dump() for t in final],
+    magok, final, warnings = apply_p2(p1.nivalok, p1.szinek, obj.changes)
+    flags2 = check_rules(p1, job, magok, final, torzs_size=len(ctx.tesz_torzs()))
+    art = obj.model_dump() | {"final_nivalok": [m.model_dump() for m in magok],
+                              "final_szinek": [t.model_dump() for t in final],
                               "warnings": p1.link_warnings + warnings,
                               "rule_flags_before": [f.as_dict() for f in flags],
                               "rule_flags_after": [f.as_dict() for f in flags2]}
@@ -439,7 +439,7 @@ def run_p2(ctx: Context, job: dict, p1: P1Output) -> dict:
     try:
         obj, _ = call_json(ctx.llm("P2"), ctx.system, user, P2Output,
                            log=ctx.logger(job["job_id"], "P2", ctx.settings.p2),
-                           check=lambda o: apply_p2(p1.tesz_magok, p1.tesz, o.changes))
+                           check=lambda o: apply_p2(p1.nivalok, p1.szinek, o.changes))
     except LLMError as exc:
         record_error(ctx, job["job_id"], "P2", str(exc), "P1_KESZ")
         raise
@@ -451,19 +451,23 @@ def load_p1(ctx: Context, job_id: str) -> P1Output:
 
 
 # ------------------------------------------------------------------ P3 + gráf
-def final_lists(p1: P1Output | dict, p2_art: dict | None) -> tuple[list[TeszMag], list[Tesz]]:
-    """A végleges MAG- és változatlista a P2-eredményből (régi eredménynél egyelemű MAG-okkal)."""
-    if p2_art and p2_art.get("final_tesz"):
-        magok = [TeszMag.model_validate(m) for m in p2_art.get("final_magok") or []]
-        tesz = [Tesz.model_validate(t) for t in p2_art["final_tesz"]]
+def final_lists(p1: P1Output | dict, p2_art: dict | None) -> tuple[list[TeszNivalo], list[TeszSzin]]:
+    """A végleges TESZ-nivaló- és változatlista a P2-eredményből (régi eredménynél egyelemű TESZ-nivalókkal)."""
+    if p2_art and p2_art.get("final_szinek"):
+        magok = [TeszNivalo.model_validate(m) for m in p2_art.get("final_nivalok") or []]
+        tesz = [TeszSzin.model_validate(t) for t in p2_art["final_szinek"]]
     else:
         p1 = p1 if isinstance(p1, P1Output) else P1Output.model_validate(p1)
-        magok, tesz = p1.tesz_magok, p1.tesz
-    magok, tesz, _ = link_magok(list(magok), list(tesz), strict=False)
+        magok, tesz = p1.nivalok, p1.szinek
+    magok, tesz, _ = link_nivalok(list(magok), list(tesz), strict=False)
     return magok, tesz
 
 
-def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], final: list[Tesz]) -> tuple:
+def _hu(group: str, code: str) -> str:
+    return (vocab()[group].get(code) or {}).get("hu", code)
+
+
+def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo], final: list[TeszSzin]) -> tuple:
     """Egyesítés (csak olvas): (WritePlan, összefoglaló, Resolver). A P3-hívás itt fut."""
     import time
 
@@ -471,28 +475,28 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], fin
     started = time.monotonic()
     res = Resolver(ctx)
     labels = [(m.label_hu, "hu") for m in magok] + [(m.label_en, "en") for m in magok]
-    res.prefetch_aliases("TESZ_MAG", labels)
+    res.prefetch_aliases("TESZ_NIVALO", labels)
     szers = [m.primary_szer for m in magok] + [s for t in final for s in t.secondary_szer]
     res.prefetch_aliases("SZER_ELEM", [(s.label_hu, "hu") for s in szers] + [(s.label_en, "en") for s in szers])
     jid = res.resolve_job(job, p1_meta)
     # 1. gyors út minden elemre, a kétes esetek gyűjtése
     for s in szers:
         res.plan_szer(s)
-    planned = {m.mag_id: res.plan_mag(m) for m in magok}
-    # 2. egyetlen P3-hívás a kétes esetekre (MAG és SZER-ELEM)
+    planned = {m.nivalo_id: res.plan_nivalo(m) for m in magok}
+    # 2. egyetlen P3-hívás a kétes esetekre (TESZ-nivaló és SZER-ELEM)
     planned_at = time.monotonic()
     res.decide()
     decided_at = time.monotonic()
     # 3. végleges döntések és az írandók összegyűjtése
     plan = res.plan
-    summary = {"job_id": jid, "magok": [], "tesz": [], "review": [], "p3_cases": len(res.cases)}
+    summary = {"job_id": jid, "nivalok": [], "szinek": [], "review": [], "p3_cases": len(res.cases)}
     mag_ids: dict[str, str] = {}
     for m in magok:
         p = res.szer(m.primary_szer)
-        rm = res.mag(m, planned[m.mag_id], p.entity_id)
-        mag_ids[m.mag_id] = rm.entity_id
+        rm = res.mag(m, planned[m.nivalo_id], p.entity_id)
+        mag_ids[m.nivalo_id] = rm.entity_id
         new = rm.decision not in ("ALIAS", "SAME")
-        entry = plan.magok.setdefault(rm.entity_id, {
+        entry = plan.nivalok.setdefault(rm.entity_id, {
             "props": {}, "emb": None, "new": False, "tesz_type": m.tesz_type, "primary": p.entity_id,
             "role": m.primary_szer.role, "melyites": [], "kesz_ids": []})
         entry["kesz_ids"] = list(dict.fromkeys(entry["kesz_ids"] + m.kesz_ids))
@@ -501,20 +505,20 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], fin
             entry["props"] = {"label_hu": m.label_hu, "label_en": m.label_en, "outcome_hu": m.outcome_hu,
                               "status": "AI_ELLENORZOTT", "prompt_version": ctx.pv, "gen": vocab().get("version", "")}
             if ctx.embedder.enabled:
-                entry["emb"] = res.encode(res.mag_text(m))
+                entry["emb"] = res.encode(res.nivalo_text(m))
         entry["melyites"] += [x.model_dump() for x in m.melyites_jeloltek]
-        plan.alias("TESZ_MAG", rm.entity_id, [(m.label_hu, "hu"), (m.label_en, "en")] + rm.extra_aliases, rm.via)
-        summary["magok"].append({"mag_id": m.mag_id, "graph_id": rm.entity_id, "decision": rm.decision,
+        plan.alias("TESZ_NIVALO", rm.entity_id, [(m.label_hu, "hu"), (m.label_en, "en")] + rm.extra_aliases, rm.via)
+        summary["nivalok"].append({"nivalo_id": m.nivalo_id, "graph_id": rm.entity_id, "decision": rm.decision,
                                  "via": rm.via, "label_hu": m.label_hu, "tesz_type": m.tesz_type,
                                  "kesz_ids": m.kesz_ids})
         if rm.needs_review or p.needs_review:
             summary["review"].append({"kind": "mag", "label": m.label_hu, "id": rm.entity_id})
     existing = set()
-    tids = [res.tesz_id(mag_ids[t.mag_id], t) for t in final]
+    tids = [res.tesz_id(mag_ids[t.nivalo_id], t) for t in final]
     if hasattr(ctx.graph, "existing_ids"):
-        existing = ctx.graph.existing_ids("TESZ", tids)
+        existing = ctx.graph.existing_ids("TESZ_SZIN", tids)
     for t, tid in zip(final, tids):
-        gm = mag_ids[t.mag_id]
+        gm = mag_ids[t.nivalo_id]
         secondary = []
         for s in t.secondary_szer:
             rs = res.szer(s)
@@ -522,31 +526,34 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], fin
                               "kozeg": s.kozeg or t.kozeg, "helyzet": s.helyzet or t.helyzet})
             if rs.needs_review:
                 summary["review"].append({"kind": "szer", "label": s.label_hu, "id": rs.entity_id})
-        decision = "SAME" if tid in existing or tid in plan.tesz else "NEW"
-        if tid not in plan.tesz:
-            # A TESZ-nivaló a ⟨MAG, KÖZ-eg, HELY-zet⟩ példány: címkét és ALAP-jelölést nem tárol (a címke a
-            # MAG-é, az ALAP-SZÍN munkakörönkénti, a TARTALMAZ_TESZT élen van).
-            plan.tesz[tid] = {
+        decision = "SAME" if tid in existing or tid in plan.szinek else "NEW"
+        if tid not in plan.szinek:
+            # A TESZ-SZÍN a ⟨TESZ-nivaló, KÖZ-eg, HELY-zet⟩ példány: címkét és ALAP-jelölést nem tárol (a címke a
+            # TESZ-nivalóé, az ALAP-SZÍN munkakörönkénti, a TARTALMAZ_TESZT élen van).
+            plan.szinek[tid] = {
                 "mag": gm,
-                "props": {"szin_kulonbseg_hu": t.szin_kulonbseg_hu or "", "status": "AI_ELLENORZOTT",
-                          "prompt_version": ctx.pv},
+                # szin: rövid megjelenítési név (a neo4j Browser felirata), pl. "Társas / Kritikus"
+                "props": {"szin": f"{_hu('kozeg', t.kozeg)} / {_hu('helyzet', t.helyzet)}",
+                          "status": "AI_ELLENORZOTT", "prompt_version": ctx.pv},
                 "kozeg": [t.kozeg] + [k for k in t.kozeg_secondary if k != t.kozeg],
                 "helyzet": [t.helyzet] + ([t.helyzet_secondary] if t.helyzet_secondary
                                           and t.helyzet_secondary != t.helyzet else []),
                 "secondary": secondary}
         plan.links.append({"t": tid, "props": {
             "relevance": t.relevance, "expected_eqf": t.expected_eqf, "frequency": t.frequency,
-            "kor_id": t.kor_id, "cand_id": t.cand_id, "mag_cand_id": t.mag_id, "alap_szin": t.alap_szin,
+            "kor_id": t.kor_id, "cand_id": t.cand_id, "nivalo_cand_id": t.nivalo_id, "alap_szin": t.alap_szin,
             "kontextus_hu": t.kontextus_hu or "",
+            # munkakörfüggő: ehhez a munkakör ALAP-SZÍN-éhez képest mitől nehezebb/más (az ALAP-nál üres)
+            "szin_kulonbseg_hu": t.szin_kulonbseg_hu or "",
             "confidence": t.confidence, "prompt_version": ctx.pv}})
-        summary["tesz"].append({"cand_id": t.cand_id, "mag_id": t.mag_id, "tesz_id": tid, "mag_graph_id": gm,
+        summary["szinek"].append({"cand_id": t.cand_id, "nivalo_id": t.nivalo_id, "tesz_id": tid, "nivalo_graph_id": gm,
                                 "decision": decision, "via": "szin"})
     summary["timings"] = {"planning_seconds": round(planned_at - started, 3),
                           "decision_seconds": round(decided_at - planned_at, 3), **res.timings}
     return plan, summary, res
 
 
-def write_graph(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], final: list[Tesz]) -> dict:
+def write_graph(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo], final: list[TeszSzin]) -> dict:
     if ctx.graph is None:
         raise RuntimeError("A gráfba íráshoz neo4j-kapcsolat kell.")
     import time
@@ -555,12 +562,12 @@ def write_graph(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], fi
     t0 = time.monotonic()
     counts = ctx.graph.write_plan(plan)
     ctx.store.alias_add_many(plan.alias_index)
-    ctx._torzs = None  # a következő munkakör P1-e már az új MAG-okat is látja a törzsben
+    ctx._torzs = None  # a következő munkakör P1-e már az új TESZ-nivalókat is látja a törzsben
     summary["timings"]["writing_seconds"] = round(time.monotonic() - t0, 3)
     summary["written"] = counts
     if summary["review"]:
         ctx.store.enqueue(job["job_id"], "merge_review", {"items": summary["review"]})
-    print(f"P3 {job['job_id']}: {len(magok)} MAG, {len(final)} változat, {summary['p3_cases']} kétes eset; "
+    print(f"P3 {job['job_id']}: {len(magok)} TESZ-nivaló, {len(final)} változat, {summary['p3_cases']} kétes eset; "
           f"idők (mp): {summary['timings']}", flush=True)
     ctx.store.save_artifact(job["job_id"], "P3", summary, ctx.pv)
     ctx.store.set_status(job["job_id"], "GRAFBAN")
@@ -570,10 +577,10 @@ def write_graph(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], fi
 
 # ------------------------------------------------------------------ P5: tanúsítási szöveg
 def run_p5(ctx: Context, limit: int = 1000, chunk: int = 6, log=print, max_valtozat: int = 12) -> dict:
-    """MAG-rubrika (rubric_alap_hu) és változatonként igazolási mondat + SZÍN-rubrika (rubric_szin_hu)
+    """TESZ-nivaló-rubrika (rubric_alap_hu) és változatonként igazolási mondat + SZÍN-rubrika (rubric_szin_hu)
     a gráf azon elemeihez, amelyeknek még nincs (egyszer, nem munkakörönként).
 
-    Egy hívásba legfeljebb `chunk` MAG és `max_valtozat` változat kerül; ha a válasz így is eléri a
+    Egy hívásba legfeljebb `chunk` TESZ-nivaló és `max_valtozat` változat kerül; ha a válasz így is eléri a
     max_tokens korlátot, a csomag kettéválik és újra megy (a kimenetet nem vágjuk)."""
     rows = ctx.graph.p5_todo(limit)
     stat = {"mag": 0, "valtozat": 0, "kesz_mag": 0, "kesz_valtozat": 0, "hiba": 0}
@@ -586,14 +593,14 @@ def run_p5(ctx: Context, limit: int = 1000, chunk: int = 6, log=print, max_valto
             item["rubric_alap_hu"] = r["rubric_alap_hu"]
         if r.get("kontextusok"):
             item["kontextusok"] = r["kontextusok"]
-        item["valtozatok"] = [{k: v for k, v in x.items() if k != "kesz" and v not in (None, "")}
-                              for x in r["valtozatok"] if not x["kesz"]]
+        item["szinek"] = [{k: v for k, v in x.items() if k != "kesz" and v not in (None, "", [])}
+                              for x in r["szinek"] if not x["kesz"]]
         items.append(item)
         stat["mag"] += int(need_alap)
-        stat["valtozat"] += len(item["valtozatok"])
+        stat["valtozat"] += len(item["szinek"])
     parts, cur = [], []
     for it in items:
-        if cur and (len(cur) >= chunk or sum(len(x["valtozatok"]) for x in cur) + len(it["valtozatok"]) > max_valtozat):
+        if cur and (len(cur) >= chunk or sum(len(x["szinek"]) for x in cur) + len(it["szinek"]) > max_valtozat):
             parts.append(cur)
             cur = []
         cur.append(it)
@@ -602,33 +609,33 @@ def run_p5(ctx: Context, limit: int = 1000, chunk: int = 6, log=print, max_valto
 
     def send(part: list[dict]) -> None:
         want_m = {x["id"] for x in part if x["kell_alap"]}
-        want_v = {v["id"] for x in part for v in x["valtozatok"]}
+        want_v = {v["id"] for x in part for v in x["szinek"]}
         user = render(prompt("p5_tanusitas"), tesz_list_json=_json(part))
 
-        def check(o: P5MagOutput):
-            missing = (want_m - {x.id for x in o.magok}) | (want_v - {x.id for x in o.valtozatok})
+        def check(o: P5NivaloOutput):
+            missing = (want_m - {x.id for x in o.nivalok}) | (want_v - {x.id for x in o.szinek})
             if missing:
                 raise ValueError(f"Hiányzó id-k: {sorted(missing)}")
 
         try:
-            obj, _ = call_json(ctx.llm("P5"), ctx.system, user, P5MagOutput,
+            obj, _ = call_json(ctx.llm("P5"), ctx.system, user, P5NivaloOutput,
                                log=ctx.logger(None, "P5", ctx.settings.p5), check=check)
         except LLMError as exc:
             if "max_tokens" in str(exc) and len(part) > 1:
                 half = len(part) // 2
-                log(f"P5: a {len(part)} MAG-os csomag túl hosszú, kettéválik.")
+                log(f"P5: a {len(part)} TESZ-nivalós csomag túl hosszú, kettéválik.")
                 send(part[:half])
                 send(part[half:])
                 return
             stat["hiba"] += len(want_m) + len(want_v)
-            log(f"P5 hiba ({len(part)} MAG): {exc}")
+            log(f"P5 hiba ({len(part)} TESZ-nivaló): {exc}")
             return
-        mrows = [x.model_dump() for x in obj.magok if x.id in want_m]
-        vrows = [x.model_dump() for x in obj.valtozatok if x.id in want_v]
+        mrows = [x.model_dump() for x in obj.nivalok if x.id in want_m]
+        vrows = [x.model_dump() for x in obj.szinek if x.id in want_v]
         ctx.graph.set_certificates(mrows, vrows, ctx.pv)
         stat["kesz_mag"] += len(mrows)
         stat["kesz_valtozat"] += len(vrows)
-        log(f"P5: MAG {stat['kesz_mag']}/{stat['mag']}, változat {stat['kesz_valtozat']}/{stat['valtozat']}")
+        log(f"P5: TESZ-nivaló {stat['kesz_mag']}/{stat['mag']}, változat {stat['kesz_valtozat']}/{stat['valtozat']}")
 
     for part in parts:
         send(part)
@@ -674,13 +681,13 @@ def process_job(ctx: Context, job_id: str, until: str = "graph", force: bool = F
 def approve_job(ctx: Context, queue_id: int, final_override: dict | None = None) -> dict:
     """Szakértői jóváhagyás: a (szerkesztett) végső lista a gráfba kerül.
 
-    final_override: {"final_magok": [...], "final_tesz": [...]} (régi alak: csak a változatlista)."""
+    final_override: {"final_nivalok": [...], "final_szinek": [...]} (régi alak: csak a változatlista)."""
     row = next(r for r in ctx.store.queue() if r["id"] == queue_id)
     job = ctx.store.job(row["job_id"])
     p1 = ctx.store.artifact(row["job_id"], "P1") or {}
     p2 = ctx.store.artifact(row["job_id"], "P2") or {}
     if isinstance(final_override, list):
-        final_override = {"final_tesz": final_override, "final_magok": p2.get("final_magok", [])}
+        final_override = {"final_szinek": final_override, "final_nivalok": p2.get("final_nivalok", [])}
     magok, final = final_lists(p1, final_override or p2)
     summary = write_graph(ctx, job, p1, magok, final)
     ctx.store.decide(queue_id, "JOVAHAGYVA", {"final_override": bool(final_override)})
@@ -720,34 +727,34 @@ def dry_run(job: dict, s: Settings | None = None, graph=None, llm_override: dict
         merge = None
         if graph is not None:
             _, summary, _ = merge_plan(ctx, job, p1.model_dump(), magok, final)
-            merge = {m["mag_id"]: m for m in summary["magok"]}
-            tmerge = {t["cand_id"]: t for t in summary["tesz"]}
+            merge = {m["nivalo_id"]: m for m in summary["nivalok"]}
+            tmerge = {t["cand_id"]: t for t in summary["szinek"]}
             out["p3_cases"] = summary["p3_cases"]
-        out["magok"] = []
+        out["nivalok"] = []
         for m in magok:
-            vs = [t for t in final if t.mag_id == m.mag_id]
-            out["magok"].append({
-                "mag_id": m.mag_id, "kor_id": m.kor_id, "label_hu": m.label_hu, "tesz_type": m.tesz_type,
+            vs = [t for t in final if t.nivalo_id == m.nivalo_id]
+            out["nivalok"].append({
+                "nivalo_id": m.nivalo_id, "kor_id": m.kor_id, "label_hu": m.label_hu, "tesz_type": m.tesz_type,
                 "primary_szer": m.primary_szer.label_hu, "relevance": m.relevance,
                 "melyites_jeloltek": [x.model_dump() for x in m.melyites_jeloltek],
-                "mag_ref": m.mag_ref, "kesz_ids": m.kesz_ids, "kontextus_hu": m.kontextus_hu,
-                "egyesites": (merge or {}).get(m.mag_id, {}).get("decision"),
-                "valtozatok": [{"cand_id": t.cand_id, "alap_szin": t.alap_szin, "label_hu": t.label_hu,
+                "nivalo_ref": m.nivalo_ref, "kesz_ids": m.kesz_ids, "kontextus_hu": m.kontextus_hu,
+                "egyesites": (merge or {}).get(m.nivalo_id, {}).get("decision"),
+                "szinek": [{"cand_id": t.cand_id, "alap_szin": t.alap_szin, "label_hu": t.label_hu,
                                 "kozeg": t.kozeg, "helyzet": t.helyzet, "szin_kulonbseg_hu": t.szin_kulonbseg_hu,
                                 "frequency": t.frequency, "expected_eqf": t.expected_eqf,
                                 "egyesites": (tmerge or {}).get(t.cand_id, {}).get("decision") if merge else None}
                                for t in vs]})
-        out["szamok"] = {"mag": len(magok), "tesz": len(final),
-                         "core_mag": sum(m.relevance == "CORE" for m in magok),
+        out["szamok"] = {"nivalo": len(magok), "szin": len(final),
+                         "core_nivalo": sum(m.relevance == "CORE" for m in magok),
                          "nem_alap": sum(not t.alap_szin for t in final),
                          "melyitesi_jelolt": sum(len(m.melyites_jeloltek) for m in magok),
-                         "torzsbol": sum(bool(m.mag_ref) for m in magok),
-                         "torzs_meret": len(ctx.mag_torzs())}
-        # próbafutás-lánchoz: ennek a munkakörnek az új MAG-jai a következő törzsébe kerülhetnek
-        out["new_torzs"] = [{"id": f"dry:{jid}:{m.mag_id}", "label_hu": m.label_hu, "label_en": m.label_en,
+                         "torzsbol": sum(bool(m.nivalo_ref) for m in magok),
+                         "torzs_meret": len(ctx.tesz_torzs())}
+        # próbafutás-lánchoz: ennek a munkakörnek az új TESZ-SZÍN-jei a következő törzsébe kerülhetnek
+        out["new_torzs"] = [{"id": f"dry:{jid}:{m.nivalo_id}", "label_hu": m.label_hu, "label_en": m.label_en,
                              "outcome_hu": m.outcome_hu, "tesz_type": m.tesz_type,
                              "primary_szer": m.primary_szer.model_dump(), "kesz_ids": m.kesz_ids}
-                            for m in magok if not m.mag_ref]
+                            for m in magok if not m.nivalo_ref]
         out["ok"] = True
     except Exception as exc:  # a próbafutás eredménye a hiba is
         out["ok"] = False
@@ -777,18 +784,18 @@ def format_dry_run(out: dict) -> str:
         lines.append(f"HIBA: {out.get('error', '')}")
     else:
         n = out["szamok"]
-        lines.append(f"MAG: {n['mag']} (CORE {n['core_mag']}, törzsből {n.get('torzsbol', 0)}/{n.get('torzs_meret', 0)})"
-                     f" · TESZ-nivaló: {n['tesz']} (nem ALAP-SZÍN: "
+        lines.append(f"TESZ-SZÍN: {n['nivalo']} (CORE {n['core_nivalo']}, törzsből {n.get('torzsbol', 0)}/"
+                     f"{n.get('torzs_meret', 0)}) · TESZ-SZÍN: {n['szin']} (nem ALAP-SZÍN: "
                      f"{n['nem_alap']}) · mélyítési jelölt: {n['melyitesi_jelolt']} · P2: {out['p2']['verdict']}"
                      + (f" ({out['p2']['reason']})" if out["p2"].get("reason") else "")
                      + (f" · P3 kétes eset: {out['p3_cases']}" if "p3_cases" in out else ""))
-        for m in out["magok"]:
+        for m in out["nivalok"]:
             eg = f" [{m['egyesites']}]" if m.get("egyesites") else ""
-            ref = " [törzs]" if m.get("mag_ref") else ""
-            lines.append(f"  {m['mag_id']} {m['tesz_type']:<15} {m['relevance']:<10} {m['label_hu']}"
+            ref = " [törzs]" if m.get("nivalo_ref") else ""
+            lines.append(f"  {m['nivalo_id']} {m['tesz_type']:<15} {m['relevance']:<10} {m['label_hu']}"
                          f"  ‹{m['primary_szer']}›{ref}{eg}  KÉSZ: {','.join(k[5:] for k in m.get('kesz_ids') or [])}"
                          + (f"  ({m['kontextus_hu']})" if m.get("kontextus_hu") else ""))
-            for v in m["valtozatok"]:
+            for v in m["szinek"]:
                 mark = "●" if v["alap_szin"] else "○"
                 extra = "" if v["alap_szin"] else f" – {v.get('szin_kulonbseg_hu') or ''}"
                 lines.append(f"      {mark} {v['cand_id']} {v['kozeg']}/{v['helyzet']} EQF {v['expected_eqf']}{extra}")
@@ -808,12 +815,12 @@ def format_dry_run(out: dict) -> str:
 
 # ------------------------------------------------------------------ P4a
 ANCHOR_QUERIES = {
-    "KOZEG": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:KOZEGBEN_ZAJLIK {primary: true}]->(:Kozeg {id: $v})",
-    "HELYZET": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:HELYZETBEN_VEGZENDO {primary: true}]->(:Helyzet {id: $v})",
-    "TESZ_TIPUS": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:MAGJA]->(:TeszMag)-[:TIPUSA]->(:TeszTipus {id: $v})",
-    "SZER_ELEM": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo) "
-                 "WHERE (t)-[:HASZNAL]->(:SzerElem {id: $v}) OR (t)-[:MAGJA]->(:TeszMag)-[:IRANYUL]->(:SzerElem {id: $v})",
-    "SZIN": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k:Kozeg), "
+    "KOZEG": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszSzin)-[:KOZEGBEN_ZAJLIK {primary: true}]->(:Kozeg {id: $v})",
+    "HELYZET": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszSzin)-[:HELYZETBEN_VEGZENDO {primary: true}]->(:Helyzet {id: $v})",
+    "TESZ_TIPUS": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszSzin)-[:SZINEZI]->(:TeszNivalo)-[:TIPUSA]->(:TeszTipus {id: $v})",
+    "SZER_ELEM": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszSzin) "
+                 "WHERE (t)-[:HASZNAL]->(:SzerElem {id: $v}) OR (t)-[:SZINEZI]->(:TeszNivalo)-[:IRANYUL]->(:SzerElem {id: $v})",
+    "SZIN": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszSzin)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k:Kozeg), "
             "(t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h:Helyzet) WHERE k.id + '|' + h.id = $v",
 }
 
@@ -821,14 +828,14 @@ ANCHOR_QUERIES = {
 def run_p4a(ctx: Context, anchor_type: str, anchor_value: str, runs: int = 3, limit: int = 40) -> dict:
     q = ANCHOR_QUERIES[anchor_type] + (
         " WITH t, collect(DISTINCT m.label_hu) AS jobs "
-        "MATCH (t)-[:MAGJA]->(g:TeszMag), (t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(kz:Kozeg), "
+        "MATCH (t)-[:SZINEZI]->(g:TeszNivalo), (t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(kz:Kozeg), "
         "(t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(hz:Helyzet) "
         "OPTIONAL MATCH (g)-[:IRANYUL]->(s:SzerElem) OPTIONAL MATCH (g)-[:TIPUSA]->(ty) "
         "RETURN t.id AS id, g.label_hu AS label_hu, g.outcome_hu AS outcome_hu, ty.id AS tesz_type, "
         "s.label_hu AS primary_szer, kz.id AS kozeg, hz.id AS helyzet, jobs LIMIT $limit")
     tesz = ctx.graph.run(q, v=anchor_value, limit=limit)
     if not tesz:
-        raise ValueError("Ehhez a horgonyhoz nincs TESZ-nivaló a gráfban.")
+        raise ValueError("Ehhez a horgonyhoz nincs TESZ-SZÍN a gráfban.")
     existing = ctx.graph.fulltext_candidates("KESZSEG", anchor_value.replace("_", " "), k=10)
     user = render(prompt("p4a_keszseg"), anchor_type=anchor_type, anchor_value=anchor_value,
                   anchor_tesz_list_json=json.dumps(tesz, ensure_ascii=False),
