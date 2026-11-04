@@ -893,7 +893,7 @@ def test_web_dry_run_toggle_and_results(tmp_path, monkeypatch):
 
 
 # ---------------------------------------------------------------- v2: általános MAG, KÉSZ-ség- és MAG-törzs
-def _torzs_rec(mid="gh_mag_tanora", label="Tanóra vagy foglalkozás megtartása"):
+def _torzs_rec(mid="gh_niv_tanora", label="Tanóra vagy foglalkozás megtartása"):
     return {"id": mid, "label_hu": label, "label_en": "Deliver a lesson or session", "outcome_hu": "Megtartott óra.",
             "tesz_type": "SUPPORT_SERVE", "kesz_ids": ["gh_c_246", "gh_c_239"],
             "primary_szer": {"label_hu": "Foglalkozásterv", "label_en": "Session plan", "kind": "PLAN",
@@ -944,19 +944,24 @@ def test_mag_ref_from_torzs_without_p3(tmp_path):
     ctx.extra_torzs = [_torzs_rec()]
     obj, _ = call_json(ctx.llm("P1"), ctx.p1_system(), "job", P1Output, pre=ctx.resolve_mag_refs)
     m9 = obj.nivalok[8]
-    assert m9.nivalo_ref == "gh_mag_tanora" and m9.label_hu == "Tanóra vagy foglalkozás megtartása"
+    assert m9.nivalo_ref == "gh_niv_tanora" and m9.label_hu == "Tanóra vagy foglalkozás megtartása"
     assert m9.kesz_ids == ["gh_c_246", "gh_c_239"] and m9.tesz_type == "SUPPORT_SERVE"
     c09 = next(t for t in obj.szinek if t.nivalo_id == "M09")
     assert c09.label_hu == m9.label_hu and c09.kontextus_hu == "betegek és hozzátartozók"
     ctx.graph = FakeGraph()
     plan, summary, _ = merge_plan(ctx, {"job_id": "x", "title": "Ápoló"}, obj.model_dump(), obj.nivalok, obj.szinek)
     s9 = next(m for m in summary["nivalok"] if m["nivalo_id"] == "M09")
-    assert (s9["decision"], s9["via"], s9["graph_id"]) == ("SAME", "torzs", "gh_mag_tanora")
+    assert (s9["decision"], s9["via"], s9["graph_id"]) == ("SAME", "torzs", "gh_niv_tanora")
     cases = json.loads(calls[0].split("ESETEK:\n", 1)[1].split("\n\nKIMENET", 1)[0])
     assert all(c["candidate"].get("label_hu") != m9.label_hu for c in cases if c["type"] == "TESZ_NIVALO")
     link = next(l for l in plan.links if l["props"]["nivalo_cand_id"] == "M09")
     assert link["props"]["kontextus_hu"] == "betegek és hozzátartozók"
-    assert plan.nivalok["gh_mag_tanora"]["kesz_ids"] == ["gh_c_246", "gh_c_239"]
+    assert plan.nivalok["gh_niv_tanora"]["kesz_ids"] == ["gh_c_246", "gh_c_239"]
+    # a FakeGraph-ban a törzs-elem nincs meg (pl. gráf-újraépítés után): teljes mezőkkel, új elemként jön létre
+    assert plan.nivalok["gh_niv_tanora"]["new"] and plan.nivalok["gh_niv_tanora"]["props"]["label_hu"]
+    # a régi azonosító-előtag (gh_mag_) a hash megtartásával gh_niv_-re fordul
+    from gaphopper.schemas import TeszNivalo
+    assert TeszNivalo.model_validate(d["nivalok"][0] | {"nivalo_ref": "gh_mag_abc"}).nivalo_ref == "gh_niv_abc"
     # ismeretlen kód: sémahiba (újrapróbálás a hibaüzenettel)
     d["nivalok"][8]["nivalo_ref"] = "T99"
     with pytest.raises(LLMError, match="ismeretlen nivalo_ref"):

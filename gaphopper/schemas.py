@@ -127,6 +127,10 @@ class TeszNivalo(_Base):
             for old, new in (("mag_id", "nivalo_id"), ("mag_ref", "nivalo_ref")):
                 if old in data and new not in data:
                     data[new] = data.pop(old)
+            ref = data.get("nivalo_ref")
+            if isinstance(ref, str) and ref.startswith("gh_mag_"):
+                # a 2026-11-04 előtti azonosító-előtag: a hash azonos, csak az előtag változott
+                data["nivalo_ref"] = "gh_niv_" + ref[len("gh_mag_"):]
             mj = data.get("melyites_jeloltek")
             if isinstance(mj, (str, dict)) or (isinstance(mj, list) and any(not isinstance(x, dict) for x in mj)):
                 # a bíráló néha szövegként írja: a mélyítési jelölt nem kötelező, a szöveges tétel kimarad

@@ -491,11 +491,18 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo], 
     plan = res.plan
     summary = {"job_id": jid, "nivalok": [], "szinek": [], "review": [], "p3_cases": len(res.cases)}
     mag_ids: dict[str, str] = {}
+    resolved = {m.nivalo_id: (res.szer(m.primary_szer), None) for m in magok}
+    resolved = {k: (p, res.mag(m, planned[m.nivalo_id], p.entity_id)) for m in magok
+                for k, (p, _) in [(m.nivalo_id, resolved[m.nivalo_id])]}
+    # Biztonsági háló: a törzsre vagy aliasra hivatkozó, de a gráfban már nem létező TESZ-nivaló (pl. gráf-újraépítés
+    # után) új elemként, teljes mezőkkel jön létre, nem üres csomópontként.
+    refs = [rm.entity_id for _, rm in resolved.values() if rm.decision in ("ALIAS", "SAME")]
+    missing = set(refs) - (ctx.graph.existing_ids("TESZ_NIVALO", refs) if refs and hasattr(ctx.graph, "existing_ids")
+                           else set(refs))
     for m in magok:
-        p = res.szer(m.primary_szer)
-        rm = res.mag(m, planned[m.nivalo_id], p.entity_id)
+        p, rm = resolved[m.nivalo_id]
         mag_ids[m.nivalo_id] = rm.entity_id
-        new = rm.decision not in ("ALIAS", "SAME")
+        new = rm.decision not in ("ALIAS", "SAME") or rm.entity_id in missing
         entry = plan.nivalok.setdefault(rm.entity_id, {
             "props": {}, "emb": None, "new": False, "tesz_type": m.tesz_type, "primary": p.entity_id,
             "role": m.primary_szer.role, "melyites": [], "kesz_ids": []})
