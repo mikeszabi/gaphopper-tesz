@@ -325,3 +325,104 @@ Token- és költségmérés (P1 + P2, ugyanaz a 3 munkakör, ugyanazok a modelle
   (30–70 mp, ha van kétes eset).
 
 Nyitott: a P5 (MAG- és SZÍN-rubrika) a mérés idején nem futott le, mert az Anthropic-fiók egyenlege elfogyott.
+
+## 9. v2: általánosítás (2026-11-04)
+
+**A gond.** Az első változat MAG-jai túl specifikusak voltak. Az egyetemi oktatónál például a
+„Laboratóriumi gyakorlat megtartása gépész hallgatóknak” és a „Gyakorlati tárgy órájának megtartása” két
+MAG lett, holott ugyanaz a munka. Az „…online” változat a KÖZ-eget a címkébe tette. A szakdolgozat- és a
+TDK-témavezetés, illetve az ipari és a kutatási partnerkapcsolat is külön MAG-ot kapott. Az ilyen MAG-okhoz nem
+illeszthetők általános KÉSZ-ségek, és a munkakörök között sem ismétlődnek.
+
+**Új granularitás.** TESZ-MAG = általános munkaminta × SZER-ELEM-fajta (+ ERED-mény-fajta). A MAG legfeljebb 6
+szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges, és a meghatározó SZER-ELEM is fajta szintű
+(„Nyilvántartás”, nem „Betegdokumentáció”). A szakmai specifikum (szakterület, célcsoport, tantárgy) a
+MunkaKor–TESZ él `kontextus_hu` mezőjébe, a kísérő SZER-ELEM-be és a P5 rubrikapéldáiba kerül, a MAG
+címkéjébe soha. A változatnak nincs saját címkéje: a SZÍN csak ⟨KÖZ-eg, HELY-zet⟩-ben és a
+`szin_kulonbseg_hu`-ban él.
+
+**Új próbák:**
+- G1, munkakör-csere: a címke legalább 3 munkakörben előfordulhatna.
+- G2, KÉSZ-ség-illeszthetőség: a MAG-hoz 2–4 törzselem tartozik (`kesz_ids`).
+- G3, SZÍN-semlegesség: a változat címkéje megegyezik a MAG-éval.
+- G4, összevonás: azonos típus és ERED-mény-fajta, valamint legalább 2/3 KÉSZ-ség-átfedés esetén egy MAG.
+
+A célcsoport kontextus, nem új MAG.
+
+**Törzs előbb.** A P1 rendszerpromptja két gyorsítótárazott blokk:
+1. P0 + KÉSZ-ség-törzs: 275 elem a `config/kesz_torzs.yaml`-ból, a gráfban `Keszseg` csomópontként, a MAG
+   `IGENYEL` élekkel kötődik hozzá.
+2. MAG-törzs: a gráf ugyanezzel a szótárverzióval (`TeszMag.gen`) készült, legtöbbet használt ≤80 MAG-ja.
+
+Illeszkedő törzs-MAG-nál a P1 csak `mag_ref`-et ír, a MAG mezőit a kód tölti ki, és a P3 hívás nélkül oldja
+fel. Új szabályok:
+
+| Kód | Mit jelez |
+|---|---|
+| R17 | munkakör- vagy célcsoportszó a címkében vagy a meghatározó SZER-ELEM-ben |
+| R18 | G4-összevonási jelölt |
+| R19 | nagy törzs mellett túl sok új MAG |
+| R20 | 2-nél kevesebb `kesz_ids` |
+
+Új számok: MAG 6–12, CORE 4–9, TESZ-nivaló 8–18, a MAG-címke 2–6 szó.
+
+**Kalibrálás:** két kör, dry-run lánccal (`run --dry-run --chain --no-graph`; a korábbi munkakörök új MAG-jai a
+következő MAG-törzsébe kerülnek). Sorrend: oktató → ápoló → villanyszerelő.
+
+| Kör | Munkakör | MAG (CORE, a törzsből) | TESZ-nivaló | Jelzés a P1 után |
+|---|---|---|---|---|
+| 1. (`…-41a02390`) | oktató | 7 (6, 0) | 9 | R17 |
+| | ápoló | 8 (7, 0/7) | 11 | R4, R17 |
+| | villanyszerelő | 10 (7, 0/15) | 12 | R18 |
+| 2. (`…-fca75e97`) | oktató | 7 (6, 0) | 9 | R16, R17 |
+| | ápoló | 8 (7, 1/7) | 11 | – |
+| | villanyszerelő | 9 (5, 4/14) | 10 | – |
+| Valódi futás | oktató | 7 | 9 | R17 maradt → szakértői sor |
+| | ápoló (job_100-rekord) | 9 | 15 | – |
+| | villanyszerelő | 9 (3 a törzsből) | 11 | – |
+
+A két kör változtatásai:
+1. A törzs-elsőbbség kötelező, ha a típus, a munkaminta és az ERED-mény-fajta azonos, akkor is, ha más a
+   szakterület. Példák: nyilvántartás, előírás betartása.
+2. A meghatározó SZER-ELEM is fajta szintű.
+3. Az R17 a címet és a SZER-ELEM-et is nézi, a szakterület angol szavait viszont nem (a „health” hamis
+   találatot adott).
+4. A MAG-címke 2–6 szó.
+
+**Az egyetemi oktató MAG-jai (2. kör):**
+1. Tanóra vagy foglalkozás megtartása: ● Társas/Tanító, ○ Fizikai/Tanító (labor); kontextus: gépész hallgatók,
+   labor, gyakorlat, továbbképzés.
+2. Tananyag készítése.
+3. Szakmai munka témavezetése; kontextus: szakdolgozat, diplomamunka, TDK.
+4. Kutatási vagy fejlesztési feladat elvégzése: ○ Digitális/Együttműködési.
+5. Szakmai közlemény írása.
+6. Megbízás teljesítése.
+7. Szakmai kapcsolat építése és ápolása; kontextus: ipari és kutatási partnerek.
+
+Ez megfelel a 7 MAG-os célpéldának. A „Kísérlet vagy mérés elvégzése” a kutatási feladatba olvadt.
+
+**Közös MAG-ok.** A 2. kör láncában a villanyszerelő 4 MAG-ot választott a törzsből (előírás betartása,
+nyilvántartás vezetése, tájékoztatás, tanóra/foglalkozás), az ápoló 1-et. A valódi futásban az oktató a
+szakértői sorban maradt, ezért a törzs akkor még csak az ápoló MAG-jait tartalmazta. A villanyszerelő ebből 3-at
+választott (előírás betartása, nyilvántartás vezetése, munkatársak irányítása), és a P3 M1-őre egy kétes
+LLM-SAME döntést elutasított.
+
+**Token és költség** (P1 + P2, ugyanaz a 3 munkakör):
+
+| | P1 kimenet | P1 bemenet (ebből cache) | P2 hívás | Költség | P1-idő |
+|---|---|---|---|---|---|
+| v1, végső futás | 20 973 | 18 815 (8 589 olvasás) | 0 | 0,232 USD | 127 mp |
+| v2, 2. kör (lánc) | 12 274 | 33 720 (14 638 olvasás, 8 016 írás) | 1 | 0,185 USD | 73 mp |
+| v2, valódi futás | 17 840 (egy P1 újrapróba) | 45 876 | 1 | 0,234 USD | 108 mp |
+
+A kimenet a kevesebb MAG és a címke nélküli változat miatt 40%-kal csökkent. A bemenet a gyorsítótárazott
+törzsek miatt nő, de ez nagyrészt olcsó cache-olvasás. A valódi futásban az ápoló P1-e egyszer újrapróbált,
+mert egy MAG-ot hiányos mezőkkel írt üres törzs mellett.
+
+**Nyitott kérdések:**
+- A célcsoport-szólistában szerepel a „hallgató/student”, a célpélda viszont „Hallgatói kutatómunka
+  témavezetése”. Emiatt az oktató R17-tel a szakértői sorba került (a label_en „Supervise a student project”).
+  Döntés kell: maradjon-e a szó a listán.
+- A gyenge törzsválasztás: az ápolónál a „Megbízás teljesítése” (2. kör) inkább erőltetett.
+- A párhuzamos (`--workers N`) futásban minden munkakör ugyanazt a törzs-pillanatképet kapja. A
+  törzsépítéshez az első munkaköröket érdemes egymás után futtatni.

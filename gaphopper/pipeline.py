@@ -551,6 +551,7 @@ def write_graph(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], fi
     t0 = time.monotonic()
     counts = ctx.graph.write_plan(plan)
     ctx.store.alias_add_many(plan.alias_index)
+    ctx._torzs = None  # a következő munkakör P1-e már az új MAG-okat is látja a törzsben
     summary["timings"]["writing_seconds"] = round(time.monotonic() - t0, 3)
     summary["written"] = counts
     if summary["review"]:
