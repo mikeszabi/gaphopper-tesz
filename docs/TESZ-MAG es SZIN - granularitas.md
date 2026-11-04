@@ -413,7 +413,7 @@ LLM-SAME döntést elutasított.
 |---|---|---|---|---|---|
 | v1, végső futás | 20 973 | 18 815 (8 589 olvasás) | 0 | 0,232 USD | 127 mp |
 | v2, 2. kör (lánc) | 12 274 | 33 720 (14 638 olvasás, 8 016 írás) | 1 | 0,185 USD | 73 mp |
-| v2, valódi futás | 17 840 (egy P1 újrapróba) | 45 876 | 1 | 0,234 USD | 108 mp |
+| v2, valódi futás | 17 840 (egy P1 újrapróba) | 46 171 | 1 | 0,234 USD | 108 mp |
 
 A kimenet a kevesebb MAG és a címke nélküli változat miatt 40%-kal csökkent. A bemenet a gyorsítótárazott
 törzsek miatt nő, de ez nagyrészt olcsó cache-olvasás. A valódi futásban az ápoló P1-e egyszer újrapróbált,
