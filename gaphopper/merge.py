@@ -242,7 +242,7 @@ class Resolver:
         return self._add_case("N", "TESZ_NIVALO", cand, enriched)
 
     def mag(self, m: TeszNivalo, planned: Resolution | str | None, primary_szer_id: str) -> Resolution:
-        new_id = stable_id("gh_mag", m.tesz_type, primary_szer_id, m.label_hu)
+        new_id = stable_id("gh_niv", m.tesz_type, primary_szer_id, m.label_hu)
         if isinstance(planned, Resolution):
             return planned
         if planned is None:
@@ -263,7 +263,7 @@ class Resolver:
     # ---------------------------------------------------------------- TESZ-SZÍN (SZÍN)
     @staticmethod
     def tesz_id(nivalo_id: str, t: TeszSzin) -> str:
-        return stable_id("gh_tesz", nivalo_id, t.kozeg, t.helyzet)
+        return stable_id("gh_szin", nivalo_id, t.kozeg, t.helyzet)
 
     # ---------------------------------------------------------------- MUNKA-KÖR
     def resolve_job(self, job: dict, p1_meta: dict) -> str:

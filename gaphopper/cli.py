@@ -8,7 +8,7 @@
   run --dry-run --job ID.. [--input jobs.jsonl] [--workers N | --chain] [--no-graph]
                             próbafutás: P1–P3 lefut, a gráf és a state.sqlite nem változik;
                             eredmény: runs/dryrun/<job>.json
-  db-reset --yes            neo4j és state.sqlite ürítése (előtte mentés: runs/backup-<dátum>/)
+  db-reset --yes [--graph-only]   neo4j (és state.sqlite) ürítése, előtte mentés: runs/backup-<dátum>/
   batch submit --step P1|P2 [--limit N]   kötegelt beküldés (Anthropic)
   batch status | batch collect [--wait]
   manual-submit --job ID --step P1|P2 --file VÁLASZ.json
@@ -191,6 +191,18 @@ def cmd_db_reset(a):
     print(f"Mentés: {d}  ({len(nodes)} csomópont, {len(rels)} él)")
     print("neo4j törölve:", g.reset())
     g.close()
+    if a.graph_only:
+        # Csak a gráf épül újra: a P1/P2-eredmények maradnak, a gráfban lévő munkakörök a P3-ra várnak.
+        from .store import Store
+
+        S = Store(s.state_db)
+        S.db.execute("DELETE FROM alias_index")
+        n = S.db.execute("UPDATE jobs SET status='P2_ELFOGADVA', note='gráf-újraépítés: P3-ra vár' "
+                         "WHERE status='GRAFBAN'").rowcount
+        S.db.commit()
+        print(f"state.sqlite megmaradt; {n} munkakör P2_ELFOGADVA állapotba került. Újraépítés: "
+              "python -m gaphopper init, majd python -m gaphopper run")
+        return
     for suffix in ("", "-wal", "-shm"):
         Path(str(s.state_db) + suffix).unlink(missing_ok=True)
     print(f"state.sqlite törölve: {s.state_db}. Újraépítés: python -m gaphopper init")
@@ -217,7 +229,8 @@ def cmd_run(a):
         try:
             st = process_job(ctx, jid, until=a.until, force=a.force)
         except Exception as exc:  # egy hibás rekord ne állítsa meg a sort
-            ctx.store.set_status(jid, "HIBA", str(exc)[:500])
+            if ctx.store.status(jid) != "P2_ELFOGADVA":  # P3-hibánál a P2 eredménye megmarad
+                ctx.store.set_status(jid, "HIBA", str(exc)[:500])
             st = f"HIBA: {exc}"
         print(f"{jid}: {st}", flush=True)
         if st.startswith("MANUAL:"):
@@ -429,7 +442,10 @@ def main(argv=None):
     s.add_argument("--no-graph", action="store_true", help="próbafutás a neo4j olvasása nélkül (egyesítés nélkül)")
     s.set_defaults(fn=cmd_run)
     s = sub.add_parser("db-reset", help="neo4j és state.sqlite ürítése mentéssel")
-    s.add_argument("--yes", action="store_true"); s.set_defaults(fn=cmd_db_reset)
+    s.add_argument("--yes", action="store_true")
+    s.add_argument("--graph-only", action="store_true",
+                   help="csak a neo4j ürül; a state.sqlite (P1/P2-eredmények) marad, a gráf a P3-mal újraépíthető")
+    s.set_defaults(fn=cmd_db_reset)
     s = sub.add_parser("embed"); s.add_argument("action", choices=["check", "backfill"])
     s.add_argument("--limit", type=int, default=100000); s.set_defaults(fn=cmd_embed)
     s = sub.add_parser("onet-tasks", help="O*NET Task Statements betöltése a tasks mezőbe")

@@ -255,6 +255,8 @@ python -m gaphopper certify
 ```
 
 A Docker-kötet mappáját nem kell (és nem szabad) fájlrendszerből törölni: a `db-reset` Cypherrel ürít.
+Csak a gráf újraépítése (pl. sémaváltás után, P1/P2 nélkül): `db-reset --yes --graph-only`, `init`, majd
+`run --job ...` – a P2-kész munkakörökre csak az egyesítés (P3) és a gráfírás fut.
 
 ## 6. Hasonlóságkeresés (helyi Ollama)
 

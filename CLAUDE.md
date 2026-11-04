@@ -29,7 +29,8 @@ a Futás oldal naplózott tokeneket és becsült API-költséget mutat. Kulcsér
 - `python -m gaphopper run --job <id> [--until p1|p2]` – feldolgozás
 - `python -m gaphopper run --dry-run --job <id> [--input f.jsonl]` – próbafutás: LLM-lépések lefutnak, a gráf
   és a state.sqlite nem változik; kimenet `runs/dryrun/<job>.json` (a fő UI Futás oldalán kapcsolóként is)
-- `python -m gaphopper db-reset --yes` – mentés (`runs/backup-<dátum>/`), majd neo4j és state.sqlite ürítése; utána `init`
+- `python -m gaphopper db-reset --yes [--graph-only]` – mentés (`runs/backup-<dátum>/`), majd neo4j és state.sqlite
+  ürítése; `--graph-only`: csak a gráf, a P1/P2-eredmények maradnak (újraépítés LLM nélkül, csak P3); utána `init`
 - `python -m gaphopper show --job <id>` – köztes eredmények
 - `python -m gaphopper review` – szakértői sor; `--approve <qid>` gráfba írja
 - `python -m gaphopper stats`, `anchors`, `p4a --type ... --value ...`

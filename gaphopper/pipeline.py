@@ -671,7 +671,13 @@ def process_job(ctx: Context, job_id: str, until: str = "graph", force: bool = F
         if until == "p2" or ctx.store.status(job_id) == "SZAKERTORE":
             return ctx.store.status(job_id)
         magok, final = final_lists(p1, p2_art)
-        write_graph(ctx, job, p1.model_dump(), magok, final)
+        try:
+            write_graph(ctx, job, p1.model_dump(), magok, final)
+        except Exception as exc:
+            # A P1/P2 eredménye kész: a következő indítás csak a P3-at (egyesítés + gráfírás) próbálja újra.
+            ctx.store.save_artifact(job_id, "P3_ERR", {"error": str(exc)[:3000]}, ctx.pv)
+            ctx.store.set_status(job_id, "P2_ELFOGADVA", f"P3 hiba: {str(exc)[:500]}")
+            raise
         return ctx.store.status(job_id)
     except ManualStep as ms:
         d = _write_manual(job_id, ms)
