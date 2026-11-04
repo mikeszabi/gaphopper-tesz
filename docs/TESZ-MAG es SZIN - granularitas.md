@@ -431,3 +431,9 @@ figyeli.
 - A gyenge törzsválasztás: az ápolónál a „Megbízás teljesítése” (2. kör) inkább erőltetett.
 - A párhuzamos (`--workers N`) futásban minden munkakör ugyanazt a törzs-pillanatképet kapja. A
   törzsépítéshez az első munkaköröket érdemes egymás után futtatni.
+
+**Felhasználói döntés (2026-11-04, KÉSZ-ség-súlyozás):** a MAG-onkénti KÉSZ-ségek felső határa 5. A P1 csak a
+legjellemzőbbeket kéri, fontossági sorrendben, és a törzsből választott MAG-nál (`mag_ref`) is a saját munkakörére
+jellemzőket adja meg. A gráfban nincs vágás: az `IGENYEL` él `munkakorok` (az igénylő munkakörök), `suly` (ezek
+száma) és `rang` (a legjobb helyezés) mezőt kap. Újrafeldolgozáskor a munkakör korábbi igénylései előbb kikerülnek.
+A MAG-törzs a P1-nek a 5 legsúlyosabb KÉSZ-séget adja.
