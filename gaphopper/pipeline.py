@@ -784,7 +784,7 @@ def format_dry_run(out: dict) -> str:
         lines.append(f"HIBA: {out.get('error', '')}")
     else:
         n = out["szamok"]
-        lines.append(f"TESZ-SZÍN: {n['nivalo']} (CORE {n['core_nivalo']}, törzsből {n.get('torzsbol', 0)}/"
+        lines.append(f"TESZ-nivaló: {n['nivalo']} (CORE {n['core_nivalo']}, törzsből {n.get('torzsbol', 0)}/"
                      f"{n.get('torzs_meret', 0)}) · TESZ-SZÍN: {n['szin']} (nem ALAP-SZÍN: "
                      f"{n['nem_alap']}) · mélyítési jelölt: {n['melyitesi_jelolt']} · P2: {out['p2']['verdict']}"
                      + (f" ({out['p2']['reason']})" if out["p2"].get("reason") else "")
