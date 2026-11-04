@@ -206,15 +206,19 @@ A futás idempotens: a kész munkakör nem fut újra (`--force` kell hozzá), a 
    -[:TIPUSA]->(:TeszTipus)   -[:IRANYUL {role}]->(:SzerElem)          // a meghatározó SZER-ELEM a MAG-on
    -[:IGENYEL {munkakorok, suly}]->(:Keszseg {id: "gh_c_<n>", label_en, csoport, fajta})
         // munkakörönként 2–5 KÉSZ-ség (G2); nem vágjuk: suly = hány munkakör igényli, a törzs a 5 legsúlyosabbat adja
-(:TeszNivalo {id, label_hu, alap_szin, szin_kulonbseg_hu, attestation_hu, rubric_szin_hu})
-   -[:MAGJA]->(:TeszMag)   -[:SZINBEN]->(:Szin)
+(:TeszNivalo {id, szin_kulonbseg_hu, attestation_hu, rubric_szin_hu})   // a ⟨MAG, KÖZ-eg, HELY-zet⟩ példány
+   -[:MAGJA]->(:TeszMag)
    -[:KOZEGBEN_ZAJLIK {primary}]->(:Kozeg)   -[:HELYZETBEN_VEGZENDO {primary}]->(:Helyzet)
    -[:HASZNAL {role}]->(:SzerElem)                                     // kísérő, közegfüggő SZER-ELEM
-(:Szin {id: "KOZ_FIZIKAI|HELY_KRITIKUS"})-[:KOZEGE]->(:Kozeg), -[:HELYZETE]->(:Helyzet)   // 5 × 11 rögzített
 (:Helyzet {tengely, fok})-[:MELYEBB]->(:Helyzet)   // KISZ: TANULASI 0 → RUTIN 1 → VALTOZO 2 → PROBLEMA 3 → KRITIKUS 4
-(:TeszMag)-[:MELYITESI_JELOLT {indok_hu, forras_munkakor}]->(:Szin)
+(:TeszMag)-[:MELYITESI_JELOLT {kozeg, indok_hu, forras_munkakor}]->(:Helyzet)
 (:MunkaKor)-[:TARTALMAZ_TESZT {relevance, frequency, expected_eqf, alap_szin, kontextus_hu, ...}]->(:TeszNivalo)
 ```
+
+A TESZ-nivaló csomópont azért kell, mert a „munkakör × MAG × KÖZ-eg × HELY-zet” kapcsolat többtagú, egy él
+pedig csak két csomópontot köt; rajta ül a mikrotanúsítvány (igazolás, SZÍN-rubrika). Címkét nem tárol (a MAG
+címkéje + a KÖZ-eg/HELY-zet neve), az ALAP-SZÍN munkakörönkénti (a `TARTALMAZ_TESZT` élen). Külön `Szin` csomópont
+nincs (2026-11-04): a SZÍN a KÖZ-eg és a HELY-zet kombinációja, lekérdezéssel csoportosítható.
 
 Kilét: `mag_id = stable_id("gh_mag", tesz_type, primary_szer_id, label_hu)`,
 `tesz_id = stable_id("gh_tesz", mag_id, kozeg, helyzet)`. A HELY-zet SZEREP tengelyén (DÖNTÉSI, ALKOTÓ,
@@ -243,7 +247,7 @@ webes felületen a Futás oldal „Próbafutás (dry run)” kapcsolójával, il
 ```bash
 python -m gaphopper db-reset --yes   # mentés: runs/backup-<dátum>/ (state.sqlite + neo4j-export.json), majd
                                      # minden neo4j-csomópont, index és constraint és a state.sqlite törlése
-python -m gaphopper init             # új séma: constraint-ek, indexek, szótárak, 55 Szin, MELYEBB-lánc
+python -m gaphopper init             # új séma: constraint-ek, indexek, szótárak, KÉSZ-ség-törzs, MELYEBB-lánc
 python -m gaphopper import data/job_100.jsonl
 python -m gaphopper run --dry-run --job <id>   # kalibráció
 python -m gaphopper run --workers 4
@@ -276,13 +280,13 @@ python -m gaphopper embed backfill            # a már a gráfban lévő elemek 
 ## 7. KÉSZ-ségek (P4a)
 
 ```bash
-python -m gaphopper anchors                       # az 1. kapu (≥3 munkakör, ≥5 TESZ) feletti SZÍN-ek (a Szin csomópontból)
+python -m gaphopper anchors                       # az 1. kapu (≥3 munkakör, ≥5 TESZ) feletti SZÍN-ek (⟨KÖZ-eg, HELY-zet⟩ párok)
 python -m gaphopper p4a --type HELYZET --value HELY_RUTIN --runs 3
 python -m gaphopper p4a --type SZIN --value "KOZ_TARSAS|HELY_SZOLGALTATASI"
 ```
 
-SZÍN-horgonynál a KÉSZ-ség a `Szin` csomóponthoz köt (`HORGONYOZ`, `ASPEKTUSA`), ugyanahhoz, amelyhez a
-TESZ-nivaló `SZINBEN` éle: a TESZ és a KÉSZ-ség mélyülése egy gráfúton látszik. A P4a háromszor fut; ELLENŐRZÖTT státuszt kap a KÉSZ-ség, ha legalább 2 futásban megjelenik, és a horgony
+SZÍN-horgonynál a KÉSZ-ség a pár mindkét tagjához köt (`HORGONYOZ {szin: "KOZ_x|HELY_y"}` a Kozeg és a Helyzet
+csomópontra), ugyanahhoz a KÖZ-eghez és HELY-zethez, amelyhez a TESZ-nivaló. A P4a háromszor fut; ELLENŐRZÖTT státuszt kap a KÉSZ-ség, ha legalább 2 futásban megjelenik, és a horgony
 TESZ-einek legalább 70%-át lefedi; különben JELÖLT. Az ELFOGADOTT státusz szakértői döntés.
 
 ## 8. Claude Code és neo4j MCP

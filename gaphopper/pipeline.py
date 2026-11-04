@@ -524,16 +524,16 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], fin
                 summary["review"].append({"kind": "szer", "label": s.label_hu, "id": rs.entity_id})
         decision = "SAME" if tid in existing or tid in plan.tesz else "NEW"
         if tid not in plan.tesz:
+            # A TESZ-nivaló a ⟨MAG, KÖZ-eg, HELY-zet⟩ példány: címkét és ALAP-jelölést nem tárol (a címke a
+            # MAG-é, az ALAP-SZÍN munkakörönkénti, a TARTALMAZ_TESZT élen van).
             plan.tesz[tid] = {
-                "mag": gm, "szin": f"{t.kozeg}|{t.helyzet}",
-                "props": {"label_hu": t.label_hu, "label_en": t.label_en, "alap_szin": t.alap_szin,
-                          "szin_kulonbseg_hu": t.szin_kulonbseg_hu or "", "status": "AI_ELLENORZOTT",
+                "mag": gm,
+                "props": {"szin_kulonbseg_hu": t.szin_kulonbseg_hu or "", "status": "AI_ELLENORZOTT",
                           "prompt_version": ctx.pv},
                 "kozeg": [t.kozeg] + [k for k in t.kozeg_secondary if k != t.kozeg],
                 "helyzet": [t.helyzet] + ([t.helyzet_secondary] if t.helyzet_secondary
                                           and t.helyzet_secondary != t.helyzet else []),
                 "secondary": secondary}
-        plan.alias("TESZ", tid, [(t.label_hu, "hu"), (t.label_en, "en")], "szin")
         plan.links.append({"t": tid, "props": {
             "relevance": t.relevance, "expected_eqf": t.expected_eqf, "frequency": t.frequency,
             "kor_id": t.kor_id, "cand_id": t.cand_id, "mag_cand_id": t.mag_id, "alap_szin": t.alap_szin,
@@ -790,17 +790,19 @@ ANCHOR_QUERIES = {
     "TESZ_TIPUS": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:MAGJA]->(:TeszMag)-[:TIPUSA]->(:TeszTipus {id: $v})",
     "SZER_ELEM": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo) "
                  "WHERE (t)-[:HASZNAL]->(:SzerElem {id: $v}) OR (t)-[:MAGJA]->(:TeszMag)-[:IRANYUL]->(:SzerElem {id: $v})",
-    "SZIN": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:SZINBEN]->(:Szin {id: $v})",
+    "SZIN": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k:Kozeg), "
+            "(t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h:Helyzet) WHERE k.id + '|' + h.id = $v",
 }
 
 
 def run_p4a(ctx: Context, anchor_type: str, anchor_value: str, runs: int = 3, limit: int = 40) -> dict:
     q = ANCHOR_QUERIES[anchor_type] + (
         " WITH t, collect(DISTINCT m.label_hu) AS jobs "
-        "MATCH (t)-[:MAGJA]->(g:TeszMag), (t)-[:SZINBEN]->(sz:Szin) "
+        "MATCH (t)-[:MAGJA]->(g:TeszMag), (t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(kz:Kozeg), "
+        "(t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(hz:Helyzet) "
         "OPTIONAL MATCH (g)-[:IRANYUL]->(s:SzerElem) OPTIONAL MATCH (g)-[:TIPUSA]->(ty) "
-        "RETURN t.id AS id, t.label_hu AS label_hu, g.outcome_hu AS outcome_hu, ty.id AS tesz_type, "
-        "s.label_hu AS primary_szer, sz.kozeg AS kozeg, sz.helyzet AS helyzet, jobs LIMIT $limit")
+        "RETURN t.id AS id, g.label_hu AS label_hu, g.outcome_hu AS outcome_hu, ty.id AS tesz_type, "
+        "s.label_hu AS primary_szer, kz.id AS kozeg, hz.id AS helyzet, jobs LIMIT $limit")
     tesz = ctx.graph.run(q, v=anchor_value, limit=limit)
     if not tesz:
         raise ValueError("Ehhez a horgonyhoz nincs TESZ-nivaló a gráfban.")
@@ -834,10 +836,12 @@ def run_p4a(ctx: Context, anchor_type: str, anchor_value: str, runs: int = 3, li
         props = {"erosseg": sk.erosseg, "aspects": ["|".join(a) for a in sk.aspects],
                  "covered_share": round(share, 2), "runs_hit": e["hits"], "runs": runs, "status": status}
         if anchor_type == "SZIN":
-            # A KÉSZ-ség-aspektus és a TESZ-nivaló ugyanahhoz a SZÍN-csomóponthoz köt.
-            ctx.graph.run("MATCH (k:Keszseg {id: $id}), (s:Szin {id: $v}) "
-                          "MERGE (k)-[h:HORGONYOZ]->(s) SET h += $p MERGE (k)-[:ASPEKTUSA]->(s)",
-                          id=sid, v=anchor_value, p=props)
+            # SZÍN-horgony: a KÉSZ-ség a pár mindkét tagjához köt, a pár azonosítójával (nincs Szin csomópont).
+            kz, hz = anchor_value.split("|")
+            ctx.graph.run("MATCH (k:Keszseg {id: $id}), (a:Kozeg {id: $kz}), (b:Helyzet {id: $hz}) "
+                          "MERGE (k)-[h1:HORGONYOZ {szin: $v}]->(a) SET h1 += $p "
+                          "MERGE (k)-[h2:HORGONYOZ {szin: $v}]->(b) SET h2 += $p",
+                          id=sid, kz=kz, hz=hz, v=anchor_value, p=props)
         else:
             lbl = {"KOZEG": "Kozeg", "HELYZET": "Helyzet", "TESZ_TIPUS": "TeszTipus", "SZER_ELEM": "SzerElem"}[anchor_type]
             ctx.graph.run(f"MATCH (k:Keszseg {{id: $id}}), (a:{lbl} {{id: $v}}) "

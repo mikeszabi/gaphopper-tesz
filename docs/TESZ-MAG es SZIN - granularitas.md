@@ -437,3 +437,10 @@ legjellemzőbbeket kéri, fontossági sorrendben, és a törzsből választott M
 jellemzőket adja meg. A gráfban nincs vágás: az `IGENYEL` él `munkakorok` (az igénylő munkakörök), `suly` (ezek
 száma) és `rang` (a legjobb helyezés) mezőt kap. Újrafeldolgozáskor a munkakör korábbi igénylései előbb kikerülnek.
 A MAG-törzs a P1-nek a 5 legsúlyosabb KÉSZ-séget adja.
+
+**Felhasználói döntés (2026-11-04, karcsú adatmodell):** nincs külön `Szin` csomópont és `SZINBEN` él; a SZÍN a
+KÖZ-eg és a HELY-zet kombinációja. A TESZ-nivaló (az elnevezés marad) a ⟨MAG, KÖZ-eg, HELY-zet⟩ példány: `MAGJA`,
+`KOZEGBEN_ZAJLIK`, `HELYZETBEN_VEGZENDO` és `HASZNAL` élekkel; címkét nem tárol (a MAG-é + a SZÍN neve), az
+ALAP-SZÍN pedig munkakörönkénti, ezért csak a `TARTALMAZ_TESZT` élen van. A mélyítési jelölt
+`(:TeszMag)-[:MELYITESI_JELOLT {kozeg}]->(:Helyzet)`, a SZÍN-horgony `HORGONYOZ {szin}` a Kozeg és a Helyzet felé.
+Ez az 5.1 fejezet `Szin`-csomópontos javaslatát váltja ki.

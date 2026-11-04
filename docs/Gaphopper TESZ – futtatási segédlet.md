@@ -75,7 +75,7 @@ Ha rendelkezésre áll, a `data/job_100.jsonl` a táblázat 100 munkakörét tar
 
 ```bash
 python -m gaphopper embed check                 # dimenzió + magyar–angol próba
-python -m gaphopper init                        # séma, szótárak, 55 SZÍN-csomópont, vektorindexek
+python -m gaphopper init                        # séma, szótárak, KÉSZ-ség-törzs, vektorindexek
 python -m gaphopper import data/job_100.jsonl   # 100 rekord NYERS állapotba
 python -m gaphopper stats                       # Munkakörök állapota: {'NYERS': 100}
 ```

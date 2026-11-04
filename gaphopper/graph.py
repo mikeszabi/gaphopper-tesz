@@ -2,12 +2,14 @@
 
 Séma (TESZ-MAG × SZÍN):
   (:TeszMag)-[:TIPUSA]->(:TeszTipus), (:TeszMag)-[:IRANYUL {role}]->(:SzerElem)
-  (:TeszNivalo)-[:MAGJA]->(:TeszMag), (:TeszNivalo)-[:SZINBEN]->(:Szin)
+  (:TeszNivalo {id, szin_kulonbseg_hu, attestation_hu, rubric_szin_hu})-[:MAGJA]->(:TeszMag)
+     a TESZ-nivaló a ⟨MAG, KÖZ-eg, HELY-zet⟩ példány; címkét nem tárol (MAG + KÖZ-eg/HELY-zet neve)
   (:TeszNivalo)-[:KOZEGBEN_ZAJLIK {primary}]->(:Kozeg), -[:HELYZETBEN_VEGZENDO {primary}]->(:Helyzet)
   (:TeszNivalo)-[:HASZNAL {role, kozeg_id, helyzet_id}]->(:SzerElem)
-  (:Szin {id: 'KOZ_x|HELY_y'})-[:KOZEGE]->(:Kozeg), -[:HELYZETE]->(:Helyzet)
   (:Helyzet {tengely, fok})-[:MELYEBB]->(:Helyzet)   (KISZ tengely, fok szerint)
-  (:TeszMag)-[:MELYITESI_JELOLT {indok_hu, forras_munkakor}]->(:Szin)
+  (:TeszMag)-[:MELYITESI_JELOLT {kozeg, indok_hu, forras_munkakor}]->(:Helyzet)
+  (:MunkaKor)-[:TARTALMAZ_TESZT {alap_szin, kontextus_hu, ...}]->(:TeszNivalo)   az ALAP-SZÍN munkakörönkénti
+  (nincs külön Szin csomópont: a SZÍN a KÖZ-eg és a HELY-zet kombinációja, lekérdezéssel számolható)
   (:MunkaKor)-[:TARTALMAZ_TESZT {relevance, frequency, expected_eqf, ...}]->(:TeszNivalo)
 """
 from __future__ import annotations
@@ -22,11 +24,8 @@ LABELS = {"MUNKA_KOR": "MunkaKor", "TESZ": "TeszNivalo", "TESZ_MAG": "TeszMag", 
 FULLTEXT = {"MunkaKor": "munkakor_text", "TeszNivalo": "tesz_text", "TeszMag": "mag_text", "SzerElem": "szer_text",
             "Keszseg": "keszseg_text"}
 VECTOR = {"MunkaKor": "munkakor_vec", "TeszMag": "mag_vec", "SzerElem": "szer_vec", "Keszseg": "keszseg_vec"}
-NODE_LABELS = ["MunkaKor", "TeszMag", "TeszNivalo", "SzerElem", "TeszTipus", "Kozeg", "Helyzet", "Szin", "Keszseg"]
+NODE_LABELS = ["MunkaKor", "TeszMag", "TeszNivalo", "SzerElem", "TeszTipus", "Kozeg", "Helyzet", "Keszseg"]
 
-
-def szin_id(kozeg: str, helyzet: str) -> str:
-    return f"{kozeg}|{helyzet}"
 _LUCENE = re.compile(r'([+\-&|!(){}\[\]^"~*?:\\/])')
 
 
@@ -94,12 +93,8 @@ class Graph:
         rows = [{"id": k, "en": x["en"], "group": x["group"], "type": x["type"]} for k, x in kesz_torzs().items()]
         self.run("UNWIND $rows AS r MERGE (k:Keszseg {id: r.id}) SET k.label_en = r.en, k.label_hu = coalesce(k.label_hu, r.en), "
                  "k.csoport = r.group, k.fajta = r.type, k.forras = 'GH_competency_list', k.status = 'TORZS'", rows=rows)
-        # SZÍN: minden ⟨KÖZ-eg, HELY-zet⟩ pár rögzített csomópont.
-        szin = [{"id": szin_id(k, h), "k": k, "h": h, "hu": f"{kx['hu']} / {hx['hu']}"}
-                for k, kx in v["kozeg"].items() for h, hx in v["helyzet"].items()]
-        self.run("UNWIND $rows AS r MERGE (s:Szin {id: r.id}) SET s.label_hu = r.hu, s.kozeg = r.k, s.helyzet = r.h "
-                 "WITH s, r MATCH (k:Kozeg {id: r.k}), (h:Helyzet {id: r.h}) "
-                 "MERGE (s)-[:KOZEGE]->(k) MERGE (s)-[:HELYZETE]->(h)", rows=szin)
+        # A régi (v1) Szin-csomópontok eltávolítása: a SZÍN a KÖZ-eg és a HELY-zet kombinációja.
+        self.run("MATCH (s:Szin) DETACH DELETE s")
 
     def reset(self) -> dict:
         """Teljes ürítés: minden csomópont, index és constraint törlődik (az init újraépíti)."""
@@ -213,7 +208,7 @@ class Graph:
         szer = [{"id": k, "props": {x: y for x, y in v.items() if x != "embedding"}, "emb": v.get("embedding")}
                 for k, v in plan.szer.items()]
         magok = [{"id": k, **v} for k, v in plan.magok.items()]
-        mely = [{"mag": k, "szin": szin_id(x["kozeg"], x["helyzet"]), "indok": x.get("indok_hu", ""),
+        mely = [{"mag": k, "kozeg": x["kozeg"], "helyzet": x["helyzet"], "indok": x.get("indok_hu", ""),
                  "job": plan.job["id"]} for k, v in plan.magok.items() for x in v.get("melyites", [])]
         igenyel = [{"mag": k, "k": kid, "rang": i + 1} for k, v in plan.magok.items()
                    for i, kid in enumerate(v.get("kesz_ids", []))]
@@ -235,8 +230,9 @@ class Graph:
                    "WITH g, r WHERE r.new "
                    "MATCH (ty:TeszTipus {id: r.tesz_type}), (s:SzerElem {id: r.primary}) "
                    "MERGE (g)-[:TIPUSA]->(ty) MERGE (g)-[i:IRANYUL]->(s) SET i.role = r.role", rows=magok)
-            tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (s:Szin {id: r.szin}) "
-                   "MERGE (g)-[e:MELYITESI_JELOLT]->(s) SET e.indok_hu = r.indok, e.forras_munkakor = r.job", rows=mely)
+            tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (h:Helyzet {id: r.helyzet}) "
+                   "MERGE (g)-[e:MELYITESI_JELOLT {kozeg: r.kozeg}]->(h) SET e.indok_hu = r.indok, "
+                   "e.forras_munkakor = r.job", rows=mely)
             # IGENYEL súlyozva: munkakorok = az igénylő munkakörök, suly = darabszámuk. Újrafeldolgozáskor a
             # munkakör korábbi igénylései előbb kikerülnek (a kiürült él törlődik), így nem számolunk kétszer.
             tx.run("MATCH (:TeszMag)-[e:IGENYEL]->(:Keszseg) WHERE $j IN coalesce(e.munkakorok, []) "
@@ -246,9 +242,9 @@ class Graph:
             tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (k:Keszseg {id: r.k}) MERGE (g)-[e:IGENYEL]->(k) "
                    "WITH e, r, [x IN coalesce(e.munkakorok, []) WHERE x <> $j] + [$j] AS mk "
                    "SET e.munkakorok = mk, e.suly = size(mk), e.rang = r.rang", rows=igenyel, j=plan.job["id"])
-            tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (s:Szin {id: r.szin}) "
+            tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}) "
                    "MERGE (t:TeszNivalo {id: r.id}) ON CREATE SET t += r.props, t.created_at = datetime() "
-                   "SET t.last_seen = datetime() MERGE (t)-[:MAGJA]->(g) MERGE (t)-[:SZINBEN]->(s)", rows=tesz)
+                   "SET t.last_seen = datetime() MERGE (t)-[:MAGJA]->(g)", rows=tesz)
             tx.run("UNWIND $rows AS r MATCH (t:TeszNivalo {id: r.t}), (k:Kozeg {id: r.k}) "
                    "MERGE (t)-[e:KOZEGBEN_ZAJLIK]->(k) SET e.primary = coalesce(e.primary, false) OR r.p", rows=kozeg)
             tx.run("UNWIND $rows AS r MATCH (t:TeszNivalo {id: r.t}), (h:Helyzet {id: r.h}) "
@@ -289,7 +285,7 @@ class Graph:
             self.run(f"MATCH (a)-[r:{rel}]->(d:{lbl} {{id: $drop}}), (k:{lbl} {{id: $keep}}) "
                      f"MERGE (a)-[r2:{rel}]->(k) SET r2 += properties(r) DELETE r", keep=keep_id, drop=drop_id)
         for rel in ["TIPUSA", "IRANYUL", "HASZNAL", "KOZEGBEN_ZAJLIK", "HELYZETBEN_VEGZENDO", "FAJTAJA", "MAGJA",
-                    "SZINBEN", "MELYITESI_JELOLT", "IGENYEL"]:
+                    "MELYITESI_JELOLT", "IGENYEL"]:
             self.run(f"MATCH (d:{lbl} {{id: $drop}})-[r:{rel}]->(b), (k:{lbl} {{id: $keep}}) "
                      f"MERGE (k)-[r2:{rel}]->(b) SET r2 += properties(r) DELETE r", keep=keep_id, drop=drop_id)
             self.run(f"MATCH (a)-[r:{rel}]->(d:{lbl} {{id: $drop}}), (k:{lbl} {{id: $keep}}) "
@@ -312,10 +308,11 @@ class Graph:
         return self.run(
             "MATCH (t:TeszNivalo)-[:MAGJA]->(g:TeszMag) "
             "WHERE t.attestation_hu IS NULL OR g.rubric_alap_hu IS NULL "
-            "WITH g, t ORDER BY g.id, t.alap_szin DESC, t.id "
-            "MATCH (t)-[:SZINBEN]->(s:Szin) "
-            "WITH g, collect({id: t.id, label_hu: t.label_hu, kozeg: s.kozeg, helyzet: s.helyzet, "
-            "  alap: t.alap_szin, szin_kulonbseg_hu: t.szin_kulonbseg_hu, kesz: t.attestation_hu IS NOT NULL}) AS v "
+            "MATCH (t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k:Kozeg), (t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h:Helyzet) "
+            "OPTIONAL MATCH (t)<-[l:TARTALMAZ_TESZT]-() "
+            "WITH g, t, k, h, any(x IN collect(l.alap_szin) WHERE x) AS alap ORDER BY g.id, alap DESC, t.id "
+            "WITH g, collect({id: t.id, kozeg: k.id, helyzet: h.id, alap: alap, "
+            "  szin_kulonbseg_hu: t.szin_kulonbseg_hu, kesz: t.attestation_hu IS NOT NULL}) AS v "
             "OPTIONAL MATCH (g)-[:TIPUSA]->(ty) OPTIONAL MATCH (g)-[:IRANYUL]->(sz:SzerElem) "
             "OPTIONAL MATCH (g)<-[:MAGJA]-()<-[r:TARTALMAZ_TESZT]-() "
             "WITH g, v, ty, sz, [x IN collect(DISTINCT r.kontextus_hu) WHERE x IS NOT NULL AND x <> ''][..4] AS ktx "
@@ -367,10 +364,11 @@ class Graph:
         return out
 
     def anchors(self, min_tesz: int = 5, min_jobs: int = 3) -> list[dict]:
-        """Az 1. kapu (gyakoriság) feletti SZÍN-horgonyok a P4a-hoz, a Szin csomópontból."""
+        """Az 1. kapu (gyakoriság) feletti SZÍN-horgonyok a P4a-hoz: ⟨KÖZ-eg, HELY-zet⟩ párok."""
         return self.run(
-            "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:SZINBEN]->(s:Szin) "
-            "WITH s, count(DISTINCT t) AS tesz_db, count(DISTINCT m) AS munkakor_db "
+            "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t:TeszNivalo)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k:Kozeg), "
+            "(t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h:Helyzet) "
+            "WITH k, h, count(DISTINCT t) AS tesz_db, count(DISTINCT m) AS munkakor_db "
             "WHERE tesz_db >= $mt AND munkakor_db >= $mj "
-            "RETURN s.id AS szin, s.kozeg AS kozeg, s.helyzet AS helyzet, tesz_db, munkakor_db "
+            "RETURN k.id + '|' + h.id AS szin, k.id AS kozeg, h.id AS helyzet, tesz_db, munkakor_db "
             "ORDER BY tesz_db DESC", mt=min_tesz, mj=min_jobs)

@@ -57,18 +57,24 @@ CYPHER = {
     "Legtöbb munkakörben szereplő TESZ-MAG": "MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(:TeszNivalo)-[:MAGJA]->(g:TeszMag) "
                                              "RETURN g.id AS id, g.label_hu AS mag, count(DISTINCT m) AS munkakor_db "
                                              "ORDER BY munkakor_db DESC LIMIT 50",
-    "MAG-ok mélyítési létrája": "MATCH (g:TeszMag)<-[:MAGJA]-(t:TeszNivalo)-[:SZINBEN]->(s:Szin)-[:HELYZETE]->(h:Helyzet) "
+    "MAG-ok mélyítési létrája": "MATCH (g:TeszMag)<-[:MAGJA]-(t:TeszNivalo)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h:Helyzet) "
                                 "WITH g, collect(h.id + ' (' + coalesce(toString(h.fok), h.tengely) + ')') AS szinek, "
                                 "count(t) AS v WHERE v > 1 RETURN g.label_hu AS mag, v AS valtozat, szinek "
                                 "ORDER BY v DESC LIMIT 100",
-    "Mélyítési jelöltek": "MATCH (g:TeszMag)-[e:MELYITESI_JELOLT]->(s:Szin) "
-                          "RETURN g.label_hu AS mag, s.id AS szin, e.indok_hu AS indok, e.forras_munkakor AS munkakor",
+    "Mélyítési jelöltek": "MATCH (g:TeszMag)-[e:MELYITESI_JELOLT]->(h:Helyzet) "
+                          "RETURN g.label_hu AS mag, e.kozeg + '|' + h.id AS szin, e.indok_hu AS indok, "
+                          "e.forras_munkakor AS munkakor",
     "SZER-ELEM-ek használat szerint": "MATCH (x)-[:IRANYUL|HASZNAL]->(s:SzerElem) "
                                       "RETURN s.id AS id, s.label_hu AS szer_elem, count(x) AS hasznalat "
                                       "ORDER BY hasznalat DESC LIMIT 100",
     "TESZ-típus × SZÍN": "MATCH (:MunkaKor)-[:TARTALMAZ_TESZT]->(t)-[:MAGJA]->(:TeszMag)-[:TIPUSA]->(ty), "
-                         "(t)-[:SZINBEN]->(s:Szin) "
-                         "RETURN ty.id AS tipus, s.id AS szin, count(*) AS db ORDER BY db DESC",
+                         "(t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k), (t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h) "
+                         "RETURN ty.id AS tipus, k.id + '|' + h.id AS szin, count(*) AS db ORDER BY db DESC",
+    "MAG-ok SZÍN-jei (TESZ-nivalók)": "MATCH (g:TeszMag)<-[:MAGJA]-(t:TeszNivalo), "
+                                      "(t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k), (t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h) "
+                                      "OPTIONAL MATCH (m:MunkaKor)-[:TARTALMAZ_TESZT]->(t) "
+                                      "RETURN g.label_hu AS mag, k.label_hu + ' / ' + h.label_hu AS szin, "
+                                      "count(DISTINCT m) AS munkakor_db ORDER BY mag, munkakor_db DESC LIMIT 300",
 }
 
 
@@ -329,9 +335,12 @@ def job_detail(S: Store, job_id: str) -> dict:
         "MATCH (m:MunkaKor {id: $id})-[r:TARTALMAZ_TESZT]->(t:TeszNivalo) "
         "OPTIONAL MATCH (t)-[:MAGJA]->(g:TeszMag) OPTIONAL MATCH (g)-[:TIPUSA]->(ty) "
         "OPTIONAL MATCH (other:MunkaKor)-[:TARTALMAZ_TESZT]->(t) "
-        "RETURN t.id AS id, t.label_hu AS label_hu, ty.id AS tesz_type, r.cand_id AS cand_id, g.id AS mag, "
-        "r.relevance AS relevance, size(coalesce(g.rubric_alap_hu, [])) + size(coalesce(t.rubric_szin_hu, [])) AS rubrika, "
-        "count(DISTINCT other) AS munkakor_db ORDER BY t.label_hu", id=gid)
+        "OPTIONAL MATCH (t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k) OPTIONAL MATCH (t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h) "
+        "WITH t, r, g, ty, k, h, count(DISTINCT other) AS munkakor_db "
+        "RETURN t.id AS id, g.label_hu + ' – ' + coalesce(k.label_hu, '') + '/' + coalesce(h.label_hu, '') AS label_hu, "
+        "ty.id AS tesz_type, r.cand_id AS cand_id, g.id AS mag, r.relevance AS relevance, "
+        "size(coalesce(g.rubric_alap_hu, [])) + size(coalesce(t.rubric_szin_hu, [])) AS rubrika, "
+        "munkakor_db ORDER BY label_hu", id=gid)
     if g_rows is not None:
         graph_ids = {x["id"] for x in g_rows}
     tesz = []

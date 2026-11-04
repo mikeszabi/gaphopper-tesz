@@ -645,7 +645,11 @@ def test_write_graph_single_p3_call(tmp_path):
     t5 = [t for t in summary["tesz"] if t["mag_id"] == "M05"]
     assert len(t5) == 2 and t5[0]["tesz_id"] != t5[1]["tesz_id"]
     assert {plan.tesz[t["tesz_id"]]["mag"] for t in t5} == {m05["graph_id"]}
-    assert plan.tesz[t5[1]["tesz_id"]]["szin"] == "KOZ_FIZIKAI|HELY_VALTOZO"
+    v = plan.tesz[t5[1]["tesz_id"]]
+    assert (v["kozeg"][0], v["helyzet"][0]) == ("KOZ_FIZIKAI", "HELY_VALTOZO")
+    # a TESZ-nivaló csomópont karcsú: címke és ALAP-jelölés nélkül (az ALAP-SZÍN a munkakör élén van)
+    assert "label_hu" not in v["props"] and "alap_szin" not in v["props"]
+    assert {l["props"]["alap_szin"] for l in plan.links if l["t"] in {t["tesz_id"] for t in t5}} == {True, False}
     # az LLM SAME-je a MAG-ra csak azonos TESZ-típusnál és meghatározó SZER-ELEM-nél áll meg (M1-őr):
     # a FakeGraph törzseleme VERIFY / 'x', a jelölt nem az -> új MAG, szakértői átnézésre
     assert summary["magok"][0]["decision"] == "NEW" and summary["magok"][0]["via"] == "llm-elutasitva"
