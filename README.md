@@ -151,7 +151,7 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
    | R14 | MAG | SZÍN-jelző a MAG címkéjében (`szin_jelzok` szólista) |
    | R15 | séma | MAG-onként pontosan egy ALAP-SZÍN (a P1-nél sémahiba, a P2 után a kód javítja) |
    | R16 | változat | csak KÖZ-egben eltér, azonos kísérő SZER-ELEM-ekkel – valószínű kísérő KÖZ-eg |
-   | R17 | MAG | munkakör-, szakterület- vagy célcsoportszó a MAG-címkében (G1) |
+   | R17 | MAG | munkakör- vagy szakszó (gépész, villamos …) a MAG-címkében vagy a meghatározó SZER-ELEM-ben (G1); általános célcsoport („hallgatóknak”) maradhat |
    | R18 | MAG | G4-összevonási jelölt: azonos TESZ-típus és ≥ 2/3 KÉSZ-ség-átfedés |
    | R19 | MAG | ≥ 50 elemű MAG-törzs mellett az új MAG-ok aránya > 50% |
    | R20 | MAG | 2-nél kevesebb `kesz_ids` (G2) |

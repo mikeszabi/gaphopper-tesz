@@ -7,17 +7,18 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
 2. TESZ-MAG-OK: összesen 6-12 MAG (ebből 4-9 CORE), feladatkörönként 1-3. Forrás: tasks,
    description, requirements, conditions és a szakma ismert gyakorlata a locale-ban.
    a) TÖRZS ELŐBB: ha a MAG-TÖRZS valamelyik eleme illik (azonos TESZ-típus, munkaminta és
-      ERED-mény-fajta), azt KELL választanod akkor is, ha a szakterület vagy a célcsoport más (pl.
+      ERED-mény-fajta), azt KELL választanod akkor is, ha a szakterület vagy a szak más (pl.
       ápolási és szerelési nyilvántartás rögzítése = ugyanaz a DOCUMENT-MAG; higiéniai és
       villamos biztonsági előírás betartása = ugyanaz a COMPLY-MAG); a különbség a kontextus_hu.
       Alak: {"mag_id","mag_ref":"T07","kor_id","relevance","kontextus_hu"} – a többi MAG-mezőt ne
       írd ki. Újat csak akkor alkoss, ha egyik sem illik.
    b) ÚJ MAG: munkamintából, a SZER-ELEM fajtájával (G1-G4); label_hu 2-6 szó, label_en is,
-      szakterület, célcsoport és SZÍN nélkül (a primary_szer is fajta szintű); tesz_type (az ERED-mény fajtája szerint) és runner_up;
+      szakterület, szak és SZÍN nélkül, általános célcsoport maradhat ("hallgatóknak", nem
+      "gépész hallgatóknak"); a primary_szer is fajta szintű; tesz_type (az ERED-mény fajtája szerint) és runner_up;
       primary_szer (a fajta, definíció egy rövid mondat); outcome_hu (a közös ERED-mény egy
       mondatban, minőségi küszöbbel); relevance (CORE, ha a munkakör nélküle nem az, ami);
       kesz_ids: 2-4 sorszám a KÉSZ-SÉG-TÖRZSből (G2).
-   c) kontextus_hu: a munkakör-specifikus tartalom röviden (szakterület, célcsoport, tantárgy,
+   c) kontextus_hu: a munkakör-specifikus tartalom röviden (szakterület, szak, tantárgy,
       helyszín), legfeljebb 8 szó – ide kerül minden, ami a MAG-címkéből kimaradt.
    Összevonás (G4): azonos típus, azonos ERED-mény-fajta és 2/3 KÉSZ-ség-átfedés esetén egy MAG
    (pl. szakdolgozat- és TDK-témavezetés; ipari és kutatási partnerkapcsolat).

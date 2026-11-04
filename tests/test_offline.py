@@ -967,6 +967,15 @@ def test_rules_v2_generality():
     f = {x.rule: x for x in rules.check(p1.tesz, None, "Health and care", magok=p1.tesz_magok,
                                          job_title="Ápoló")}
     assert f["R17"].cand_ids == ["M01"] and f["R20"].cand_ids == ["M04"]
+    # az általános célcsoport maradhat, a szak szerinti bontás nem (felhasználói döntés, 2026-11-04)
+    for label, flagged in (("Kutatómunka témavezetése hallgatóknak", False),
+                           ("Kutatómunka témavezetése gépész hallgatóknak", True)):
+        d2 = p1_fixture()
+        d2["tesz_magok"][3]["label_hu"] = label
+        p2 = P1Output.model_validate(d2)
+        r17 = [x for x in rules.check(p2.tesz, None, "", magok=p2.tesz_magok, job_title="Egyetemi oktató")
+               if x.rule == "R17"]
+        assert ("M04" in (r17[0].cand_ids if r17 else [])) is flagged, label
     assert set(f["R18"].cand_ids) == {"M05", "M06"} and "M07" not in f["R18"].cand_ids
     assert "R19" not in f
     # R19: nagy törzs mellett túl sok új MAG

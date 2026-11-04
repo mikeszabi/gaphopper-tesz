@@ -419,7 +419,12 @@ A kimenet a kevesebb MAG és a címke nélküli változat miatt 40%-kal csökken
 törzsek miatt nő, de ez nagyrészt olcsó cache-olvasás. A valódi futásban az ápoló P1-e egyszer újrapróbált,
 mert egy MAG-ot hiányos mezőkkel írt üres törzs mellett.
 
-**Nyitott kérdések:**
+**Felhasználói döntés (2026-11-04):** az általános célcsoport maradhat a MAG-ban („hallgatóknak”, „betegnek”);
+nem szabad viszont szak szerint bontani („gépész hallgatóknak” → „hallgatóknak”). Az R17 ezért a
+célcsoport-szólista helyett szak- és szakterületszavakat (`rules.szak_szavak`) és a munkakör címének szavait
+figyeli.
+
+**Nyitott kérdések (a döntés előtt):**
 - A célcsoport-szólistában szerepel a „hallgató/student”, a célpélda viszont „Hallgatói kutatómunka
   témavezetése”. Emiatt az oktató R17-tel a szakértői sorba került (a label_en „Supervise a student project”).
   Döntés kell: maradjon-e a szó a listán.

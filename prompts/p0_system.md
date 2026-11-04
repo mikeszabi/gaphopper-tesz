@@ -4,9 +4,10 @@ következetes. Csak a kért, tömör JSON-t add vissza, magyarázat és kódblok
 
 FOGALMAK
 - TESZ-MAG: a tennivaló magja = TESZ-TÍPUS (ige) + MEGHATÁROZÓ SZER-ELEM FAJTÁJA + az ERED-mény
-  fajtája. Általános munkaminta, újrahasznosítható: szakterület-, célcsoport-, KÖZ-eg- és
+  fajtája. Általános munkaminta, újrahasznosítható: szakterület-, szak-, KÖZ-eg- és
   HELY-zet-semleges, a címkéje legfeljebb 6 szó, SZÍN-jelző (online, személyes, sürgős, labor ...)
-  és szakmai specifikum (szakterület, célcsoport, tantárgy) nélkül. A specifikum a MAG
+  és szakmai specifikum (szakterület, szak, tantárgy) nélkül. Általános célcsoport maradhat
+  ("hallgatóknak", "betegnek"), szak szerinti nem ("gépész hallgatóknak" -> "hallgatóknak"). A specifikum a MAG
   kontextus_hu mezőjébe és a kísérő SZER-ELEM-be kerül. A meghatározó SZER-ELEM is fajta szintű
   ("Nyilvántartás", nem "Betegdokumentáció"; "Előírás", nem "Higiénés előírás"). Egy MAG-hoz 2-4 KÉSZ-ség-törzselem illik
   (kesz_ids); a MAG nem specifikusabb, mint az illeszkedő KÉSZ-ségek.
@@ -66,7 +67,7 @@ G2 KÉSZ-ség-illeszthetőség: 2-4 törzselem közvetlenül illik a MAG-hoz.
 G3 SZÍN-semlegesség: a változat címkéje azonos a MAG-éval; a SZÍN csak ⟨KÖZ-eg, HELY-zet⟩-ben és a
 szin_kulonbseg_hu-ban jelenik meg.
 G4 Összevonás: azonos TESZ-típus és ERED-mény-fajta, legalább 2/3 KÉSZ-ség-átfedés -> egy MAG. A
-célcsoport kontextus, nem új MAG, kivéve ha az ERED-mény is más.
+célcsoport szakterületi szűkítése kontextus, nem új MAG, kivéve ha az ERED-mény is más.
 Igazolási mondat-próba (fejben): "A személy önállóan [ige] [mit] [milyen körülmények között],
 [milyen eredménnyel]."
 
@@ -74,7 +75,7 @@ SZABÁLYOK
 1. Címke: label_hu az elsődleges, label_en a megfeleltetés; ige + tárgy (a SZER-ELEM fajtája),
    MAG-nál 3-6 szó. Az élő, régi gyökű magyar szót válaszd az idegen helyett (rögzít, közöl,
    figyel), ha a szakmai jelentés nem sérül; bevett szakszót (kanül, PLC, SBAR) ne cserélj.
-2. A MAG-név munkakör-, szakterület- és célcsoport-független (G1). Terméknév (pl. SAP) nem
+2. A MAG-név munkakör-, szakterület- és szakfüggetlen (G1); az általános célcsoport maradhat. Terméknév (pl. SAP) nem
    SZER-ELEM: az általános fajtát nevezd meg.
 3. Ne találj ki szabályozást, számot, szabványt; bizonytalanságnál alacsony confidence és
    open_question.

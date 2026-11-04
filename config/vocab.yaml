@@ -96,10 +96,12 @@ rules:
   mag_torzs_max: 80        # a P1 rendszerpromptjába kerülő MAG-törzs mérete
   r19_torzs_min: 50        # R19: ha a törzs legalább ekkora ...
   r19_new_share_max: 0.5   # ... és az új MAG-ok aránya efölött van
-  # R17: célcsoport-szavak a MAG-címkében (szótőre illesztve); a munkakör címe és szakterülete is ide számít
-  celcsoport_szavak: ["hallgató", "diák", "tanuló", "beteg", "páciens", "ügyfél", "vevő", "gyermek", "gyerek",
-                      "idős", "lakó", "utas", "vendég", "partnercég", "student", "pupil", "patient", "client",
-                      "customer", "child", "guest"]
+  # R17: szak- és szakterület-szavak a MAG-címkében (szótőre illesztve); a munkakör címe is ide számít.
+  # Az általános célcsoport (hallgatók, betegek, ügyfelek) maradhat; a szak szerinti bontás nem (2026-11-04,
+  # felhasználói döntés: "gépész hallgatók" -> "hallgatók").
+  szak_szavak: ["gépész", "villamos", "villany", "mechatronik", "informatik", "vegyész", "építész", "építő",
+                "közgazd", "jogász", "orvostan", "ápolás", "ápolói", "pedagóg", "mérnök", "mechanical",
+                "electrical", "civil engineering", "chemical", "nursing", "engineering"]
   label_words_min: 4  # magyarul az összetett szavak miatt 4 is elég (változat-címke)
   mag_label_words_min: 2  # a SZÍN-semleges, általános MAG-címke rövid (v2 kalibrálva: "Tananyag összeállítása")
   label_words_max: 14

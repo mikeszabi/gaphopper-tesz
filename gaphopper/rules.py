@@ -186,15 +186,16 @@ def check(tesz: list[Tesz], kor_ids: list[str] | None = None, job_field: str = "
         flags.append(Flag("R16", "Csak KÖZ-egben tér el az ALAP-SZÍN-től, a kísérő SZER-ELEM-ek azonosak: "
                                  "valószínű kísérő KÖZ-eg (FOLD).", kis))
 
-    # R17 – munkakör-, szakterület- vagy célcsoportszó a MAG-címkében (G1: a specifikum a kontextus_hu-ba)
+    # R17 – munkakör- vagy szakszó a MAG-címkében (G1: a specifikum a kontextus_hu-ba; az általános célcsoport
+    # – hallgatók, betegek – maradhat)
     # (a szakterület angol mezőszavai túl általánosak – "health" –, ezért csak a munkakör címe számít)
-    words = [w.lower() for w in r.get("celcsoport_szavak", [])] + _job_words(job_title)
+    words = [w.lower() for w in r.get("szak_szavak", [])] + _job_words(job_title)
     spec = [m.mag_id for m in magok if not m.mag_ref and _jelzo(
         f"{m.label_hu} {m.label_en} {m.primary_szer.label_hu} {m.primary_szer.label_en}", words)]
     if spec:
-        flags.append(Flag("R17", "Munkakör- vagy célcsoportszó a MAG címkéjében vagy meghatározó SZER-ELEM-ében: "
-                                 "általánosíts a SZER-ELEM fajtájára, a specifikum a kontextus_hu-ba és a kísérő "
-                                 "SZER-ELEM-be kerül (G1).", spec))
+        flags.append(Flag("R17", "Munkakör- vagy szakszó (gépész, villamos ...) a MAG címkéjében vagy meghatározó "
+                                 "SZER-ELEM-ében: általánosíts (gépész hallgatók -> hallgatók), a szak a "
+                                 "kontextus_hu-ba kerül (G1).", spec))
 
     # R18 – G4-összevonási jelölt: azonos típus és nagy KÉSZ-ség-átfedés
     pairs = g4_pairs(magok, float(r.get("g4_kesz_overlap", 0.66)))
