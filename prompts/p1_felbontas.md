@@ -10,14 +10,17 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
       ERED-mény-fajta), azt KELL választanod akkor is, ha a szakterület vagy a szak más (pl.
       ápolási és szerelési nyilvántartás rögzítése = ugyanaz a DOCUMENT-MAG; higiéniai és
       villamos biztonsági előírás betartása = ugyanaz a COMPLY-MAG); a különbség a kontextus_hu.
-      Alak: {"mag_id","mag_ref":"T07","kor_id","relevance","kontextus_hu"} – a többi MAG-mezőt ne
+      Alak: {"mag_id","mag_ref":"T07","kor_id","relevance","kesz_ids","kontextus_hu"}: a kesz_ids
+      ennek a munkakörnek a 2-5 legjellemzőbb KÉSZ-sége ehhez a MAG-hoz (a gráf munkakörönként
+      súlyozza őket); a többi MAG-mezőt ne
       írd ki. Újat csak akkor alkoss, ha egyik sem illik.
    b) ÚJ MAG: munkamintából, a SZER-ELEM fajtájával (G1-G4); label_hu 2-6 szó, label_en is,
       szakterület, szak és SZÍN nélkül, általános célcsoport maradhat ("hallgatóknak", nem
       "gépész hallgatóknak"); a primary_szer is fajta szintű; tesz_type (az ERED-mény fajtája szerint) és runner_up;
       primary_szer (a fajta, definíció egy rövid mondat); outcome_hu (a közös ERED-mény egy
       mondatban, minőségi küszöbbel); relevance (CORE, ha a munkakör nélküle nem az, ami);
-      kesz_ids: 2-4 sorszám a KÉSZ-SÉG-TÖRZSből (G2).
+      kesz_ids: 2-5 sorszám a KÉSZ-SÉG-TÖRZSből (G2): csak a legjellemzőbbek, a legfontosabb
+      elöl; ne sorold fel az összes kapcsolódót.
    c) kontextus_hu: a munkakör-specifikus tartalom röviden (szakterület, szak, tantárgy,
       helyszín), legfeljebb 8 szó – ide kerül minden, ami a MAG-címkéből kimaradt.
    Összevonás (G4): azonos típus, azonos ERED-mény-fajta és 2/3 KÉSZ-ség-átfedés esetén egy MAG
@@ -63,7 +66,7 @@ KIMENET (csak tömör JSON; a minta olvashatóság miatt tördelt):
    "primary_szer":{"label_hu":"Foglalkozásterv","label_en":"Session plan","kind":"PLAN","role":"GUIDED_BY","definition_hu":"..."},
    "relevance":"CORE","kesz_ids":[246,239,163],"kontextus_hu":"gépész hallgatók, labor és gyakorlat",
    "melyites_jeloltek":[{"kozeg":"KOZ_FIZIKAI","helyzet":"HELY_KRITIKUS","indok_hu":"..."}]},
-  {"mag_id":"M02","mag_ref":"T07","kor_id":"K2","relevance":"CORE","kontextus_hu":"..."}],
+  {"mag_id":"M02","mag_ref":"T07","kor_id":"K2","relevance":"CORE","kesz_ids":[19,67,5],"kontextus_hu":"..."}],
  "tesz":[
   {"cand_id":"C01","mag_id":"M01","alap_szin":true,"kozeg":"KOZ_TARSAS","helyzet":"HELY_TANITO",
    "secondary_szer":[{"label_hu":"...","label_en":"...","kind":"TOOL","role":"USES"}],

@@ -164,8 +164,9 @@ class Graph:
             "OPTIONAL MATCH (g)<-[:MAGJA]-()<-[:TARTALMAZ_TESZT]-(m:MunkaKor) "
             "WITH g, count(DISTINCT m) AS n ORDER BY n DESC, g.created_at LIMIT $limit "
             "MATCH (g)-[:TIPUSA]->(ty), (g)-[i:IRANYUL]->(s:SzerElem) "
-            "OPTIONAL MATCH (g)-[:IGENYEL]->(k:Keszseg) "
-            "WITH g, n, ty, i, s, collect(k.id) AS kesz "
+            "OPTIONAL MATCH (g)-[e:IGENYEL]->(k:Keszseg) "
+            "WITH g, n, ty, i, s, k, e ORDER BY coalesce(e.suly, 0) DESC, coalesce(e.rang, 9) "
+            "WITH g, n, ty, i, s, [x IN collect(k.id) WHERE x IS NOT NULL][..5] AS kesz "
             "RETURN g.id AS id, g.label_hu AS label_hu, g.label_en AS label_en, g.outcome_hu AS outcome_hu, "
             "ty.id AS tesz_type, {label_hu: s.label_hu, label_en: coalesce(s.label_en, ''), kind: s.kind, "
             "role: i.role, definition_hu: coalesce(s.definition_hu, '')} AS primary_szer, kesz AS kesz_ids, "
@@ -214,7 +215,8 @@ class Graph:
         magok = [{"id": k, **v} for k, v in plan.magok.items()]
         mely = [{"mag": k, "szin": szin_id(x["kozeg"], x["helyzet"]), "indok": x.get("indok_hu", ""),
                  "job": plan.job["id"]} for k, v in plan.magok.items() for x in v.get("melyites", [])]
-        igenyel = [{"mag": k, "k": kid} for k, v in plan.magok.items() for kid in v.get("kesz_ids", [])]
+        igenyel = [{"mag": k, "k": kid, "rang": i + 1} for k, v in plan.magok.items()
+                   for i, kid in enumerate(v.get("kesz_ids", []))]
         tesz = [{"id": k, **v} for k, v in plan.tesz.items()]
         kozeg = [{"t": t["id"], "k": k, "p": i == 0} for t in tesz for i, k in enumerate(t["kozeg"])]
         helyzet = [{"t": t["id"], "h": h, "p": i == 0} for t in tesz for i, h in enumerate(t["helyzet"])]
@@ -235,8 +237,15 @@ class Graph:
                    "MERGE (g)-[:TIPUSA]->(ty) MERGE (g)-[i:IRANYUL]->(s) SET i.role = r.role", rows=magok)
             tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (s:Szin {id: r.szin}) "
                    "MERGE (g)-[e:MELYITESI_JELOLT]->(s) SET e.indok_hu = r.indok, e.forras_munkakor = r.job", rows=mely)
-            tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (k:Keszseg {id: r.k}) MERGE (g)-[:IGENYEL]->(k)",
-                   rows=igenyel)
+            # IGENYEL súlyozva: munkakorok = az igénylő munkakörök, suly = darabszámuk. Újrafeldolgozáskor a
+            # munkakör korábbi igénylései előbb kikerülnek (a kiürült él törlődik), így nem számolunk kétszer.
+            tx.run("MATCH (:TeszMag)-[e:IGENYEL]->(:Keszseg) WHERE $j IN coalesce(e.munkakorok, []) "
+                   "WITH e, [x IN e.munkakorok WHERE x <> $j] AS rest "
+                   "SET e.munkakorok = rest, e.suly = size(rest) WITH e, rest WHERE size(rest) = 0 DELETE e",
+                   j=plan.job["id"])
+            tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (k:Keszseg {id: r.k}) MERGE (g)-[e:IGENYEL]->(k) "
+                   "WITH e, r, [x IN coalesce(e.munkakorok, []) WHERE x <> $j] + [$j] AS mk "
+                   "SET e.munkakorok = mk, e.suly = size(mk), e.rang = r.rang", rows=igenyel, j=plan.job["id"])
             tx.run("UNWIND $rows AS r MATCH (g:TeszMag {id: r.mag}), (s:Szin {id: r.szin}) "
                    "MERGE (t:TeszNivalo {id: r.id}) ON CREATE SET t += r.props, t.created_at = datetime() "
                    "SET t.last_seen = datetime() MERGE (t)-[:MAGJA]->(g) MERGE (t)-[:SZINBEN]->(s)", rows=tesz)

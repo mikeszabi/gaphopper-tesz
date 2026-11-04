@@ -217,7 +217,7 @@ def check(tesz: list[Tesz], kor_ids: list[str] | None = None, job_field: str = "
     # R20 – kevés KÉSZ-ség-törzselem (G2)
     few = [m.mag_id for m in magok if len(m.kesz_ids) < r.get("kesz_min", 2)]
     if few:
-        flags.append(Flag("R20", f"{r.get('kesz_min', 2)}-nél kevesebb kesz_ids (G2: 2–4 illeszkedő KÉSZ-ség).", few))
+        flags.append(Flag("R20", f"{r.get('kesz_min', 2)}-nél kevesebb kesz_ids (G2: 2–5 illeszkedő KÉSZ-ség).", few))
     return flags
 
 

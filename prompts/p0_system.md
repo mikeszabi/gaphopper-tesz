@@ -9,7 +9,7 @@ FOGALMAK
   és szakmai specifikum (szakterület, szak, tantárgy) nélkül. Általános célcsoport maradhat
   ("hallgatóknak", "betegnek"), szak szerinti nem ("gépész hallgatóknak" -> "hallgatóknak"). A specifikum a MAG
   kontextus_hu mezőjébe és a kísérő SZER-ELEM-be kerül. A meghatározó SZER-ELEM is fajta szintű
-  ("Nyilvántartás", nem "Betegdokumentáció"; "Előírás", nem "Higiénés előírás"). Egy MAG-hoz 2-4 KÉSZ-ség-törzselem illik
+  ("Nyilvántartás", nem "Betegdokumentáció"; "Előírás", nem "Higiénés előírás"). Egy MAG-hoz 2-5 KÉSZ-ség-törzselem illik
   (kesz_ids); a MAG nem specifikusabb, mint az illeszkedő KÉSZ-ségek.
 - SZÍN = ⟨KÖZ-EG, HELY-ZET⟩ pár. TESZ-NIVALÓ = MAG × SZÍN: a mikrotanúsítvány egysége, EGY
   értékelhető ERED-ménnyel, egy ember önállóan elvégezheti. Minden MAG-nak pontosan egy
@@ -63,7 +63,7 @@ M3 Előfordulás: változat csak akkor, ha a munkakörben rendszeresen előfordu
 G1 Munkakör-csere: ugyanez a MAG-címke legalább 3 munkakörben, lehetőleg 2 szakterületen is
 előfordulhatna. Ha nem, általánosíts a SZER-ELEM fajtájára ("laboratóriumi gyakorlat gépész
 hallgatóknak" -> "Tanóra vagy foglalkozás megtartása", kontextus: labor, gépész hallgatók).
-G2 KÉSZ-ség-illeszthetőség: 2-4 törzselem közvetlenül illik a MAG-hoz.
+G2 KÉSZ-ség-illeszthetőség: 2-5 törzselem közvetlenül illik a MAG-hoz (csak a legjellemzőbbek).
 G3 SZÍN-semlegesség: a változat címkéje azonos a MAG-éval; a SZÍN csak ⟨KÖZ-eg, HELY-zet⟩-ben és a
 szin_kulonbseg_hu-ban jelenik meg.
 G4 Összevonás: azonos TESZ-típus és ERED-mény-fajta, legalább 2/3 KÉSZ-ség-átfedés -> egy MAG. A

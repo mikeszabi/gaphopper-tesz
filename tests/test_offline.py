@@ -905,7 +905,8 @@ def test_kesz_ids_normalized_and_checked():
     with pytest.raises(Exception, match="nincs a KÉSZ-ség-törzsben"):
         TeszMag.model_validate(d | {"kesz_ids": [999]})
     with pytest.raises(Exception):
-        TeszMag.model_validate(d | {"kesz_ids": [1, 2, 3, 4, 5]})
+        TeszMag.model_validate(d | {"kesz_ids": [1, 2, 3, 4, 5, 6]})  # legfeljebb 5 (2026-11-04)
+    assert len(TeszMag.model_validate(d | {"kesz_ids": [1, 2, 3, 4, 5]}).kesz_ids) == 5
 
 
 def test_p1_system_has_torzs_and_two_cache_blocks(tmp_path):

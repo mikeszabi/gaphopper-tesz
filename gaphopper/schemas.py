@@ -110,8 +110,8 @@ class TeszMag(_Base):
     primary_szer: SzerElem
     relevance: Literal["CORE", "SUPPORTING"] = "SUPPORTING"
     melyites_jeloltek: list[Melyites] = Field(default_factory=list, max_length=1)
-    # G2: 2–4 illeszkedő KÉSZ-ség-törzselem (gh_c_<n>); a P1 számmal is írhatja
-    kesz_ids: list[str] = Field(default_factory=list, max_length=4)
+    # G2: 2–5 illeszkedő KÉSZ-ség-törzselem (gh_c_<n>), a legjellemzőbb elöl; a P1 számmal is írhatja
+    kesz_ids: list[str] = Field(default_factory=list, max_length=5)
     # a MAG-törzs eleme, ha a P1 onnan választott (ilyenkor a MAG mezői a törzsből jönnek)
     mag_ref: Optional[str] = None
     # munkakör-függő szakmai kontextus (szakterület, célcsoport, tantárgy): a MunkaKor–TESZ élre kerül

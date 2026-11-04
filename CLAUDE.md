@@ -2,7 +2,7 @@
 
 ## Cél
 MUNKA-KÖR-ök felbontása általános TESZ-MAG-okra (v2: munkaminta × SZER-ELEM-fajta + ERED-mény; legfeljebb 6
-szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–4 KÉSZ-ség-törzselem a `config/kesz_torzs.yaml`-ból;
+szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–5 KÉSZ-ség-törzselem a `config/kesz_torzs.yaml`-ból (a gráfban súlyozva: hány munkakör igényli);
 a munkaköri specifikum a `kontextus_hu`-ba) és azok SZÍN-ezett változataira, a TESZ-nivalókra (MAG × SZÍN ⟨KÖZ-eg, HELY-zet⟩; egy
 TESZ-nivaló = egy mikrotanúsítvány), majd betöltés a helyi neo4j-be. Minden MAG-nak pontosan egy ALAP-SZÍN-e
 van; további változat csak az M2 (új/szigorúbb kritérium) és M3 (rendszeres) próbával. A tervezés:

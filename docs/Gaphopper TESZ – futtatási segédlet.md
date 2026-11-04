@@ -5,7 +5,7 @@ Frissítve: 2026. október 22. (TESZ-MAG × SZÍN modell, próbafutás)
 Beállítási referencia: [README.md](../README.md); fejlesztési szabályok: [CLAUDE.md](../CLAUDE.md).
 
 **Fogalmak röviden.** A P1 általános TESZ-MAG-okat ad (munkaminta × SZER-ELEM-fajta + ERED-mény, legfeljebb 6
-szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–4 KÉSZ-ség-törzselem; a munkaköri specifikum a
+szó, szakterület-, célcsoport-, KÖZ-eg- és HELY-zet-semleges; 2–5 KÉSZ-ség-törzselem; a munkaköri specifikum a
 `kontextus_hu`-ban). Ha a MAG-törzsben van illeszkedő MAG, a P1 azt választja (`mag_ref`), és mindegyikhez SZÍN-ezett változatokat, a TESZ-nivalókat
 (SZÍN = ⟨KÖZ-eg, HELY-zet⟩). Minden MAG-nak pontosan egy ALAP-SZÍN-e van (a leggyakoribb változat); további
 változat csak akkor, ha új vagy szigorúbb értékelési kritériumot hoz (M2) és a munkakörben rendszeres (M3). A
@@ -119,7 +119,7 @@ Az `--until p2` a felbontást és a bírálatot a `state.sqlite`-ba menti, a gr�
 
 - [ ] 6–12 MAG (4–9 CORE), 8–18 TESZ-nivaló, MAG-onként legfeljebb 3 változat, 3–6 TESZ-kör
 - [ ] G1: a MAG-címke legfeljebb 6 szó, munkakör-, szakterület-, célcsoport- és SZÍN-semleges; a specifikum a `kontextus_hu`-ban
-- [ ] G2: MAG-onként 2–4 `kesz_ids` a KÉSZ-ség-törzsből; G4: nincs két azonos típusú, nagy KÉSZ-ség-átfedésű MAG
+- [ ] G2: MAG-onként 2–5 legjellemzőbb `kesz_ids` a KÉSZ-ség-törzsből; G4: nincs két azonos típusú, nagy KÉSZ-ség-átfedésű MAG
 - [ ] G3: a változatnak nincs saját címkéje; a SZÍN a KÖZ-eg/HELY-zet mezőben és a `szin_kulonbseg_hu`-ban
 - [ ] lánc-próbafutásnál (`--chain`) a későbbi munkakörök a törzsből választanak (`[törzs]` jelölés)
 - [ ] M1: két MAG nem csak KÖZ-egben vagy HELY-zetben tér el (különben egy MAG két változata)

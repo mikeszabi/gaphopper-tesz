@@ -1,6 +1,6 @@
 # Gaphopper TESZ-felbontó
 
-MUNKA-KÖR → általános TESZ-MAG-ok (munkaminta × SZER-ELEM-fajta, 2–4 KÉSZ-ség-törzselemmel) → SZÍN-ezett változataik, a
+MUNKA-KÖR → általános TESZ-MAG-ok (munkaminta × SZER-ELEM-fajta, 2–5 KÉSZ-ség-törzselemmel) → SZÍN-ezett változataik, a
 TESZ-nivalók (MAG × SZÍN, SZÍN = ⟨KÖZ-eg, HELY-zet⟩) → helyi neo4j. A tervezés indoklása:
 [docs/TESZ-MAG es SZIN - granularitas.md](docs/TESZ-MAG%20es%20SZIN%20-%20granularitas.md).
 A feldolgozás lépései: E0 kinyerés, P1 felbontás, P2 bírálat, P3 egyesítés, P4 készséghorgonyzás és EQF, P5 tanúsítás.
@@ -121,7 +121,7 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
 
 1. **P1** – a modell általános TESZ-MAG-okra bontja a munkakört (v2: 6–12 MAG, 4–9 CORE). A MAG munkaminta ×
    SZER-ELEM-fajta, legfeljebb 6 szó, szakterület-, célcsoport- és SZÍN-semleges (G1–G4); a szakmai specifikum a
-   `kontextus_hu` mezőbe kerül (a MunkaKor–TESZ élen), a MAG-hoz 2–4 KÉSZ-ség-törzselem (`kesz_ids`) tartozik.
+   `kontextus_hu` mezőbe kerül (a MunkaKor–TESZ élen), a MAG-hoz 2–5 legjellemzőbb KÉSZ-ség-törzselem (`kesz_ids`) tartozik.
    A P1 rendszerpromptjának gyorsítótárazott része a KÉSZ-ség-törzs és a MAG-törzs (a gráf ugyanezzel a
    szótárverzióval készült, legtöbbet használt ≤80 MAG-ja); illeszkedő törzs-MAG-nál a P1 csak a kódot írja
    (`mag_ref`), a MAG mezőit a kód tölti ki, a P3 hívás nélkül oldja fel. Minden MAG-hoz pontosan egy
@@ -204,7 +204,8 @@ A futás idempotens: a kész munkakör nem fut újra (`--force` kell hozzá), a 
 ```
 (:TeszMag {id, label_hu, label_en, outcome_hu, aliases, embedding, status, gen, rubric_alap_hu})
    -[:TIPUSA]->(:TeszTipus)   -[:IRANYUL {role}]->(:SzerElem)          // a meghatározó SZER-ELEM a MAG-on
-   -[:IGENYEL]->(:Keszseg {id: "gh_c_<n>", label_en, csoport, fajta})  // 2–4 KÉSZ-ség-törzselem (G2)
+   -[:IGENYEL {munkakorok, suly}]->(:Keszseg {id: "gh_c_<n>", label_en, csoport, fajta})
+        // munkakörönként 2–5 KÉSZ-ség (G2); nem vágjuk: suly = hány munkakör igényli, a törzs a 5 legsúlyosabbat adja
 (:TeszNivalo {id, label_hu, alap_szin, szin_kulonbseg_hu, attestation_hu, rubric_szin_hu})
    -[:MAGJA]->(:TeszMag)   -[:SZINBEN]->(:Szin)
    -[:KOZEGBEN_ZAJLIK {primary}]->(:Kozeg)   -[:HELYZETBEN_VEGZENDO {primary}]->(:Helyzet)
