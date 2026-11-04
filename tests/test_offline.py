@@ -3,6 +3,7 @@ import json
 import os
 import re
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -1032,3 +1033,28 @@ def test_p2_fix_identity_drops_mag_ref():
     by = {m.mag_id: m for m in magok}
     assert by["M04"].mag_ref is None and by["M05"].kesz_ids == ["gh_c_28", "gh_c_29"]
     assert next(t for t in final if t.cand_id == "C05b").kontextus_hu == "intenzív osztály"
+
+
+def test_p5_splits_on_max_tokens(tmp_path):
+    """P5: túl hosszú válasznál a csomag kettéválik (a kimenetet nem vágjuk)."""
+    from gaphopper.pipeline import Context, run_p5
+
+    rows = [{"id": f"g{i}", "label_hu": f"MAG {i}", "outcome_hu": "x", "tesz_type": "VERIFY", "primary_szer": "y",
+             "rubric_alap_hu": None, "kontextusok": [],
+             "valtozatok": [{"id": f"t{i}", "kozeg": "KOZ_FIZIKAI", "helyzet": "HELY_RUTIN", "alap": True,
+                             "kesz": False}]} for i in range(4)]
+    written = []
+    graph = SimpleNamespace(p5_todo=lambda limit: rows, set_certificates=lambda m, v, pv: written.append((m, v)))
+
+    def p5(system, user):
+        part = json.loads(user.split("VÁLTOZATOK:\n", 1)[1].split("\n\nKIMENET", 1)[0])
+        if len(part) > 1:
+            raise LLMError("A válasz elérte a max_tokens korlátot (6000)")
+        return json.dumps({"magok": [{"id": x["id"], "rubric_alap_hu": ["a", "b", "c"]} for x in part],
+                           "valtozatok": [{"id": v["id"], "attestation_hu": "A személy önállóan ...", "rubric_szin_hu": []}
+                                          for x in part for v in x["valtozatok"]]})
+
+    ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False, llm_override={"P5": FakeLLM(p5)})
+    ctx.graph = graph
+    st = run_p5(ctx, log=lambda *a: None)
+    assert st["kesz_mag"] == 4 and st["kesz_valtozat"] == 4 and st["hiba"] == 0 and len(written) == 4

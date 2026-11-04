@@ -569,26 +569,40 @@ def write_graph(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszMag], fi
 
 
 # ------------------------------------------------------------------ P5: tanúsítási szöveg
-def run_p5(ctx: Context, limit: int = 1000, chunk: int = 6, log=print) -> dict:
+def run_p5(ctx: Context, limit: int = 1000, chunk: int = 6, log=print, max_valtozat: int = 12) -> dict:
     """MAG-rubrika (rubric_alap_hu) és változatonként igazolási mondat + SZÍN-rubrika (rubric_szin_hu)
-    a gráf azon elemeihez, amelyeknek még nincs (egyszer, nem munkakörönként). chunk: MAG-ok hívásonként."""
+    a gráf azon elemeihez, amelyeknek még nincs (egyszer, nem munkakörönként).
+
+    Egy hívásba legfeljebb `chunk` MAG és `max_valtozat` változat kerül; ha a válasz így is eléri a
+    max_tokens korlátot, a csomag kettéválik és újra megy (a kimenetet nem vágjuk)."""
     rows = ctx.graph.p5_todo(limit)
     stat = {"mag": 0, "valtozat": 0, "kesz_mag": 0, "kesz_valtozat": 0, "hiba": 0}
-    for i in range(0, len(rows), chunk):
-        part = []
-        for r in rows[i:i + chunk]:
-            need_alap = not r.get("rubric_alap_hu")
-            item = {"id": r["id"], "label_hu": r["label_hu"], "outcome_hu": r["outcome_hu"],
-                    "tesz_type": r["tesz_type"], "primary_szer": r["primary_szer"], "kell_alap": need_alap}
-            if not need_alap:
-                item["rubric_alap_hu"] = r["rubric_alap_hu"]
-            item["valtozatok"] = [{k: v for k, v in x.items() if k != "kesz" and v not in (None, "")}
-                                  for x in r["valtozatok"] if not x["kesz"]]
-            part.append(item)
+    items = []
+    for r in rows:
+        need_alap = not r.get("rubric_alap_hu")
+        item = {"id": r["id"], "label_hu": r["label_hu"], "outcome_hu": r["outcome_hu"],
+                "tesz_type": r["tesz_type"], "primary_szer": r["primary_szer"], "kell_alap": need_alap}
+        if not need_alap:
+            item["rubric_alap_hu"] = r["rubric_alap_hu"]
+        if r.get("kontextusok"):
+            item["kontextusok"] = r["kontextusok"]
+        item["valtozatok"] = [{k: v for k, v in x.items() if k != "kesz" and v not in (None, "")}
+                              for x in r["valtozatok"] if not x["kesz"]]
+        items.append(item)
+        stat["mag"] += int(need_alap)
+        stat["valtozat"] += len(item["valtozatok"])
+    parts, cur = [], []
+    for it in items:
+        if cur and (len(cur) >= chunk or sum(len(x["valtozatok"]) for x in cur) + len(it["valtozatok"]) > max_valtozat):
+            parts.append(cur)
+            cur = []
+        cur.append(it)
+    if cur:
+        parts.append(cur)
+
+    def send(part: list[dict]) -> None:
         want_m = {x["id"] for x in part if x["kell_alap"]}
         want_v = {v["id"] for x in part for v in x["valtozatok"]}
-        stat["mag"] += len(want_m)
-        stat["valtozat"] += len(want_v)
         user = render(prompt("p5_tanusitas"), tesz_list_json=_json(part))
 
         def check(o: P5MagOutput):
@@ -600,15 +614,24 @@ def run_p5(ctx: Context, limit: int = 1000, chunk: int = 6, log=print) -> dict:
             obj, _ = call_json(ctx.llm("P5"), ctx.system, user, P5MagOutput,
                                log=ctx.logger(None, "P5", ctx.settings.p5), check=check)
         except LLMError as exc:
+            if "max_tokens" in str(exc) and len(part) > 1:
+                half = len(part) // 2
+                log(f"P5: a {len(part)} MAG-os csomag túl hosszú, kettéválik.")
+                send(part[:half])
+                send(part[half:])
+                return
             stat["hiba"] += len(want_m) + len(want_v)
             log(f"P5 hiba ({len(part)} MAG): {exc}")
-            continue
+            return
         mrows = [x.model_dump() for x in obj.magok if x.id in want_m]
         vrows = [x.model_dump() for x in obj.valtozatok if x.id in want_v]
         ctx.graph.set_certificates(mrows, vrows, ctx.pv)
         stat["kesz_mag"] += len(mrows)
         stat["kesz_valtozat"] += len(vrows)
         log(f"P5: MAG {stat['kesz_mag']}/{stat['mag']}, változat {stat['kesz_valtozat']}/{stat['valtozat']}")
+
+    for part in parts:
+        send(part)
     return stat
 
 

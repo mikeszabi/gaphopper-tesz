@@ -124,6 +124,11 @@ class TeszMag(_Base):
             data = dict(data)
             if "kesz" in data and "kesz_ids" not in data:
                 data["kesz_ids"] = data.pop("kesz")
+            mj = data.get("melyites_jeloltek")
+            if isinstance(mj, (str, dict)) or (isinstance(mj, list) and any(not isinstance(x, dict) for x in mj)):
+                # a bíráló néha szövegként írja: a mélyítési jelölt nem kötelező, a szöveges tétel kimarad
+                lst = mj if isinstance(mj, list) else [mj]
+                data["melyites_jeloltek"] = [x for x in lst if isinstance(x, dict)]
             if "runner_up" in data and "tesz_type_runner_up" not in data:
                 data["tesz_type_runner_up"] = data.pop("runner_up")
             if "relevance" in data:
