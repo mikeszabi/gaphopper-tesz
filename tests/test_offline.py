@@ -1665,3 +1665,20 @@ def test_approve_kesz_keeps_renamed_aliases(tmp_path, monkeypatch):
         assert config.kesz_torzs()[res["id"]]["aliases"] == ["hu:Régi név", "en:Old name"]
     finally:
         config.kesz_cache_clear()
+
+
+def test_ui_task_refuses_python_without_provider_packages(tmp_path, monkeypatch):
+    """2026-11-05: a felületet a base Pythonnal indították (anthropic nélkül), a run 2 mp alatt elbukott.
+    A tasks.start most indítás előtt, érthető hibaüzenettel szól; a hibás parancs el sem indul."""
+    import importlib.util
+
+    from gaphopper import tasks
+
+    monkeypatch.setattr(tasks, "TASK_DIR", tmp_path)
+    real = importlib.util.find_spec
+    monkeypatch.setattr(importlib.util, "find_spec", lambda m, *a: None if m == "anthropic" else real(m, *a))
+    with pytest.raises(ValueError, match="anthropic.*conda activate gaphopper"):
+        tasks.start("x", ["run"])
+    assert not list(tmp_path.iterdir())
+    monkeypatch.setattr(importlib.util, "find_spec", lambda m, *a: object())
+    assert tasks.env_problem() == ""

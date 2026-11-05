@@ -487,8 +487,11 @@ def cmd_models(a):
 
 
 def cmd_ui(a):
+    from .tasks import env_problem
     from .web import serve
 
+    if env_problem():
+        print("Figyelem: " + env_problem(), file=sys.stderr, flush=True)
     serve(a.host, a.port, open_browser=not a.no_browser)
 
 

@@ -17,10 +17,44 @@ from .config import ROOT
 
 TASK_DIR = ROOT / "runs" / "ui_tasks"
 _procs: dict[str, subprocess.Popen] = {}
+_PROVIDER_PKG = {"anthropic": "anthropic", "gemini": "google.genai", "openai": "openai"}
+
+
+def missing_packages() -> list[str]:
+    """A beállított szolgáltatókhoz és a neo4j-hez szükséges csomagok közül azok, amelyeket a felületet futtató
+    Python nem lát (a parancsok ugyanezzel a Pythonnal indulnak, ezért így biztosan hibára futnának)."""
+    import importlib.util
+
+    from .config import settings
+
+    s = settings()
+    need = {"neo4j"} | {_PROVIDER_PKG[getattr(s, st).provider] for st in ("e0", "p1", "p2", "p3", "p4", "p5")
+                        if getattr(s, st).provider in _PROVIDER_PKG}
+    out = []
+    for m in sorted(need):
+        try:
+            ok = importlib.util.find_spec(m) is not None
+        except ModuleNotFoundError:
+            ok = False
+        if not ok:
+            out.append(m)
+    return out
+
+
+def env_problem() -> str:
+    miss = missing_packages()
+    if not miss:
+        return ""
+    return (f"A felületet futtató Python ({sys.executable}) nem látja ezeket a csomagokat: {', '.join(miss)}. "
+            "Állítsd le a felületet, és indítsd a gaphopper környezetből: "
+            "conda activate gaphopper && python -m gaphopper ui")
 
 
 def start(label: str, args: list[str], targets: list[str] | str | None = None) -> str:
     """targets: a parancs által érintett munkakörök (vagy "all"), hogy a felület jelölni tudja őket."""
+    problem = env_problem()
+    if problem:  # a parancs biztosan elbukna: azonnal, érthetően jelezzük (a felület hibaüzenetként mutatja)
+        raise ValueError(problem)
     TASK_DIR.mkdir(parents=True, exist_ok=True)
     tid = datetime.now().strftime("%Y%m%d-%H%M%S-%f")[:-3]
     log = TASK_DIR / f"{tid}.log"
