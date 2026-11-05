@@ -363,6 +363,17 @@ python -m gaphopper ui --host 0.0.0.0  # a helyi hálózatról is elérhető (je
 Egyetlen JavaScript-oldal (`web/`), a Python oldalon csak a standard könyvtár fut (`gaphopper/web.py`); külön csomag nem kell.
 
 - **Futás:** a „Próbafutás (dry run)” kapcsolóval a kijelölt munkakörök P1–P3 lépése lefut, de semmi nem íródik (lásd 5c). Felül a fázisok (E0 kinyerés → P1 felbontás → P2 bírálat → P3 gráfba írás → neo4j → P5 tanúsítás), mindegyiknél hány munkakör kész, kihagyott, hibás, várakozó vagy fut éppen. Alatta munkakörönként ugyanez egy sorban, és külön oszlopban, hogy a munkakör ténylegesen benne van-e a neo4j-ben (a gráfból ellenőrizve, nem az állapotmezőből). Indítás: kijelöltek / következő N / minden várakozó, meddig, hány szálon; a futó parancs kimenete élőben, leállítható. Egy munkakörre kattintva: fázisonként a modell, a tokenek, az idő és a költség, a hiba szövege, a P2 módosításai, és TESZ-nivalónként csoportosítva a változatok (● ALAP-SZÍN, ○ mélyítő/átvivő, ◇ mélyítési jelölt), hogy bekerültek-e a gráfba (új elemként vagy egy meglévőhöz kapcsolva), illetve mit vett ki a P2. A szakértői jóváhagyás és elutasítás is itt van.
+- **KÉSZ-ség:** a törzs (kategória → csoport → elem) szűrhetően: keresés névre és aliasra, kategória, csoport, irány,
+  fő TESZ-típus-család, hordozhatóság, csak a használt elemek. Elemre kattintva: aliasok, leírás, családarányok, az
+  IGENYEL élek (TESZ-nivaló, típus, súly, munkakörök) és a beolvadt hiányjelöltek. A törzset minden kérésnél frissen
+  olvassa a yaml-ból, a 2. tengelyt a gráfból.
+- **KÉSZ-ség-sor:** az új KÉSZ-ség-javaslatok (`kesz_review`), a bizonytalan irányok (`kesz_irany_review`) és a bontási
+  javaslatok (`split_review`). Jóváhagyás előtt az új javaslat neve, csoportja és iránya, az iránykérdésnél a javasolt
+  irány szerkeszthető (a régi név alias lesz); a jóváhagyás és az elutasítás a `review --approve/--reject` parancsot
+  indítja, a napló alatta látszik.
+- **Karbantartás:** `kesz-bovit` (próba, futtatás, próbafutásokból, próbafutásokból a sorba), `kesz-irany`, `generalize`,
+  `split` gombok, ugyanúgy a háttérben futó CLI-paranccsal; alatta a próbafutások KÉSZ-ség-hiányjelöltjei (név,
+  csoport, irány, R23-állapot, TESZ-nivaló). A munkakör próbafutás-eredményében (Futás oldal) is látszanak.
 - **Adatbázis:** összevetés: hány munkakör van a gráfban, hány nincs, melyik „kész” munkakör hiányzik a gráfból, mi van csak a gráfban, hány TESZ-SZÍN-nek nincs még igazolása. Kész lekérdezések: TESZ-nivalók mélyítési létrája, mélyítési jelöltek, TESZ-típus × SZÍN. A SQLite állapotai és a neo4j csomópontjai, kapcsolatai; csak olvasó Cypher- és SQL-lekérdezés.
 - **Modellek:** lépésenként szolgáltató és modell; API-ból frissíthető modellválaszték; OpenAI-kompatibilis API és beágyazó modell beállítása és ellenőrzése; szerkeszthető egységárak; P2-mód. A mentés a `config/models.yaml`-ba kerül, és erősebb, mint a `.env`.
 - **Promptok:** a lépés sorrendjében, melyik lépés használja; szerkesztés, eltérés mentés előtt, korábbi változatok (`prompts/.history/`) betöltése.

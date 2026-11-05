@@ -267,6 +267,7 @@ def approve_kesz(ctx, row: dict, payload: dict) -> dict:
     h = kesz_hierarchia()
     kid = next_kesz_id(h["items"])
     aliases = [f"hu:{n}" for n in payload.get("nevek", []) if n != payload["label_hu"]]
+    aliases += [a for a in payload.get("aliases_extra", []) if a not in aliases]   # pl. átnevezés előtti angol név
     h["items"].append({"id": kid, "label_hu": payload["label_hu"], "label_en": payload["label_en"],
                        "csoport": payload["csoport"], "irany": payload["irany"], "irany_forras": "szakerto",
                        "forras": "kesz-bovit", "aliases": aliases})

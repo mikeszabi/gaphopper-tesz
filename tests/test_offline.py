@@ -1544,3 +1544,124 @@ def test_anthropic_bad_workspace_retries_without_header(monkeypatch):
     assert text == '{"ok": 1}' and headers == ["nincs-ilyen", None] and llm._WS_BAD
     llm.anthropic_client()
     assert headers[-1] is None            # a folyamat további kliensei már fejléc nélkül
+
+
+def test_web_kesz_pages_api(tmp_path, monkeypatch):
+    """KÉSZ-ség-oldal, KÉSZ-ség-sor és Karbantartás végpontjai: olvasás a yaml-ból és a gráfból, írás csak a
+    CLI-parancsokon át (tasks.start), UJ-javaslat nevének szerkesztése jóváhagyás előtt."""
+    import threading
+    import urllib.error
+    import urllib.request
+    from http.server import ThreadingHTTPServer
+
+    from gaphopper import config, pipeline, web
+    from gaphopper.store import Store
+
+    _tmp_torzs(tmp_path, monkeypatch)
+    monkeypatch.setenv("GH_STATE_DB", str(tmp_path / "state.sqlite"))
+    monkeypatch.setattr(pipeline, "DRYRUN_DIR", tmp_path / "dryrun")
+    started = []
+    monkeypatch.setattr(web.tasks, "start", lambda label, args, targets=None: started.append(args) or f"t{len(started)}")
+
+    class G:
+        err = ""
+
+        def get(self):
+            return self
+
+        def read(self, q, limit=5000, **kw):
+            if "k.hordozhatosag AS hord" in q:
+                return [{"id": "gh_c_19", "csalad": ["javito", "megismero"], "arany": [0.67, 0.33], "hord": "altalanos",
+                         "munkakor_db": 5}]
+            if "IGENYEL" in q:
+                return [{"nivalo_id": "gh_niv_x", "nivalo": "Hiba elhárítása", "tesz_type": "PROBLEM_SOLVE", "suly": 2,
+                         "munkakorok": ["j1", "j2"]}]
+            if "MunkaKor" in q:
+                return [{"id": "j1", "label": "Villanyszerelő"}]
+            return []
+    monkeypatch.setattr(web, "GRAPH", G())
+    S = Store(tmp_path / "state.sqlite")
+    q1 = S.enqueue(None, "kesz_review", {"ids": ["gh_kh_a", "gh_kh_b"], "nevek": ["Differenciált oktatás"],
+                                          "label_hu": "Egyéni differenciálás", "label_en": "Individual differentiation",
+                                          "csoport": "L1", "irany": ["KOZ_TARSAS"], "munkakorok": ["a", "b"]})
+    q2 = S.enqueue(None, "kesz_irany_review", {"id": "gh_c_102", "label_hu": "x", "jelenlegi": ["KOZ_SZERVEZETI"],
+                                                "javaslat": ["KOZ_TARSAS"]})
+    q3 = S.enqueue("job1", "job_review", {})
+    (tmp_path / "dryrun").mkdir()
+    (tmp_path / "dryrun" / "j.json").write_text(json.dumps({"job_id": "j", "title": "Séf", "ok": True, "kesz_hiany": [
+        {"label_hu": "Szaglás", "label_en": "Sense of smell", "csoport": "H10", "irany": ["KOZ_FIZIKAI"],
+         "status": "JELOLT", "ok": "", "nivalo": "Étel elkészítése"}], "total": {}}), encoding="utf-8")
+
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), web.Handler)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{srv.server_address[1]}"
+
+    def call(path, method="GET", data=None):
+        body = json.dumps(data).encode() if data is not None else None
+        req = urllib.request.Request(base + path, data=body, method=method)
+        try:
+            with urllib.request.urlopen(req) as r:
+                return r.status, json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            return e.code, json.loads(e.read())
+    try:
+        _, d = call("/api/kesz")
+        by = {x["id"]: x for x in d["items"]}
+        assert len(by) == len(config.kesz_torzs()) and d["graph_ok"] and "KOZ_EGYEN" in d["iranyok"]
+        assert by["gh_c_19"]["hordozhatosag"] == "altalanos" and by["gh_c_19"]["csalad"][0] == "javito"
+        assert by["gh_c_181"]["kategoria"] == "SZEM" and by["gh_c_181"]["irany"] == ["KOZ_EGYEN"]
+        _, x = call("/api/kesz/gh_c_19")
+        assert x["igenyel"][0]["munkakorok"][0] == {"id": "j1", "label": "Villanyszerelő"} and x["igenyel"][0]["suly"] == 2
+        assert call("/api/kesz/gh_c_9999")[0] == 404
+        _, qd = call("/api/kesz/queue")
+        assert [q["id"] for q in qd["queue"]] == [q1, q2]                  # a munkakör-kérés nem ide tartozik
+        # UJ: átnevezés jóváhagyás előtt, a régi név alias lesz; a jóváhagyás a CLI review-parancsa
+        assert call(f"/api/kesz/queue/{q1}/approve", "POST", {"label_hu": "Egyéni igényekhez igazítás",
+                                                             "label_en": "Individual needs adaptation"})[0] == 200
+        p = json.loads(next(r for r in S.queue() if r["id"] == q1)["payload_json"])
+        assert p["label_hu"] == "Egyéni igényekhez igazítás" and "Egyéni differenciálás" in p["nevek"]
+        assert p["aliases_extra"] == ["en:Individual differentiation"] and started[-1] == ["review", "--approve", str(q1)]
+        assert call(f"/api/kesz/queue/{q1}/approve", "POST", {"csoport": "X9"})[0] == 400      # sémaellenőrzés
+        call(f"/api/kesz/queue/{q2}/approve", "POST", {"irany": ["KOZ_TARSAS", "KOZ_SZERVEZETI"]})
+        assert json.loads(next(r for r in S.queue() if r["id"] == q2)["payload_json"])["javaslat"] == \
+            ["KOZ_TARSAS", "KOZ_SZERVEZETI"]
+        call(f"/api/kesz/queue/{q2}/reject", "POST", {})
+        assert started[-1] == ["review", "--reject", str(q2)]
+        assert call(f"/api/kesz/queue/{q3}/approve", "POST", {})[0] == 400
+        # karbantartás: ugyanazok a CLI-parancsok
+        call("/api/kesz/maint/kesz-bovit", "POST", {"dry_run": True})
+        assert started[-1] == ["kesz-bovit", "--dry-run"]
+        call("/api/kesz/maint/kesz-bovit", "POST", {"from_dryrun": True, "queue": True})
+        assert started[-1][:2] == ["kesz-bovit", "--from-dryrun"] and started[-1][-1] == "--queue"
+        call("/api/kesz/maint/kesz-irany", "POST", {"all": True})
+        assert started[-1] == ["kesz-irany", "--all"]
+        call("/api/kesz/maint/generalize", "POST", {"dry_run": True})
+        call("/api/kesz/maint/split", "POST", {"review": 7})
+        assert started[-2:] == [["generalize", "--dry-run"], ["split", "--review", "7"]]
+        assert call("/api/kesz/maint/db-reset", "POST", {})[0] == 400
+        _, dl = call("/api/dryrun")
+        assert dl["runs"][0]["kesz_hiany"][0]["label_hu"] == "Szaglás"
+        with urllib.request.urlopen(base + "/") as r:
+            html = r.read().decode()
+        assert "#kesz" in html and "#keszsor" in html and "#karbantartas" in html
+    finally:
+        srv.shutdown()
+        config.kesz_cache_clear()
+
+
+def test_approve_kesz_keeps_renamed_aliases(tmp_path, monkeypatch):
+    from gaphopper import config
+    from gaphopper.kesz import approve_kesz
+    from gaphopper.pipeline import Context
+
+    _tmp_torzs(tmp_path, monkeypatch)
+    try:
+        ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False)
+        ctx.graph = _KeszGraph([])
+        qid = ctx.store.enqueue(None, "kesz_review", {})
+        res = approve_kesz(ctx, {"id": qid}, {"ids": ["gh_kh_a"], "label_hu": "Új név", "label_en": "New name",
+                                              "csoport": "L1", "irany": ["KOZ_TARSAS"], "nevek": ["Régi név"],
+                                              "aliases_extra": ["en:Old name"]})
+        assert config.kesz_torzs()[res["id"]]["aliases"] == ["hu:Régi név", "en:Old name"]
+    finally:
+        config.kesz_cache_clear()

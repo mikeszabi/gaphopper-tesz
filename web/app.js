@@ -348,6 +348,7 @@ async function refreshDrawer(force = false) {
       `<tr class="mag"><td><b>${esc(m.nivalo_id)} · ${esc(m.label_hu)}</b><div class="muted small">${esc(m.tesz_type)} · ‹${esc(m.primary_szer)}› · ${esc(m.relevance)}</div></td><td></td><td class="small">${esc(m.egyesites || "")}</td></tr>`
       + m.szinek.map((v) => `<tr><td>${v.alap_szin ? "●" : "○"} ${esc(v.alap_szin ? "ALAP-SZÍN" : v.label_hu)}<div class="muted small">${esc(v.szin_kulonbseg_hu || "")}</div></td><td class="small mono">${esc(v.kozeg)}/${esc(v.helyzet)}</td><td class="small">${esc(v.egyesites || "")}</td></tr>`).join("")
       + (m.melyites_jeloltek || []).map((x) => `<tr><td class="small">◇ mélyítési jelölt: ${esc(x.indok_hu || "")}</td><td class="small mono">${esc(x.kozeg)}/${esc(x.helyzet)}</td><td></td></tr>`).join("")).join("")}</tbody></table>` : ""}
+    ${hianyTable(dr.kesz_hiany)}
     <table><thead><tr><th>Lépés</th><th>Modell</th><th>Bemenet</th><th>Kimenet</th><th>Idő</th><th>Költség</th></tr></thead><tbody>${(dr.usage || []).map((u) =>
       `<tr><td>${esc(u.step)}</td><td class="small">${esc(u.model)}</td><td>${fmt(u.input + u.cache_read + u.cache_write)}</td><td>${fmt(u.output)}</td><td>${u.ido_mp.toFixed(1)} mp</td><td>${usd(u.koltseg_usd)}</td></tr>`).join("")}</tbody></table></details>`;
   const dropped = d.dropped.map((t) => `<tr><td><s>${esc(t.label_hu)}</s><div class="muted small">${esc(t.reason || "")}</div></td><td>${pill("skip", "P2 kivette")}</td></tr>`).join("");
@@ -404,6 +405,132 @@ async function refreshDrawer(force = false) {
     }
   });
 }
+
+// ------------------------------------------------------------------ KÉSZ-SÉG: törzs, sor, karbantartás
+const R23_HU = { JELOLT: "törzsjelölt", TUD_SZER: "TUD-ás/SZER-ELEM (R23)", TORZSBEN: "már a törzsben" };
+function hianyTable(list) {
+  if (!list || !list.length) return '<p class="small muted">KÉSZ-ség-hiányjelölt nincs.</p>';
+  return `<table><thead><tr><th>KÉSZ-ség-hiányjelölt</th><th>csoport</th><th>irány</th><th>R23-állapot</th><th>TESZ-nivaló</th></tr></thead><tbody>
+    ${list.map((h) => `<tr><td>${esc(h.label_hu)}<div class="muted small">${esc(h.label_en || "")}</div></td><td class="mono small">${esc(h.csoport || "")}</td>
+    <td class="small">${esc((h.irany || []).join(", "))}</td><td>${pill(h.status === "JELOLT" ? "review" : h.status === "TORZSBEN" ? "done" : "skip", R23_HU[h.status] || h.status)}
+    ${h.ok ? `<div class="muted small">${esc(h.ok)}</div>` : ""}</td><td class="small">${esc(h.nivalo || "")}</td></tr>`).join("")}</tbody></table>`;
+}
+async function taskBox(el, tid) {
+  // a parancs naplója (ugyanaz, mint a Futás oldalon); amíg fut, frissül
+  const tick = async () => {
+    let d; try { d = await api(`tasks/${tid}?lines=60`); } catch { return; }
+    el.innerHTML = `<p>${pill(d.status === "fut" ? "run" : d.status === "kész" ? "done" : "error", d.status)} ${esc(d.label)}</p><pre>${esc(d.log || "")}</pre>`;
+    if (d.status === "fut") setTimeout(tick, 2000);
+  };
+  tick();
+}
+const kui = { q: "", csoport: "", kategoria: "", irany: "", hord: "", csalad: "", csak: false };
+
+pages.kesz = async (view) => {
+  view.innerHTML = `<h1>KÉSZ-ség-törzs</h1><p class="sub">Kategória → csoport → KÉSZ-ség; 1. tengely: irányultság (KÖZ-eg), 2. tengely: TESZ-típus-család és hordozhatóság (a gráfból számolva). Kattints egy sorra a részletekért.</p><div id="kv">betöltés…</div>`;
+  let d;
+  try { d = await api("kesz"); } catch (e) { $("#kv").innerHTML = `<p class="bad">${esc(e.message)}</p>`; return; }
+  const opt = (pairs, cur) => `<option value="">mind</option>` + pairs.map(([k, v]) => `<option value="${esc(k)}" ${k === cur ? "selected" : ""}>${esc(v)}</option>`).join("");
+  const csal = (x) => x.csalad.map((c, i) => `${esc(d.csaladok[c] || c)} ${Math.round((x.csalad_arany[i] || 0) * 100)}%`).join(", ");
+  const draw = () => {
+    const q = kui.q.toLowerCase();
+    const rows = d.items.filter((x) => (!q || (x.label_hu + " " + x.label_en + " " + x.aliases.join(" ")).toLowerCase().includes(q))
+      && (!kui.csoport || x.csoport === kui.csoport) && (!kui.kategoria || x.kategoria === kui.kategoria)
+      && (!kui.irany || x.irany.includes(kui.irany)) && (!kui.hord || x.hordozhatosag === kui.hord)
+      && (!kui.csalad || x.csalad[0] === kui.csalad) && (!kui.csak || x.munkakor_db > 0));
+    $("#kt").innerHTML = `<p class="small muted">${rows.length} / ${d.items.length} elem · törzsverzió ${esc(d.version)}${d.graph_ok ? "" : " · a gráf nem érhető el: a 2. tengely üres"}</p>
+      <div style="overflow:auto"><table><thead><tr><th>#</th><th>KÉSZ-ség</th><th>csoport</th><th>kategória</th><th>irány</th><th>TESZ-típus-család</th><th>hordozhatóság</th><th style="text-align:right">munkakör</th></tr></thead><tbody>
+      ${rows.map((x) => `<tr data-k="${esc(x.id)}" style="cursor:pointer"><td class="mono small">${x.n}</td><td>${esc(x.label_hu)}<div class="muted small">${esc(x.label_en)}</div></td>
+        <td class="small">${esc(x.csoport)} ${esc(x.csoport_hu)}</td><td class="small">${esc(x.kategoria_hu)}</td>
+        <td class="small">${x.irany.map((i) => esc(d.iranyok[i] || i)).join(" + ")}${x.irany_forras === "ellenorzendo" ? ' <span class="tag">ellenőrzendő</span>' : ""}</td>
+        <td class="small">${csal(x)}</td><td class="small">${esc(d.hordozhatosag[x.hordozhatosag] || "")}</td><td style="text-align:right">${x.munkakor_db || ""}</td></tr>`).join("")}</tbody></table></div>`;
+    $$("#kt tr[data-k]").forEach((tr) => (tr.onclick = () => openKesz(tr.dataset.k, d)));
+  };
+  $("#kv").innerHTML = `<div class="card"><div class="controls">
+      <input id="kq" placeholder="keresés (név, alias)" value="${esc(kui.q)}">
+      <label class="f">kategória<span><select id="kk">${opt(d.kategoriak.map((k) => [k.kod, k.label_hu]), kui.kategoria)}</select></span></label>
+      <label class="f">csoport<span><select id="kc">${opt(d.csoportok.map((c) => [c.kod, c.kod + " " + c.label_hu]), kui.csoport)}</select></span></label>
+      <label class="f">irány<span><select id="ki">${opt(Object.entries(d.iranyok), kui.irany)}</select></span></label>
+      <label class="f">fő család<span><select id="kf">${opt(Object.entries(d.csaladok), kui.csalad)}</select></span></label>
+      <label class="f">hordozhatóság<span><select id="kh">${opt(Object.entries(d.hordozhatosag), kui.hord)}</select></span></label>
+      <label class="f">csak használt<span><input id="ku" type="checkbox" ${kui.csak ? "checked" : ""}></span></label></div></div><div id="kt"></div>`;
+  $("#kq").oninput = (e) => { kui.q = e.target.value; draw(); };
+  for (const [id, key] of [["kk", "kategoria"], ["kc", "csoport"], ["ki", "irany"], ["kf", "csalad"], ["kh", "hord"]])
+    $("#" + id).onchange = (e) => { kui[key] = e.target.value; draw(); };
+  $("#ku").onchange = (e) => { kui.csak = e.target.checked; draw(); };
+  draw();
+};
+async function openKesz(id, lst) {
+  let x; try { x = await api("kesz/" + encodeURIComponent(id)); } catch (e) { toast(e.message, true); return; }
+  const dr = $("#drawer"); dr.hidden = false;
+  const csal = x.csalad.map((c, i) => `<tr><td>${esc(lst.csaladok[c] || c)}</td><td style="text-align:right">${Math.round((x.csalad_arany[i] || 0) * 100)}%</td></tr>`).join("");
+  dr.innerHTML = `<button class="close" id="dx">Bezárás ✕</button><h1>${esc(x.label_hu)}</h1>
+    <p class="sub"><span class="mono">${esc(x.id)}</span> · ${esc(x.label_en)} · ${esc(x.csoport)} ${esc(x.csoport_hu)} · ${esc(x.kategoria_hu)}</p>
+    <p>Irány: <b>${x.irany.map((i) => esc(lst.iranyok[i] || i)).join(" + ")}</b> <span class="muted small">(${esc(x.irany_forras)})</span> ·
+      hordozhatóság: <b>${esc(lst.hordozhatosag[x.hordozhatosag] || "–")}</b> · ${x.munkakor_db} munkakör${x.forras ? ` · forrás: ${esc(x.forras)}` : ""}</p>
+    ${x.leiras_hu ? `<p class="small">${esc(x.leiras_hu)}</p>` : ""}
+    <h2>Aliasok</h2><p class="small">${x.aliases.length ? x.aliases.map(esc).join(" · ") : '<span class="muted">nincs</span>'}</p>
+    <h2>TESZ-típus-család</h2>${csal ? `<table>${csal}</table>` : '<p class="muted small">még nem igényli TESZ-nivaló</p>'}
+    <h2>IGENYEL (TESZ-nivalók)</h2>${x.igenyel.length ? `<table><thead><tr><th>TESZ-nivaló</th><th>típus</th><th style="text-align:right">súly</th><th>munkakörök</th></tr></thead><tbody>
+      ${x.igenyel.map((e) => `<tr><td>${esc(e.nivalo)}</td><td class="small mono">${esc(e.tesz_type || "")}</td><td style="text-align:right">${e.suly}</td><td class="small">${e.munkakorok.map((j) => esc(j.label)).join(", ")}</td></tr>`).join("")}</tbody></table>` : '<p class="muted small">nincs</p>'}
+    ${x.beolvadt.length ? `<h2>Beolvadt hiányjelöltek</h2><p class="small">${x.beolvadt.map((h) => `${esc(h.label_hu)} (${esc(h.status)})`).join(" · ")}</p>` : ""}`;
+  $("#dx").onclick = closeDrawer;
+}
+
+pages.keszsor = async (view) => {
+  view.innerHTML = `<h1>KÉSZ-ség-sor</h1><p class="sub">Új KÉSZ-ség-javaslatok (kesz-bovit), bizonytalan irányok (kesz-irany) és bontási javaslatok (generalize). A jóváhagyás ugyanazt a review-parancsot indítja, mint a parancssor; az új javaslat neve előtte szerkeszthető (a régi név alias lesz).</p><div id="qv">betöltés…</div><div id="qtask"></div>`;
+  let d;
+  try { d = await api("kesz/queue"); } catch (e) { $("#qv").innerHTML = `<p class="bad">${esc(e.message)}</p>`; return; }
+  const ir = Object.entries(d.iranyok);
+  const irSel = (cur, n) => `<select data-ir="${n}">${ir.map(([k, v]) => `<option value="${k}" ${cur === k ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>`;
+  const irSel2 = (cur, n) => `<select data-ir="${n}"><option value="">–</option>${ir.map(([k, v]) => `<option value="${k}" ${cur === k ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>`;
+  const card = (q) => {
+    const p = q.payload, btn = `<div class="controls" style="margin-top:8px"><button class="primary" data-q="${q.id}" data-a="approve">Jóváhagyás</button><button class="danger" data-q="${q.id}" data-a="reject">Elutasítás</button></div>`;
+    if (q.kind === "kesz_review") return `<div class="card" data-card="${q.id}"><b>Új KÉSZ-ség</b> <span class="tag">#${q.id}</span>
+      <div class="controls"><label class="f">magyar név<span><input data-f="label_hu" value="${esc(p.label_hu)}"></span></label>
+      <label class="f">angol név<span><input data-f="label_en" value="${esc(p.label_en)}"></span></label>
+      <label class="f">csoport<span><input data-f="csoport" value="${esc(p.csoport)}" size="4"></span></label>
+      <label class="f">irány<span>${irSel(p.irany[0], 0)} ${irSel2(p.irany[1] || "", 1)}</span></label></div>
+      <p class="small">${(p.munkakorok || []).length} munkakör igényli: ${(p.munkakorok || []).map(esc).join(", ")}<br>jelöltek: ${(p.nevek || []).map(esc).join(" · ")}<br><span class="muted">${esc(p.indok || "")}</span></p>${btn}</div>`;
+    if (q.kind === "kesz_irany_review") return `<div class="card" data-card="${q.id}"><b>Irány</b> <span class="tag">#${q.id}</span> ${esc(p.kesz_nev || p.label_hu)} <span class="mono small muted">${esc(p.id)}</span>
+      <p class="small">jelenlegi: ${(p.jelenlegi || []).map((i) => esc(d.iranyok[i] || i)).join(" + ")} · javasolt: <span>${irSel(p.javaslat[0], 0)} ${irSel2(p.javaslat[1] || "", 1)}</span><br><span class="muted">${esc(p.indok || "")}</span></p>${btn}</div>`;
+    return `<div class="card" data-card="${q.id}"><b>Bontási javaslat</b> <span class="tag">#${q.id}</span> ${esc(p.nev || p.id)}<p class="small muted">${esc(p.indok || "")}</p>
+      <p class="small">${(p.javaslat || []).map((x) => esc(x.label_hu || JSON.stringify(x))).join(" · ")}</p>${btn}</div>`;
+  };
+  $("#qv").innerHTML = d.queue.length ? d.queue.map(card).join("") : '<p class="muted">A KÉSZ-ség-sor üres.</p>';
+  $$("#qv button[data-q]").forEach((b) => (b.onclick = async () => {
+    const c = b.closest("[data-card]"), body = {};
+    $$("input[data-f]", c).forEach((i) => (body[i.dataset.f] = i.value));
+    const irs = $$("select[data-ir]", c).map((s) => s.value).filter(Boolean);
+    if (irs.length) body.irany = [...new Set(irs)];
+    const r = await act(() => api(`kesz/queue/${b.dataset.q}/${b.dataset.a}`, { method: "POST", body }), "Elindult; a napló alább látható.");
+    taskBox($("#qtask"), r.task);
+    setTimeout(() => pages.keszsor(view), 4000);
+  }));
+};
+
+pages.karbantartas = async (view) => {
+  view.innerHTML = `<h1>Karbantartás</h1><p class="sub">Törzskarbantartó parancsok. Ugyanúgy külön folyamatban futnak, mint a parancssorból; a napló alább és a Futás oldalon is látszik. A javaslatok a <a href="#keszsor">KÉSZ-ség-sor</a>ba kerülnek.</p>
+    <div class="row">
+      <div class="card" style="flex:1 1 380px"><h2>KÉSZ-ség-törzs bővítése (kesz-bovit)</h2><p class="small muted">A hiányjelöltek csoportosítása: ALIAS azonnal, UJ a sorba (legalább 2 munkakörnél), ELVET.</p>
+        <div class="controls"><button data-m="kesz-bovit" data-o='{"dry_run":true}'>Próba (gráfból)</button><button class="primary" data-m="kesz-bovit" data-o='{}'>Futtatás</button></div>
+        <div class="controls"><button data-m="kesz-bovit" data-o='{"from_dryrun":true}'>Próba a próbafutásokból</button><button data-m="kesz-bovit" data-o='{"from_dryrun":true,"queue":true}'>Próbafutásokból, UJ a sorba</button></div></div>
+      <div class="card" style="flex:1 1 380px"><h2>KÉSZ-ség-irányok (kesz-irany)</h2><p class="small muted">A még csak csoportból örökölt irányok elemenkénti felülvizsgálata; a bizonytalan a sorba kerül.</p>
+        <div class="controls"><button data-m="kesz-irany" data-o='{"dry_run":true}'>Próba</button><button class="primary" data-m="kesz-irany" data-o='{}'>Futtatás</button><button data-m="kesz-irany" data-o='{"all":true,"dry_run":true}'>Mind, próba</button></div></div>
+      <div class="card" style="flex:1 1 380px"><h2>TESZ-nivalók általánosítása (generalize)</h2><p class="small muted">A több munkakörben használt, túl szűk nevek; a bontási javaslat a sorba kerül.</p>
+        <div class="controls"><button data-m="generalize" data-o='{"dry_run":true}'>Próba</button><button class="primary" data-m="generalize" data-o='{}'>Futtatás</button></div></div>
+      <div class="card" style="flex:1 1 380px"><h2>Bontás végrehajtása (split)</h2><p class="small muted">A jóváhagyott bontási javaslatok végrehajtása.</p>
+        <div class="controls"><button class="primary" data-m="split" data-o='{}'>Végrehajtás</button></div></div>
+    </div><div id="mtask"></div><div class="card"><h2>Próbafutások KÉSZ-ség-hiányjelöltjei</h2><div id="mdry">betöltés…</div></div>`;
+  $$("button[data-m]", view).forEach((b) => (b.onclick = async () => {
+    const r = await act(() => api(`kesz/maint/${b.dataset.m}`, { method: "POST", body: JSON.parse(b.dataset.o) }), "Elindult.");
+    taskBox($("#mtask"), r.task);
+  }));
+  try {
+    const { runs } = await api("dryrun");
+    $("#mdry").innerHTML = runs.length ? runs.map((r) => `<details><summary>${esc(r.title || r.job_id)} <span class="muted small">${esc(r.time)} · ${(r.kesz_hiany || []).length} hiányjelölt</span></summary>${hianyTable(r.kesz_hiany)}</details>`).join("") : '<p class="muted">Nincs próbafutás.</p>';
+  } catch (e) { $("#mdry").innerHTML = `<p class="bad">${esc(e.message)}</p>`; }
+};
 
 // ------------------------------------------------------------------ ADATBÁZIS
 pages.adatbazis = async (view) => {

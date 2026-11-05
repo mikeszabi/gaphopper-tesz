@@ -756,6 +756,8 @@ def dryrun_list() -> dict:
         out.append({"job_id": d.get("job_id"), "title": d.get("title"), "ok": d.get("ok"), "szamok": d.get("szamok"),
                     "flags": [x.get("rule") for x in d.get("rule_flags") or []], "total": d.get("total"),
                     "prompt_version": d.get("prompt_version"),
+                    "kesz_hiany": [{k: h.get(k) for k in ("label_hu", "label_en", "csoport", "irany", "status", "ok", "nivalo")}
+                                   for h in d.get("kesz_hiany") or []],
                     "time": datetime.fromtimestamp(f.stat().st_mtime).isoformat(timespec="seconds")})
     return {"runs": out}
 
@@ -913,6 +915,18 @@ class Handler(BaseHTTPRequestHandler):
             if d is None:
                 raise KeyError(p[1])
             return d
+        if head == "kesz":
+            from .web_kesz import kesz_decide, kesz_detail, kesz_list, kesz_queue, start_maint
+            if m == "GET" and len(p) == 1:
+                return kesz_list(GRAPH)
+            if m == "GET" and p[1:] == ["queue"]:
+                return kesz_queue(S)
+            if m == "POST" and len(p) == 4 and p[1] == "queue":
+                return kesz_decide(S, int(p[2]), p[3], self.body())
+            if m == "POST" and len(p) == 3 and p[1] == "maint":
+                return {"task": start_maint(p[2], self.body())}
+            if m == "GET" and len(p) == 2:
+                return kesz_detail(GRAPH, p[1])
         if head == "certify" and m == "POST":
             b = self.body()
             return {"task": tasks.start("tanúsítás (P5)", ["certify"] + (["--limit", str(int(b["limit"]))]

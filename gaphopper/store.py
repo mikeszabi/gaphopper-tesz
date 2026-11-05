@@ -120,6 +120,10 @@ class Store:
     def queue(self, status: str = "NYITOTT") -> list[sqlite3.Row]:
         return self.db.execute("SELECT * FROM review_queue WHERE status=? ORDER BY id", (status,)).fetchall()
 
+    def update_payload(self, qid: int, payload: dict) -> None:
+        self.db.execute("UPDATE review_queue SET payload_json=? WHERE id=?", (json.dumps(payload, ensure_ascii=False), qid))
+        self.db.commit()
+
     def decide(self, qid: int, status: str, decision: dict | None = None) -> None:
         self.db.execute("UPDATE review_queue SET status=?, decided_at=?, decision_json=? WHERE id=?",
                         (status, now(), json.dumps(decision or {}, ensure_ascii=False), qid))
