@@ -172,7 +172,9 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
    kontextussal használt TESZ-nivalókra egy csomagolt Haiku-hívás eldönti, igaz-e a név mindegyikre. MARAD; ATNEVEZ
    (általánosabb név, a régi alias lesz, az azonosító és a kapcsolatok maradnak; szűk meghatározó SZER-ELEM-nél új,
    fajta szintű SZER-ELEM, a régi `FAJTAJA` éllel alá kerül); BONT (gyűjtő-TESZ-nivaló, pl. „Működés ellenőrzése…”
-   szoftvertesztelésre és villamos mérésre: szakértői sorba kerül). `--dry-run`: csak a lista. A változások listája:
+   szoftvertesztelésre és villamos mérésre: szakértői sorba kerül; jóváhagyás után `split` hajtja végre: új
+   TESZ-nivaló a javasolt névvel, a felsorolt munkakörök TESZ-SZÍN-jei és KÉSZ-ség-súlyai átkerülnek, a régi név és
+   aliasai a régin maradnak, az új meghatározó SZER-ELEM a munkakör saját P1-es SZER-ELEM-fajtája). `--dry-run`: csak a lista. A változások listája:
    `runs/generalize-<idő>.json`. Kb. 0,01 USD 50 TESZ-nivalónként.
 6. **P5 (`certify`)** – halmozható tanúsítvány: TESZ-nivalónként 3–6 alapkritérium (`rubric_alap_hu`), változatonként
    igazolási mondat és 1–3 kiegészítő SZÍN-kritérium (`rubric_szin_hu`, az ALAP-SZÍN-nél üres). Egyszer készül,
@@ -259,6 +261,7 @@ python -m gaphopper import data/job_100.jsonl
 python -m gaphopper run --dry-run --job <id>   # kalibráció
 python -m gaphopper run --workers 4
 python -m gaphopper generalize       # P6 törzskarbantartás: túl szűk nevek általánosítása, gyűjtő-nevek bontási javaslata
+python -m gaphopper split            # a jóváhagyott bontási javaslatok végrehajtása (új TESZ-nivaló, munkakörök átkötése)
 python -m gaphopper certify
 ```
 

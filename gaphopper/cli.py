@@ -17,6 +17,7 @@
   anchors [--min-tesz 5 --min-jobs 3]
   p4a --type HELYZET --value HELY_RUTIN [--runs 3]
   show --job ID             egy munkakör köztes eredményei
+  split [--review QID]      jóváhagyott bontási javaslat végrehajtása (új TESZ-nivaló, a munkakörök átkötése)
   generalize [--min-jobs 2] [--dry-run]   P6: túl szűk TESZ-nivaló-nevek általánosítása bizonyíték alapján
   certify [--limit N] [--chunk 10]   P5: igazolási mondat és rubrika a rubrika nélküli TESZ-ekhez
   report [--job ID..] [--by prompt_version,step]   tokenek, idő és költség a futásnaplóból
@@ -373,6 +374,18 @@ def cmd_certify(a):
     ctx.close()
 
 
+def cmd_split(a):
+    from .pipeline import run_split
+
+    ctx = _ctx()
+    try:
+        ids = a.review or [r["id"] for r in ctx.store.queue() if r["kind"] == "split_review"]
+        for q in ids:
+            run_split(ctx, q)
+    finally:
+        ctx.close()
+
+
 def cmd_generalize(a):
     from .pipeline import run_generalize
 
@@ -497,6 +510,9 @@ def main(argv=None):
     s.add_argument("--min-jobs", type=int, default=2); s.add_argument("--chunk", type=int, default=20)
     s.add_argument("--dry-run", action="store_true", help="csak a javaslatok listája, a gráf nem változik")
     s.set_defaults(fn=cmd_generalize)
+    s = sub.add_parser("split", help="jóváhagyott bontási javaslat (split_review) végrehajtása")
+    s.add_argument("--review", type=int, action="append", help="a szakértői sor azonosítója (alapból mind)")
+    s.set_defaults(fn=cmd_split)
     s = sub.add_parser("report"); s.add_argument("--job", action="append")
     s.add_argument("--by", default="prompt_version,step"); s.set_defaults(fn=cmd_report)
     s = sub.add_parser("models"); s.add_argument("--check-local", action="store_true"); s.set_defaults(fn=cmd_models)

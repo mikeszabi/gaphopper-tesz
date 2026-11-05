@@ -356,6 +356,65 @@ class Graph:
                  "  new.status = 'JAVASOLT', new.created_at = datetime() "
                  "MERGE (old)-[:FAJTAJA]->(new) MERGE (g)-[i2:IRANYUL]->(new) SET i2.role = i.role DELETE i", rows=rows)
 
+    def split_context(self, nivalo_id: str) -> dict:
+        """A bontáshoz: a TESZ-nivaló adatai és munkakörönként a TESZ-SZÍN-jei."""
+        g = self.run("MATCH (g:TeszNivalo {id: $id}) OPTIONAL MATCH (g)-[:TIPUSA]->(ty) "
+                     "OPTIONAL MATCH (g)-[i:IRANYUL]->(s:SzerElem) "
+                     "RETURN g {.*, embedding: null} AS g, ty.id AS tesz_type, s.id AS szer_id, s.kind AS szer_kind, "
+                     "i.role AS role", id=nivalo_id)
+        if not g:
+            raise KeyError(nivalo_id)
+        links = self.run("MATCH (m:MunkaKor)-[r:TARTALMAZ_TESZT]->(t:TeszSzin)-[:SZINEZI]->(:TeszNivalo {id: $id}) "
+                         "MATCH (t)-[:KOZEGBEN_ZAJLIK {primary: true}]->(k), (t)-[:HELYZETBEN_VEGZENDO {primary: true}]->(h) "
+                         "RETURN m.id AS job, m.label_hu AS job_hu, t.id AS szin_id, k.id AS kozeg, h.id AS helyzet",
+                         id=nivalo_id)
+        return g[0] | {"links": links}
+
+    def apply_split(self, old_id: str, new: dict, moves: list[dict]) -> None:
+        """Egy rész leválasztása: új TESZ-nivaló (a régi típusával, a megadott SZER-ELEM-mel), a mozgó munkakörök
+        TESZ-SZÍN-jei az új alá kerülnek (KÖZ-eg/HELY-zet/HASZNAL és a munkakör-él tulajdonságai másolva), a
+        KÉSZ-ség-súlyok a mozgó munkakörökkel együtt átkerülnek. A régi név és aliasai a régi TESZ-nivalón maradnak."""
+        jobs = sorted({m["job"] for m in moves})
+
+        def work(tx):
+            tx.run("MATCH (old:TeszNivalo {id: $old}) MERGE (n:TeszNivalo {id: $n.id}) "
+                   "ON CREATE SET n.label_hu = $n.label_hu, n.label_en = $n.label_en, n.outcome_hu = old.outcome_hu, "
+                   "  n.status = 'BONTASBOL', n.gen = old.gen, n.prompt_version = old.prompt_version, "
+                   "  n.created_at = datetime(), n.split_from = $old, "
+                   "  n.aliases = ['hu:' + $n.label_hu], n.alias_keys = [$n.key], n.alias_text = ' ' + $n.label_hu "
+                   "WITH old, n MATCH (old)-[:TIPUSA]->(ty) MERGE (n)-[:TIPUSA]->(ty)", old=old_id, n=new)
+            tx.run("MATCH (n:TeszNivalo {id: $n.id}) MERGE (s:SzerElem {id: $n.szer_id}) "
+                   "ON CREATE SET s.label_hu = $n.szer_hu, s.kind = $n.szer_kind, s.status = 'JAVASOLT', "
+                   "  s.created_at = datetime() MERGE (n)-[i:IRANYUL]->(s) SET i.role = $n.role", n=new)
+            tx.run("UNWIND $rows AS r MATCH (old:TeszSzin {id: r.old_szin}), (n:TeszNivalo {id: $nid}) "
+                   "MERGE (t:TeszSzin {id: r.new_szin}) ON CREATE SET t.szin = old.szin, t.status = old.status, "
+                   "  t.prompt_version = old.prompt_version, t.created_at = datetime() "
+                   "MERGE (t)-[:SZINEZI]->(n) "
+                   "WITH old, t, r MATCH (old)-[e:KOZEGBEN_ZAJLIK]->(k) MERGE (t)-[e2:KOZEGBEN_ZAJLIK]->(k) "
+                   "SET e2.primary = e.primary", rows=moves, nid=new["id"])
+            tx.run("UNWIND $rows AS r MATCH (old:TeszSzin {id: r.old_szin}), (t:TeszSzin {id: r.new_szin}) "
+                   "MATCH (old)-[e:HELYZETBEN_VEGZENDO]->(h) MERGE (t)-[e2:HELYZETBEN_VEGZENDO]->(h) "
+                   "SET e2.primary = e.primary", rows=moves)
+            tx.run("UNWIND $rows AS r MATCH (old:TeszSzin {id: r.old_szin}), (t:TeszSzin {id: r.new_szin}) "
+                   "MATCH (old)-[e:HASZNAL]->(s) MERGE (t)-[e2:HASZNAL]->(s) SET e2 += properties(e)", rows=moves)
+            tx.run("UNWIND $rows AS r MATCH (m:MunkaKor {id: r.job})-[l:TARTALMAZ_TESZT]->(old:TeszSzin {id: r.old_szin}), "
+                   "(t:TeszSzin {id: r.new_szin}) MERGE (m)-[l2:TARTALMAZ_TESZT]->(t) SET l2 += properties(l) DELETE l",
+                   rows=moves)
+            # a munkakör nélkül maradt régi TESZ-SZÍN-ek törlődnek
+            tx.run("UNWIND $rows AS r MATCH (old:TeszSzin {id: r.old_szin}) WHERE NOT ()-[:TARTALMAZ_TESZT]->(old) "
+                   "DETACH DELETE old", rows=moves)
+            # KÉSZ-ség-súlyok: a mozgó munkakörök igénylései átkerülnek az új TESZ-nivalóra
+            tx.run("MATCH (old:TeszNivalo {id: $old})-[e:IGENYEL]->(k:Keszseg), (n:TeszNivalo {id: $nid}) "
+                   "WITH e, k, n, [x IN coalesce(e.munkakorok, []) WHERE x IN $jobs] AS mv WHERE size(mv) > 0 "
+                   "MERGE (n)-[e2:IGENYEL]->(k) "
+                   "WITH e, e2, mv, [x IN coalesce(e2.munkakorok, []) WHERE NOT x IN mv] + mv AS nk, "
+                   "  [x IN e.munkakorok WHERE NOT x IN mv] AS rest "
+                   "SET e2.munkakorok = nk, e2.suly = size(nk), e2.rang = e.rang, e.munkakorok = rest, e.suly = size(rest) "
+                   "WITH e, rest WHERE size(rest) = 0 DELETE e", old=old_id, nid=new["id"], jobs=jobs)
+
+        with self.driver.session(database=self.database) as sess:
+            sess.execute_write(work)
+
     def set_certificates(self, magok: list[dict], valtozatok: list[dict], prompt_version: str) -> None:
         self.run("UNWIND $rows AS r MATCH (g:TeszNivalo {id: r.id}) SET g.rubric_alap_hu = r.rubric_alap_hu, "
                  "g.cert_prompt_version = $pv", rows=magok, pv=prompt_version)

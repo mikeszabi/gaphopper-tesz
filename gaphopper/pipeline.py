@@ -736,6 +736,68 @@ def run_generalize(ctx: Context, min_jobs: int = 2, chunk: int = 20, apply: bool
     return out
 
 
+def split_plan(ctx_data: dict, proposal: dict, ref_szer: dict[str, str] | None = None) -> list[dict]:
+    """A bontási javaslatból írási terv. A régi névvel azonos rész (vagy a fel nem sorolt munkakörök) a régi
+    TESZ-nivalón marad; a többi rész új TESZ-nivalót kap. ref_szer: munkakör-id -> a P1 saját SZER-ELEM-fajtája
+    (ha a munkakör a törzsből választotta), ez lesz az új rész meghatározó SZER-ELEM-e."""
+    from .schemas import TeszSzin
+
+    old_label = norm_key(ctx_data["g"]["label_hu"], "hu")
+    by_label = {norm_key(l["job_hu"] or "", "hu"): l for l in ctx_data["links"]}
+    parts = []
+    for part in proposal.get("javaslat", []):
+        if norm_key(part["label_hu"], "hu") == old_label:
+            continue
+        jobs = []
+        for mk in part.get("munkakorok", []):
+            name = norm_key(mk.split(":", 1)[0], "hu")
+            jobs += [l for k, l in by_label.items() if k == name]
+        if not jobs:
+            continue
+        nid = stable_id("gh_niv", ctx_data["tesz_type"] or "", part["label_hu"])
+        szer_hu = next((ref_szer[l["job"]] for l in jobs if ref_szer and ref_szer.get(l["job"])), None) \
+            or part.get("szer_hu") or ctx_data["g"].get("label_hu")
+        new = {"id": nid, "label_hu": part["label_hu"], "label_en": part.get("label_en", ""),
+               "key": norm_key(part["label_hu"], "hu"), "szer_hu": szer_hu,
+               "szer_id": stable_id("gh_szer", szer_hu, ctx_data["szer_kind"] or ""),
+               "szer_kind": ctx_data["szer_kind"] or "OBJECT", "role": ctx_data["role"] or "ACTS_ON"}
+        moves = []
+        for l in ctx_data["links"]:
+            if l in jobs:
+                tid = TeszSzin(cand_id="x", nivalo_id="x", kozeg=l["kozeg"], helyzet=l["helyzet"], expected_eqf=1)
+                moves.append({"job": l["job"], "old_szin": l["szin_id"],
+                              "new_szin": stable_id("gh_szin", nid, tid.kozeg, tid.helyzet)})
+        parts.append({"new": new, "moves": moves})
+    return parts
+
+
+def run_split(ctx: Context, queue_id: int, log=print) -> list[dict]:
+    """Egy jóváhagyott bontási javaslat végrehajtása (split_review a szakértői sorban)."""
+    row = next(r for r in ctx.store.queue() if r["id"] == queue_id)
+    if row["kind"] != "split_review":
+        raise ValueError(f"A(z) {queue_id} nem bontási javaslat.")
+    proposal = json.loads(row["payload_json"])
+    cx = ctx.graph.split_context(proposal["id"])
+    ref_szer = {}
+    for l in cx["links"]:
+        p1 = ctx.store.artifact(l["job"], "P1") or {}
+        for m in p1.get("nivalok") or p1.get("tesz_magok") or []:
+            ref = (m.get("nivalo_ref") or m.get("mag_ref") or "").replace("gh_mag_", "gh_niv_")
+            if ref == proposal["id"] and (m.get("ref_szer") or m.get("szer")):
+                ref_szer[l["job"]] = m.get("ref_szer") or m.get("szer")
+    done = []
+    for part in split_plan(cx, proposal, ref_szer):
+        ctx.graph.apply_split(proposal["id"], part["new"], part["moves"])
+        ctx.store.alias_add_many([(part["new"]["key"], "hu", part["new"]["label_hu"], "TESZ_NIVALO",
+                                   part["new"]["id"], "split")])
+        done.append({"uj": part["new"]["label_hu"], "id": part["new"]["id"], "szer": part["new"]["szer_hu"],
+                     "munkakorok": [m["job"] for m in part["moves"]]})
+        log(f"Bontás: {cx['g']['label_hu']} -> + {part['new']['label_hu']} ‹{part['new']['szer_hu']}› "
+            f"({', '.join(m['job'] for m in part['moves'])})")
+    ctx.store.decide(queue_id, "JOVAHAGYVA", {"bontas": done})
+    return done
+
+
 # ------------------------------------------------------------------ vezérlés
 def _write_manual(job_id: str, ms: ManualStep) -> Path:
     d = MANUAL_DIR / job_id.replace(":", "_")

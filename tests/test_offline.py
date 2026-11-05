@@ -1147,3 +1147,25 @@ def test_fajtaja_edge_and_torzs_guard(tmp_path):
     m9 = next(m for m in summary["nivalok"] if m["nivalo_id"] == "M09")
     assert m9["via"] == "torzs-ellenorzendo" and any(r["kind"] == "mag" for r in summary["review"])
     assert plan.szer_broader and all(b["a"] != b["b"] for b in plan.szer_broader)
+
+
+def test_split_plan_moves_listed_jobs():
+    """Bontás: a régi névvel azonos rész a régi TESZ-nivalón marad, a többi új TESZ-nivalót kap a munkakörei
+    TESZ-SZÍN-jeivel; az új SZER-ELEM a munkakör saját (P1) SZER-ELEM-fajtája."""
+    from gaphopper.pipeline import split_plan
+
+    cx = {"g": {"label_hu": "Szoftver tesztelése"}, "tesz_type": "VERIFY", "szer_kind": "DATA", "role": "ACTS_ON",
+          "links": [{"job": "j1", "job_hu": "Szoftverfejlesztő", "szin_id": "s1", "kozeg": "KOZ_DIGITALIS",
+                     "helyzet": "HELY_RUTIN"},
+                    {"job": "j2", "job_hu": "Villanyszerelő", "szin_id": "s2", "kozeg": "KOZ_FIZIKAI",
+                     "helyzet": "HELY_RUTIN"},
+                    {"job": "j3", "job_hu": "Mechatronikai technikus", "szin_id": "s3", "kozeg": "KOZ_FIZIKAI",
+                     "helyzet": "HELY_PROBLEMA"}]}
+    prop = {"javaslat": [{"label_hu": "Szoftver tesztelése", "munkakorok": ["Szoftverfejlesztő: egységteszt"]},
+                         {"label_hu": "Villamos áramkör vizsgálata", "munkakorok": ["Villanyszerelő: szigetelésmérés"]}]}
+    parts = split_plan(cx, prop, {"j2": "Mérőműszer"})
+    assert len(parts) == 1
+    p = parts[0]
+    assert p["new"]["label_hu"] == "Villamos áramkör vizsgálata" and p["new"]["szer_hu"] == "Mérőműszer"
+    assert [m["job"] for m in p["moves"]] == ["j2"] and p["moves"][0]["old_szin"] == "s2"
+    assert p["new"]["id"].startswith("gh_niv_") and p["moves"][0]["new_szin"].startswith("gh_szin_")

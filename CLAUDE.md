@@ -38,6 +38,7 @@ a Futás oldal naplózott tokeneket és becsült API-költséget mutat. Kulcsér
 - `python -m gaphopper embed check|backfill` – helyi Ollama beágyazás próbája, hiányzó vektorok pótlása
 - `python -m gaphopper generalize [--dry-run]` – P6 törzskarbantartás: a több munkakörben, eltérő kontextussal
   használt TESZ-nivalók túl szűk nevének általánosítása (a régi név alias), gyűjtő-nevek bontási javaslata (szakértőhöz)
+- `python -m gaphopper split [--review QID]` – jóváhagyott bontási javaslat végrehajtása (szakértői sor: split_review)
 - `python -m gaphopper certify` – P5: TESZ-nivaló-rubrika (`rubric_alap_hu`), változatonként igazolás + SZÍN-rubrika (`rubric_szin_hu`)
 - `python -m gaphopper report` – tokenek, idő, költség promptverziónként; `models` – érvényes modellbeállítás
 - `python -m gaphopper ui` – webes felület (http://localhost:8765; `gaphopper/web.py` + `web/`)
