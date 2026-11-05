@@ -229,6 +229,7 @@ python -m gaphopper init
 python -m gaphopper import data/job_100.jsonl
 python -m gaphopper run --dry-run --job <3 referencia-munkakör>   # kalibráció
 python -m gaphopper run --workers 8
+python -m gaphopper generalize       # P6: túl szűk TESZ-nivaló-nevek általánosítása (előtte: --dry-run)
 python -m gaphopper certify          # P5: TESZ-nivaló-rubrika + változatonként igazolás és SZÍN-rubrika
 ```
 

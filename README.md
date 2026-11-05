@@ -151,10 +151,11 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
    | R14 | TESZ-nivaló | SZÍN-jelző a TESZ-nivaló címkéjében (`szin_jelzok` szólista) |
    | R15 | séma | TESZ-nivalónként pontosan egy ALAP-SZÍN (a P1-nél sémahiba, a P2 után a kód javítja) |
    | R16 | változat | csak KÖZ-egben eltér, azonos kísérő SZER-ELEM-ekkel – valószínű kísérő KÖZ-eg |
-   | R17 | TESZ-nivaló | munkakör- vagy szakszó (gépész, villamos …) a TESZ-nivaló-címkében vagy a meghatározó SZER-ELEM-ben (G1); általános célcsoport („hallgatóknak”) maradhat |
+   | R17 | TESZ-nivaló | a munkakör saját címének vagy szakterületének szava a névben vagy a meghatározó SZER-ELEM-ben (G1); rögzített szólista nincs, a túl szűk nevet a `generalize` javítja |
    | R18 | TESZ-nivaló | G4-összevonási jelölt: azonos TESZ-típus és ≥ 2/3 KÉSZ-ség-átfedés |
    | R19 | TESZ-nivaló | ≥ 50 elemű TESZ-törzs mellett az új TESZ-nivalók aránya > 50% |
    | R20 | TESZ-nivaló | 2-nél kevesebb `kesz_ids` (G2) |
+   | R21 | TESZ-nivaló | a név nem tartalmazza a meghatározó SZER-ELEM nevét vagy tövét (G5: felismerhetőség) |
 3. **P2** – csak akkor fut, ha kell: szabályjelzésnél, és a minőség követésére egy véletlen mintán (alapból 15%,
    `GH_P2_MODE=auto|always|never`, `GH_P2_SAMPLE`). A bíráló a P1 tömörített, TESZ-nivalónként csoportosított nézetét
    kapja (indoklás, angol címke és definíció nélkül), és csak az eltéréseket adja vissza: FIX (változaton vagy
@@ -167,7 +168,13 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
    TESZ-SZÍN kiléte `stable_id(gh_tesz, mag_id, kozeg, helyzet)`; ha a TESZ-nivalón már van ilyen SZÍN, SAME, különben új
    változat. Az írás egy tranzakcióban, típusonként egy `UNWIND`-lekérdezéssel megy. A szinonimák az elem
    `aliases` / `alias_keys` tulajdonságaiba kerülnek, nem külön csomópontba.
-5. **P5 (`certify`)** – halmozható tanúsítvány: TESZ-nivalónként 3–6 alapkritérium (`rubric_alap_hu`), változatonként
+5. **P6 (`generalize`) – törzskarbantartás bizonyíték alapján**, a futások után: a legalább 2 munkakörben, eltérő
+   kontextussal használt TESZ-nivalókra egy csomagolt Haiku-hívás eldönti, igaz-e a név mindegyikre. MARAD; ATNEVEZ
+   (általánosabb név, a régi alias lesz, az azonosító és a kapcsolatok maradnak; szűk meghatározó SZER-ELEM-nél új,
+   fajta szintű SZER-ELEM, a régi `FAJTAJA` éllel alá kerül); BONT (gyűjtő-TESZ-nivaló, pl. „Működés ellenőrzése…”
+   szoftvertesztelésre és villamos mérésre: szakértői sorba kerül). `--dry-run`: csak a lista. A változások listája:
+   `runs/generalize-<idő>.json`. Kb. 0,01 USD 50 TESZ-nivalónként.
+6. **P5 (`certify`)** – halmozható tanúsítvány: TESZ-nivalónként 3–6 alapkritérium (`rubric_alap_hu`), változatonként
    igazolási mondat és 1–3 kiegészítő SZÍN-kritérium (`rubric_szin_hu`, az ALAP-SZÍN-nél üres). Egyszer készül,
    a gráfba írás után, hívásonként 6 TESZ-nivaló a változataival.
 6. **Napló** – minden LLM-hívás nyers válasza, modellje, promptverziója, tokenje és ideje a `runs/state.sqlite`-ban. Összesítés: `python -m gaphopper report` (promptverziónként, így a régi és az új futás összevethető).
@@ -251,6 +258,7 @@ python -m gaphopper init             # új séma: constraint-ek, indexek, szót�
 python -m gaphopper import data/job_100.jsonl
 python -m gaphopper run --dry-run --job <id>   # kalibráció
 python -m gaphopper run --workers 4
+python -m gaphopper generalize       # P6 törzskarbantartás: túl szűk nevek általánosítása, gyűjtő-nevek bontási javaslata
 python -m gaphopper certify
 ```
 

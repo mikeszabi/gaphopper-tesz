@@ -461,3 +461,26 @@ A TESZ-SZÍN csomópont rövid megjelenítési nevet kap (`szin: "Társas / Krit
 `szin_kulonbseg_hu` munkakörfüggő (ehhez a munkakör ALAP-SZÍN-éhez képest mitől nehezebb), ezért az ALAP-jelöléssel
 együtt a `TARTALMAZ_TESZT` élre került; a P5 a munkakörök szövegeiből írja a SZÍN-rubrikát. A régi mezőnevű
 P1-eredmények (`tesz_magok`, `tesz`, `mag_id`, `mag_ref`) továbbra is betölthetők.
+
+## 11. Felismerhetőség és bizonyíték alapú törzskarbantartás (2026-11-05)
+
+**A gond.** A szoftverfejlesztőnél a kódolás és a tesztelés nem tűnt el, de túl elvont néven szerepelt („Rendszer
+vagy program működtetése és módosítása”, „Működés ellenőrzése előírt kritérium szerint”). A túl elvont név a sor
+elején bekerült a TESZ-törzsbe, és utána hat munkakör is innen választotta, így gyűjtő-TESZ-nivaló lett. Három ok
+erősítette egymást: a G1 „2 szakterület” kitétele, a „KELL választanod” törzs-szabály, és az, hogy a törzs nevei
+mintát adtak. Próbafutásban, üres törzzsel ugyanez a munkakör jó neveket adott („Programkód írása és módosítása”,
+„Rendszer tesztelése és ellenőrzése”).
+
+**Döntések (felhasználó, 2026-11-05):**
+1. G1: elég, ha a név legalább 3 munkakörben előfordulhat, egy szakterületen belül is. Új **G5 felismerhetőség**: a
+   CORE név a szakma alapigéjét és a meghatározó SZER-ELEM fajtáját tartalmazza, a szakember ráismer. **R21**: a
+   név tartalmazza a meghatározó SZER-ELEM nevét vagy tövét.
+2. Törzs-választás csak azonos TESZ-típus, SZER-ELEM-fajta és ERED-mény esetén, és ha a szakember ráismer. A P1
+   megadja a saját SZER-ELEM-fajtáját (`szer`). Ha ez eltér a törzselemétől, nincs automatikus SAME, hanem
+   átnézés (P3-őr).
+3. A szűkítés a SZER-ELEM-be kerül: a meghatározó SZER-ELEM fajta szintű („Előírás”), a szűkebb fajta („Higiéniai
+   előírás”) a TESZ-SZÍN kísérő SZER-ELEM-e `fajtaja: true` jelöléssel, a gráfban `FAJTAJA` éllel.
+4. Az R17-ből kikerül a rögzített szólista, mert több száz munkakörnél nem tartható karban. Csak a munkakör saját
+   címét és szakterületét nézi.
+5. **`generalize` (P6)**: bizonyíték alapú törzskarbantartás a futások után (MARAD / ATNEVEZ / BONT). Az ATNEVEZ
+   azonnal érvényes: a régi név alias, az azonosító marad. A BONT szakértői sorba kerül.

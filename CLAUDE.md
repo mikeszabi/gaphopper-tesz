@@ -36,6 +36,8 @@ a Futás oldal naplózott tokeneket és becsült API-költséget mutat. Kulcsér
 - `python -m gaphopper stats`, `anchors`, `p4a --type ... --value ...`
 - `python -m gaphopper onet-tasks <Task Statements> [--ratings <Task Ratings>]` – O*NET-feladatlisták a `tasks` mezőbe
 - `python -m gaphopper embed check|backfill` – helyi Ollama beágyazás próbája, hiányzó vektorok pótlása
+- `python -m gaphopper generalize [--dry-run]` – P6 törzskarbantartás: a több munkakörben, eltérő kontextussal
+  használt TESZ-nivalók túl szűk nevének általánosítása (a régi név alias), gyűjtő-nevek bontási javaslata (szakértőhöz)
 - `python -m gaphopper certify` – P5: TESZ-nivaló-rubrika (`rubric_alap_hu`), változatonként igazolás + SZÍN-rubrika (`rubric_szin_hu`)
 - `python -m gaphopper report` – tokenek, idő, költség promptverziónként; `models` – érvényes modellbeállítás
 - `python -m gaphopper ui` – webes felület (http://localhost:8765; `gaphopper/web.py` + `web/`)
@@ -63,7 +65,9 @@ Kézi módban az `extract` a `runs/manual/extract/<fájlnév>/` mappába írja a
 - A P1 rendszerpromptja: P0 + KÉSZ-ség-törzs | TESZ-törzs (`llm.CACHE_SPLIT` két cache-blokk); törzs-TESZ-nivalónál a
   P1 csak `nivalo_ref`-et ír (`Context.resolve_mag_refs`), a P3 hívás nélkül oldja fel. A törzs csak az aktuális
   szótárverzióval (`TeszNivalo.gen`) készült TESZ-nivalókból áll.
-- Szabályok: R1–R20 (`rules.py`; G1–G4: R4, R17, R18, R20; törzshasználat: R19), küszöbök a `vocab.yaml` `rules` részében; a zárt listák egyértelmű
+- A meghatározó SZER-ELEM fajta szintű; a szűkebb fajta a TESZ-SZÍN kísérő SZER-ELEM-e (`fajtaja: true` -> `FAJTAJA` él).
+  Törzs-választásnál a P1 megadja a saját SZER-ELEM-fajtáját (`szer`); ha eltér a törzselemétől, átnézésre kerül.
+- Szabályok: R1–R21 (`rules.py`; G1–G5: R4, R17, R18, R20, R21; törzshasználat: R19; R17-hez nincs szólista), küszöbök a `vocab.yaml` `rules` részében; a zárt listák egyértelmű
   eltérései az `alias_ertek` táblában (új tételt csak egyértelmű megfeleltetésnél vegyél fel).
 - Ne hozz létre külön csomópontot szinonimáknak: a nevek az elem `aliases` tulajdonságába kerülnek.
 - A magyar név az elsődleges, az angol a megfeleltetés; régi gyökű magyar szót válassz az idegen helyett.
