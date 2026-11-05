@@ -1406,3 +1406,32 @@ def test_dry_run_kesz_hiany_to_bovit(tmp_path):
     assert out["szamok"]["kesz_hiany"] == 3 and out["szamok"]["kesz_hiany_jelolt"] == 1
     c = candidates_from_dryrun(list((tmp_path / "dry").glob("*.json")))
     assert [x["label_hu"] for x in c] == ["Kockázatérzékelés"] and c[0]["munkakorok"] == [rec["job_id"]]
+
+
+def test_kesz_bovit_partial_cover_is_uj(tmp_path, monkeypatch):
+    """Gyógypedagógus, 2026-11-05: az "Egyéni differenciálás" a 161 "Fejlődést segítő támogatás"-t csak részben fedi:
+    UJ-javaslat (szakértői sor), nem ALIAS; a prompt a teljes fedést kéri ALIAS-hoz."""
+    from gaphopper import config
+    from gaphopper.kesz import run_kesz_bovit
+    from gaphopper.pipeline import Context
+
+    _tmp_torzs(tmp_path, monkeypatch)
+    try:
+        assert "csak teljes jelentésfedésnél" in prompt("p8_kesz_bovit") and "Ha kétséges, ALIAS" not in prompt("p8_kesz_bovit")
+        assert "kesz_hiany" in prompt("p1_felbontas").split("KIMENET")[1]      # példa a kimeneti mintában
+        rows = [{"id": "gh_kh_dif", "label_hu": "Egyéni differenciálás", "label_en": "Individual differentiation",
+                 "csoport": "L1", "irany": ["KOZ_TARSAS"], "nivalok": ["Egyéni fejlesztési terv készítése"],
+                 "munkakorok": ["onet:25-2056.00", "onet:25-2021.00"]}]
+        ans = json.dumps({"csoportok": [{"ids": ["gh_kh_dif"], "dontes": "UJ", "label_hu": "Egyéni differenciálás",
+                                         "label_en": "Individual differentiation", "csoport": "L1",
+                                         "irany": ["KOZ_TARSAS"], "indok_hu": "a 161 csak részben fedi"}]})
+        ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False,
+                      llm_override={"P3": FakeLLM(lambda a, b: ans)})
+        ctx.graph = _KeszGraph(rows)
+        out = run_kesz_bovit(ctx)
+        assert not out["alias"] and [u["label_hu"] for u in out["uj"]] == ["Egyéni differenciálás"]
+        assert [r["kind"] for r in ctx.store.queue()] == ["kesz_review"]
+        assert ("status", ["gh_kh_dif"], "JAVASOLT") in ctx.graph.calls
+        assert "gh_c_292" not in config.kesz_torzs()          # jóváhagyás nélkül nem kerül a törzsbe
+    finally:
+        config.kesz_cache_clear()

@@ -46,7 +46,8 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
    munkakörben NEM jellemző: melyites_jeloltek (legfeljebb 1; nem TESZ!).
 5. ÖNELLENŐRZÉS: T1-T6 a változatokra, M1 és G1-G5 a TESZ-nivalókra; a munkakör fő tevékenységei
    (pl. szoftverfejlesztőnél kódolás és tesztelés) felismerhető néven szerepelnek. Készség jellegű elem a
-   skill_mentions listába.
+   skill_mentions listába. KÉSZ-ség-lefedettség TESZ-nivalónként: fedik-e a kesz_ids a TESZ-nivaló lényeges
+   KÉSZ-ségeit? Ha nem (csak részben vagy távolról), kesz_hiany (2d).
 6. VÁLTOZATONKÉNT: kozeg, helyzet, frequency, expected_eqf (1-8), confidence (0.6 alatt csak
    valódi, szakértőt igénylő bizonytalanságnál, open_question-nel); 0-4 kísérő SZER-ELEM
    (secondary_szer, definíció nélkül) – a szakmai és közegfüggő eszközök itt vannak; a meghatározó
@@ -77,6 +78,7 @@ KIMENET (csak tömör JSON; a minta olvashatóság miatt tördelt):
    "tesz_type":"SUPPORT_SERVE","runner_up":"COMMUNICATE",
    "primary_szer":{"label_hu":"Foglalkozásterv","label_en":"Session plan","kind":"PLAN","role":"GUIDED_BY","definition_hu":"..."},
    "relevance":"CORE","kesz_ids":[246,239,163],"kontextus_hu":"gépész hallgatók, labor és gyakorlat",
+   "kesz_hiany":[{"label_hu":"Egyéni differenciálás","label_en":"Individual differentiation","csoport":"L1","irany":["KOZ_TARSAS"]}],
    "melyites_jeloltek":[{"kozeg":"KOZ_FIZIKAI","helyzet":"HELY_KRITIKUS","indok_hu":"..."}]},
   {"nivalo_id":"N02","nivalo_ref":"T07","szer":"Hiba","kor_id":"K2","relevance":"CORE","kesz_ids":[19,67,5],"kontextus_hu":"..."}],
  "szinek":[

@@ -4,9 +4,10 @@ jelöltnél látod, hány és mely munkakör igényelte, és mely TESZ-nivalóho
 
 1. CSOPORTOSÍTS: az azonos jelentésű jelöltek (szinonima, eltérő szóalak, magyar-angol pár) egy csoportba.
 2. DÖNTS csoportonként:
-   - ALIAS: a jelentés egy meglévő törzselem neve más szavakkal, vagy annak szűkebb esete, amelyet a
-     törzselem megfelelően lefed. Add meg a törzselem sorszámát (kesz). Ha kétséges, ALIAS-t válassz.
-   - UJ: valóban hiányzó, törzsszintű KÉSZ-ség: általános, szakterület-semleges, 1-4 szavas név,
+   - ALIAS: csak teljes jelentésfedésnél: a jelölt egy meglévő törzselem neve más szavakkal (szinonima,
+     szóalak, fordítás). Add meg a törzselem sorszámát (kesz). Ha a törzselem csak részben vagy tágabban
+     fedi (pl. "Egyéni differenciálás" ~ "Fejlődést segítő támogatás"), az nem ALIAS, hanem UJ.
+   - UJ: hiányzó vagy csak részben fedett, törzsszintű KÉSZ-ség (a szakértő hagyja jóvá): általános, szakterület-semleges, 1-4 szavas név,
      ugyanazon a granularitási szinten, mint a törzselemek; nem eszköz, termék, szoftver, szabvány
      vagy munkakör neve (az TUD-ás vagy SZER-ELEM); nem szintváltozat (alap/haladó). Add meg a
      javasolt magyar (régi gyökű szó az idegen helyett) és angol nevet, a csoportkódot (a törzs
