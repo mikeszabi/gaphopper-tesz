@@ -111,7 +111,8 @@ def prompt_version() -> str:
         h.update(p.read_bytes())
     h.update(VOCAB_PATH.read_bytes())
     if KESZ_PATH.exists():
-        h.update(KESZ_PATH.read_bytes())
+        # csak a promptba kerülő rész (id, angol név, csoport, típus): a magyar név a gráfé és a felületé
+        h.update("|".join(f"{k}:{x['en']}:{x['group']}{x['type']}" for k, x in kesz_torzs().items()).encode())
     return f"{vocab().get('version', 'v')}-{h.hexdigest()[:8]}"
 
 

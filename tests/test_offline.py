@@ -905,6 +905,7 @@ def test_kesz_ids_normalized_and_checked():
     from gaphopper.schemas import TeszNivalo
 
     assert len(kesz_torzs()) == 275 and kesz_torzs()["gh_c_246"]["en"] == "Public speaking (technical)"
+    assert all(x.get("hu") for x in kesz_torzs().values()) and kesz_torzs()["gh_c_19"]["hu"] == "Kiváltó ok feltárása"
     d = p1_fixture()["nivalok"][0] | {"kesz_ids": [3, "270", "gh_c_42", 3]}
     assert TeszNivalo.model_validate(d).kesz_ids == ["gh_c_3", "gh_c_270", "gh_c_42"]
     with pytest.raises(Exception, match="nincs a KÉSZ-ség-törzsben"):

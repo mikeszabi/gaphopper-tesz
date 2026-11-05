@@ -90,8 +90,9 @@ class Graph:
         self.run("UNWIND $pairs AS p MATCH (a:Helyzet {id: p[0]}), (b:Helyzet {id: p[1]}) MERGE (a)-[:MELYEBB]->(b)",
                  pairs=[[a["id"], b["id"]] for a, b in zip(kisz, kisz[1:])])
         # KÉSZ-ség-törzs: rögzített Keszseg-csomópontok (gh_c_<n>), a TESZ-nivalók IGENYEL éllel kötnek hozzájuk.
-        rows = [{"id": k, "en": x["en"], "group": x["group"], "type": x["type"]} for k, x in kesz_torzs().items()]
-        self.run("UNWIND $rows AS r MERGE (k:Keszseg {id: r.id}) SET k.label_en = r.en, k.label_hu = coalesce(k.label_hu, r.en), "
+        rows = [{"id": k, "en": x["en"], "hu": x.get("hu") or x["en"], "group": x["group"], "type": x["type"]}
+                for k, x in kesz_torzs().items()]
+        self.run("UNWIND $rows AS r MERGE (k:Keszseg {id: r.id}) SET k.label_en = r.en, k.label_hu = r.hu, "
                  "k.csoport = r.group, k.fajta = r.type, k.forras = 'GH_competency_list', k.status = 'TORZS'", rows=rows)
         # A régi (v1) Szin-csomópontok eltávolítása: a SZÍN a KÖZ-eg és a HELY-zet kombinációja.
         self.run("MATCH (s:Szin) DETACH DELETE s")
