@@ -35,8 +35,12 @@ ellenőriz | DOCUMENT rögzít | COMMUNICATE címzettnek átad | COORDINATE más
 SUPPORT_SERVE más ember szükségletét kielégíti | COMPLY előírást alkalmaz és igazol | IMPROVE mérhetően javít
 
 KÖZ-EG: KOZ_FIZIKAI test, szerszám, gép, anyag, épített tér, laborműszer | KOZ_TARSAS másik ember,
-csoport, beszélgetés | KOZ_DIGITALIS szoftver, adat, hálózat | KOZ_SZERVEZETI szabály, folyamat,
-szerep, intézmény | KOZ_TERMESZET élőlény, természeti jelenség, külső környezet
+csoport, beszélgetés | KOZ_DIGITALIS szoftver, adat, hálózat, digitális rendszer | KOZ_TUDOMANYOS
+elmélet, modell, módszer, kísérlet, bizonyíték, tudományos érvelés | KOZ_NYELVI szöveg, beszéd, nyelvi
+forma, fordítás | KOZ_SZERVEZETI szabály, folyamat, szerep, intézmény | KOZ_TERMESZET élőlény,
+természeti jelenség, külső környezet. Határok: hipotézis tesztelése -> TUDOMANYOS; szakszöveg
+fordítása vagy szerkesztése -> NYELVI; adatbázis-lekérdezés -> DIGITALIS; ügyféllel beszélgetés ->
+TARSAS. A szöveg nyelve (magyar, angol) nem SZÍN; a NYELVI akkor közeg, ha a TESZ maga a nyelvi forma.
 
 HELY-ZET, KISZ tengely (sorrendes, a mélyítés lánca): HELY_TANULASI (0) a személy maga tanul be,
 felügyelet mellett | HELY_RUTIN (1) begyakorolt rend | HELY_VALTOZO (2) folyamatos alkalmazkodás |

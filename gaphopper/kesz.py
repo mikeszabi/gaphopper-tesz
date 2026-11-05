@@ -81,7 +81,8 @@ def hiany_rows(job: dict, nivalo_graph_id: str, hianyok, keys: dict[str, str] | 
 
 
 # ------------------------------------------------------------------ kesz-irany: 1. tengely elemenként
-def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool = True, log=print) -> dict:
+def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool = True,
+                   iranyok: set[str] | None = None, log=print) -> dict:
     """A csoportból örökölt irány elemenkénti felülvizsgálata (P3-modell). Biztos eltérés: a yaml-ba (irany_forras
     llm); bizonytalan: szakértői sor (kesz_irany_review); a kiírás nélküli elem az alapirányt megerősíti."""
     from .config import kesz_hierarchia, prompt, render, save_kesz_torzs, kesz_torzs
@@ -91,7 +92,16 @@ def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool 
     h = kesz_hierarchia()
     torzs = kesz_torzs()
     items = [x for x in h["items"] if not only_default or x.get("irany_forras", "csoport") == "csoport"]
-    out = {"vizsgalt": 0, "valtozott": [], "szakertohoz": [], "hiba": 0}
+    if iranyok:  # csak az ilyen irányú elemek (pl. új KÖZ-eg után az érintettek)
+        items = [x for x in items if set(torzs[x["id"]]["irany"]) & iranyok]
+    out = {"vizsgalt": 0, "valtozott": [], "szakertohoz": [], "hiba": 0, "elavult": 0}
+    if apply:
+        # a most újravizsgált elemek korábbi, nyitott irány-kérdései elavulnak (az új vizsgálat újakat tehet a sorba)
+        ids = {x["id"] for x in items}
+        for r in ctx.store.queue():
+            if r["kind"] == "kesz_irany_review" and json.loads(r["payload_json"]).get("id") in ids:
+                ctx.store.decide(r["id"], "ELAVULT", {"ok": "újravizsgálva (kesz-irany)"})
+                out["elavult"] += 1
     by_id = {x["id"]: x for x in h["items"]}
     for i in range(0, len(items), chunk):
         part = items[i:i + chunk]

@@ -102,7 +102,8 @@ KESZ_HEADER = """# GapHopper KÉSZ-ség-törzs: kategória -> csoport -> KÉSZ-s
 _KESZ_ORDER = ("id", "label_hu", "label_en", "csoport", "irany", "irany_forras", "leiras_hu", "leiras_en",
                "v3_code", "forras", "aliases")
 # a KÖZ-eg-irányok sorrendje a P1 törzsblokkjában
-IRANY_SOR = ("KOZ_EGYEN", "KOZ_TARSAS", "KOZ_SZERVEZETI", "KOZ_DIGITALIS", "KOZ_FIZIKAI", "KOZ_TERMESZET")
+IRANY_SOR = ("KOZ_EGYEN", "KOZ_TARSAS", "KOZ_NYELVI", "KOZ_SZERVEZETI", "KOZ_TUDOMANYOS", "KOZ_DIGITALIS",
+             "KOZ_FIZIKAI", "KOZ_TERMESZET")
 
 
 @lru_cache(maxsize=1)

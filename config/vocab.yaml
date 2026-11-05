@@ -23,7 +23,10 @@ tesz_tipus:
 kozeg:
   KOZ_FIZIKAI:    {hu: "Fizikai",    gyok: "ANYAG-i közeg",     en: "physical"}
   KOZ_TARSAS:     {hu: "Társas",     gyok: "TÁRS-as közeg",     en: "social"}
-  KOZ_DIGITALIS:  {hu: "Digitális",  gyok: "JEL-közeg",         en: "digital"}
+  KOZ_DIGITALIS:  {hu: "Digitális",  gyok: "DIGIT-ális közeg",  en: "digital"}
+  # 2026-11-05 (felhasználói döntés): a régi "JEL-közeg" kettévált; a TESZ-SZÍN-ben és a KÉSZ-ség-iránynál is érvényes
+  KOZ_TUDOMANYOS: {hu: "Tudományos", gyok: "TUD-ományos közeg", en: "scientific"}
+  KOZ_NYELVI:     {hu: "Nyelvi",     gyok: "NYELV-i közeg",     en: "linguistic"}
   KOZ_SZERVEZETI: {hu: "Szervezeti", gyok: "SZER-vezeti közeg", en: "organisational"}
   KOZ_TERMESZET:  {hu: "Természet",  gyok: "TERM-észeti közeg", en: "natural"}
   # csak a KÉSZ-ség irányultságában (Keszseg -[:IRANYUL]-> Kozeg); TESZ-SZÍN-ben nem érvényes
