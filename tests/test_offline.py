@@ -974,6 +974,9 @@ def test_kesz_hiany_guard_r23():
     assert "szint" in g("Haladó táblázatkezelés", "Advanced spreadsheets")
     assert "hosszú" in g("Nagyon hosszú és összetett készség neve itt", "")
     assert "munkakör" in g("Villanyszerelési rutin", "", "Villanyszerelő", "Built environment and trades")
+    # a magyar munkakörnév töve (2026-11-05: az angol cím nem fogta meg az "Állatkezelés"-t)
+    assert "magyar nevének" in g("Állatkezelés", "Animal handling", "Veterinary technician", "Health", "Állatorvos-asszisztens")
+    assert g("Kockázatérzékelés", "Risk awareness", "Chef", "Hospitality", "Séf") == ""
 
 
 def test_kesz_hiany_schema_and_rows():
@@ -1418,7 +1421,8 @@ def test_kesz_bovit_partial_cover_is_uj(tmp_path, monkeypatch):
     _tmp_torzs(tmp_path, monkeypatch)
     try:
         assert "csak teljes jelentésfedésnél" in prompt("p8_kesz_bovit") and "Ha kétséges, ALIAS" not in prompt("p8_kesz_bovit")
-        assert "kesz_hiany" in prompt("p1_felbontas").split("KIMENET")[1]      # példa a kimeneti mintában
+        assert "kesz_hiany" in prompt("p1_felbontas").split("KIMENET")[1]      # példa a kimeneti mintában ...
+        assert "Egyéni differenciálás" not in prompt("p1_felbontas")           # ... helyőrzővel (szivárgás ellen)
         rows = [{"id": "gh_kh_dif", "label_hu": "Egyéni differenciálás", "label_en": "Individual differentiation",
                  "csoport": "L1", "irany": ["KOZ_TARSAS"], "nivalok": ["Egyéni fejlesztési terv készítése"],
                  "munkakorok": ["onet:25-2056.00", "onet:25-2021.00"]}]

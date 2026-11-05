@@ -243,7 +243,8 @@ def check(tesz: list[TeszSzin], kor_ids: list[str] | None = None, job_field: str
     return flags
 
 
-def kesz_hiany_guard(label_hu: str, label_en: str, job_title: str = "", job_field: str = "") -> str:
+def kesz_hiany_guard(label_hu: str, label_en: str, job_title: str = "", job_field: str = "",
+                     job_title_hu: str = "") -> str:
     """R23 – a hiányjelölt törzsszintű-e. Üres szöveg: törzsjelölt; különben az ok, amiért TUD-ás-/SZER-ELEM-jelölt.
 
     Nem törzsszintű: túl hosszú név, szám, nagybetűs termék/rövidítés, a munkakör címéből vagy szakterületéből vett szó
@@ -260,6 +261,10 @@ def kesz_hiany_guard(label_hu: str, label_en: str, job_title: str = "", job_fiel
     spec = _jelzo(label_hu, _job_words(job_title, job_field))
     if spec:
         return f"a munkakör címének vagy szakterületének szava: {', '.join(spec)}"
+    # a munkakör magyar neve (a P1 job_label_hu-ja): szótő-egyezés, mert a jelölt neve magyar ("Állatorvos-asszisztens"
+    # ~ "Állatkezelés"); az angol cím szavai a magyar névben ritkán fordulnak elő
+    if job_title_hu and stem_overlap(job_title_hu, label_hu):
+        return f"a munkakör magyar nevének töve: {job_title_hu}"
     szint = _jelzo(f"{label_hu} {label_en}", list(r.get("kesz_szintszavak") or []))
     if szint:
         return f"szintváltozat: {', '.join(szint)}"

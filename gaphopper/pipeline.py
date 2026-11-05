@@ -513,7 +513,8 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo], 
         entry["kesz_ids"] = list(dict.fromkeys(entry["kesz_ids"] + m.kesz_ids))
         if m.kesz_hiany:
             # törzsbővítési bizonyíték; a törzsben már meglévő név (szinonima, alias) egyszerű IGENYEL lesz
-            hrows, had = hiany_rows(job, rm.entity_id, m.kesz_hiany, hkeys)
+            hrows, had = hiany_rows(job | {"title_hu": p1_meta.get("job_label_hu", "")}, rm.entity_id,
+                                    m.kesz_hiany, hkeys)
             entry["kesz_ids"] = list(dict.fromkeys(entry["kesz_ids"] + had))
             plan.hianyok += [h for h in hrows if (h["id"], h["mag"]) not in {(x["id"], x["mag"]) for x in plan.hianyok}]
         if new and not entry["new"]:
@@ -929,7 +930,7 @@ def dry_run(job: dict, s: Settings | None = None, graph=None, llm_override: dict
         hk = torzs_keys()
         out["kesz_hiany"] = []
         for m in magok:
-            hrows, had = hiany_rows(job, m.nivalo_id, m.kesz_hiany, hk)
+            hrows, had = hiany_rows(job | {"title_hu": p1.job_label_hu or ""}, m.nivalo_id, m.kesz_hiany, hk)
             out["kesz_hiany"] += [{"id": h["id"], "status": h["status"], "nivalo": m.label_hu, **h["props"]}
                                   for h in hrows]
             out["kesz_hiany"] += [{"id": k, "status": "TORZSBEN", "nivalo": m.label_hu,

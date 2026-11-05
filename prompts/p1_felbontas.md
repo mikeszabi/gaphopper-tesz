@@ -78,7 +78,7 @@ KIMENET (csak tömör JSON; a minta olvashatóság miatt tördelt):
    "tesz_type":"SUPPORT_SERVE","runner_up":"COMMUNICATE",
    "primary_szer":{"label_hu":"Foglalkozásterv","label_en":"Session plan","kind":"PLAN","role":"GUIDED_BY","definition_hu":"..."},
    "relevance":"CORE","kesz_ids":[246,239,163],"kontextus_hu":"gépész hallgatók, labor és gyakorlat",
-   "kesz_hiany":[{"label_hu":"Egyéni differenciálás","label_en":"Individual differentiation","csoport":"L1","irany":["KOZ_TARSAS"]}],
+   "kesz_hiany":[{"label_hu":"<törzsszintű név>","label_en":"<general name>","csoport":"<csoportkód>","irany":["<KÖZ-eg>"]}],
    "melyites_jeloltek":[{"kozeg":"KOZ_FIZIKAI","helyzet":"HELY_KRITIKUS","indok_hu":"..."}]},
   {"nivalo_id":"N02","nivalo_ref":"T07","szer":"Hiba","kor_id":"K2","relevance":"CORE","kesz_ids":[19,67,5],"kontextus_hu":"..."}],
  "szinek":[

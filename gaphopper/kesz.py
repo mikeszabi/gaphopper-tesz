@@ -71,7 +71,8 @@ def hiany_rows(job: dict, nivalo_graph_id: str, hianyok, keys: dict[str, str] | 
         if hit:
             existing.append(hit)
             continue
-        ok = kesz_hiany_guard(h.label_hu, h.label_en, job.get("title", ""), job.get("field", ""))
+        ok = kesz_hiany_guard(h.label_hu, h.label_en, job.get("title", ""), job.get("field", ""),
+                              job.get("title_hu", ""))
         status = "TUD_SZER" if ok else "JELOLT"
         rows.append({"id": stable_id("gh_kh", status, h.label_hu), "mag": nivalo_graph_id, "status": status,
                      "props": {"label_hu": h.label_hu, "label_en": h.label_en, "csoport": h.csoport,
