@@ -1628,6 +1628,9 @@ def test_web_kesz_pages_api(tmp_path, monkeypatch):
         call(f"/api/kesz/queue/{q2}/reject", "POST", {})
         assert started[-1] == ["review", "--reject", str(q2)]
         assert call(f"/api/kesz/queue/{q3}/approve", "POST", {})[0] == 400
+        _, rv = call(f"/api/review/{q3}")
+        assert rv["tetel"]["nev"] == "Munkakör jóváhagyása" and "gráfba" in rv["tetel"]["jovahagyas"]
+        assert qd["queue"][1]["context"]["jelenlegi"] == ["Szervezeti"]
         # karbantartás: ugyanazok a CLI-parancsok
         call("/api/kesz/maint/kesz-bovit", "POST", {"dry_run": True})
         assert started[-1] == ["kesz-bovit", "--dry-run"]
@@ -1716,3 +1719,38 @@ def test_kesz_irany_filter_and_stale_reviews(tmp_path, monkeypatch):
         assert [r["id"] for r in ctx.store.queue()] == [keep] and old != keep
     finally:
         config.kesz_cache_clear()
+
+
+def test_r21_munkatars_not_stopword():
+    """Ápoló, 2026-11-05: "Munkatársak és feladatok koordinálása" ‹Munkatárs›: a munkakörcím-stopszó nem rontja el
+    a SZER-ELEM-tő egyezését (R21 nem jelez)."""
+    assert rules.stem_overlap("Munkatárs", "Munkatársak és feladatok koordinálása")
+
+
+def test_review_explain_names_rules_and_elements(tmp_path):
+    """Szakértői kérés: a szabály neve és jelentése, az érintett TESZ-nivaló teljes megnevezéssel (nem N08),
+    R18-nál a két elem és az eltérés, a P2 előtte/utána, és a jóváhagyás/elutasítás jelentése (2026-11-05)."""
+    from gaphopper.review_view import explain, format_text, rule_info
+    from gaphopper.store import Store
+
+    assert rule_info("R21")["nev"].startswith("A név nem tartalmazza") and rule_info("G5")["nev"]
+    S = Store(tmp_path / "s.sqlite")
+    S.upsert_job({"job_id": "j", "title": "Registered nurse"})
+    p1 = json.loads((FIX / "p1_nurse.json").read_text(encoding="utf-8"))
+    n1, n2 = p1["nivalok"][0], p1["nivalok"][1]
+    after = dict(n1, label_hu="Új név a javítás után")
+    S.save_artifact("j", "P1", p1, "v")
+    S.save_artifact("j", "P2", {"verdict": "FIXED", "final_nivalok": [after] + p1["nivalok"][1:],
+                                "final_szinek": p1["szinek"], "changes": [
+        {"op": "FIX", "nivalo_id": n1["nivalo_id"], "failed_tests": ["R21"], "reason_hu": "G5"}]}, "v")
+    c1 = next(x["cand_id"] for x in p1["szinek"] if x["nivalo_id"] == n2["nivalo_id"])
+    qid = S.enqueue("j", "job_review", {"verdict": "FIXED", "flags": [
+        {"rule": "R18", "message": "x", "cand_ids": [n1["nivalo_id"], c1]}]})
+    x = explain(S, next(r for r in S.queue() if r["id"] == qid))
+    f = x["flags"][0]
+    assert f["nev"] == "Összevonási jelölt" and [v["label_hu"] for v in f["elemek"]] == ["Új név a javítás után", n2["label_hu"]]
+    assert f["elemek"][0]["tesz_type_hu"] and f["elemek"][0]["szinek"] and f["elemek"][0]["kesz"][0]["label_hu"] != f["elemek"][0]["kesz"][0]["id"]
+    assert x["valtozasok"][0]["elotte"]["label_hu"] == n1["label_hu"] and x["valtozasok"][0]["utana"]["label_hu"] == "Új név a javítás után"
+    assert x["job"]["label_en"] == "Registered nurse" and f["kulonbseg"]
+    txt = format_text(x)
+    assert "R18 – Összevonási jelölt" in txt and "Jóváhagyás:" in txt and n2["label_hu"] in txt and "előtte:" in txt

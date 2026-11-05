@@ -360,7 +360,10 @@ def job_detail(S: Store, job_id: str) -> dict:
         dropped = [_tesz_brief(t) | {"reason": next((c.get("reason_hu") for c in p2.get("changes", [])
                                                       if c.get("cand_id") == t.get("cand_id")), "")}
                    for t in p1.get("szinek", []) if t.get("cand_id") not in keep]
-    queue = [dict(q) | {"payload": json.loads(q["payload_json"])} for q in S.queue() if q["job_id"] == job_id]
+    from .review_view import explain
+
+    queue = [dict(q) | {"payload": json.loads(q["payload_json"]), "context": explain(S, q, GRAPH)}
+             for q in S.queue() if q["job_id"] == job_id]
     for q in queue:
         q.pop("payload_json", None)
     return {
@@ -894,6 +897,12 @@ class Handler(BaseHTTPRequestHandler):
                 S.job(jid)
                 S.set_status(jid, "NYERS", "a felületről visszaállítva")
                 return None
+        if head == "review" and m == "GET" and len(p) == 2:
+            from .review_view import explain
+            row = next((r for r in S.queue() if r["id"] == int(p[1])), None)
+            if row is None:
+                raise KeyError(p[1])
+            return explain(S, row, GRAPH)
         if head == "review" and m == "POST" and len(p) == 3:
             qid = int(p[1])
             if p[2] == "approve":
@@ -920,7 +929,7 @@ class Handler(BaseHTTPRequestHandler):
             if m == "GET" and len(p) == 1:
                 return kesz_list(GRAPH)
             if m == "GET" and p[1:] == ["queue"]:
-                return kesz_queue(S)
+                return kesz_queue(S, GRAPH)
             if m == "POST" and len(p) == 4 and p[1] == "queue":
                 return kesz_decide(S, int(p[2]), p[3], self.body())
             if m == "POST" and len(p) == 3 and p[1] == "maint":

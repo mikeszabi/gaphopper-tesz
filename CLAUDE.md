@@ -15,6 +15,8 @@ A teljes konfigurációs referencia a [README.md](README.md); a napi munkamenet 
 [futtatási segédlet](docs/Gaphopper%20TESZ%20–%20futtatási%20segédlet.md).
 Az elsődleges UI: `python -m gaphopper ui`, http://localhost:8765 (`gaphopper/web.py` + `web/`).
 A KÉSZ-ség, KÉSZ-ség-sor és Karbantartás oldal a `gaphopper/web_kesz.py`-ban van; írni csak CLI-parancson át írnak.
+A szakértői kérések magyarázata (UI és `review` CLI) a `gaphopper/review_view.py`-ban, a szabálynevek a
+`config/szabalyok.yaml`-ban vannak; új szabálynál ide is vedd fel a nevét és egymondatos jelentését.
 A Streamlit-fájlok régi, opcionális felületet alkotnak. Új funkciót az elsődleges UI-ban vezess át.
 Modellkonfiguráció: `config/models.yaml` → `.env` → kódalapérték; `models` mutatja az effektív értékeket.
 A fő felület szolgáltatói: anthropic, gemini, openai (külön kapcsolati próbával), manual.

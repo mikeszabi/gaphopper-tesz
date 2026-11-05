@@ -336,8 +336,20 @@ def cmd_review(a):
                 ctx.store.set_status(row["job_id"], "ELVETVE")
             print("Elutasítva.")
         else:
+            from .review_view import explain, format_text
+
+            graph = None
+            try:  # az iránykérdésnél az igénylő TESZ-nivalók a gráfból; ha nem fut, nélkülük
+                from .graph import Graph
+
+                graph = Graph(ctx.settings)
+                graph.driver.verify_connectivity()
+            except Exception:
+                graph = None
             for r in ctx.store.queue():
-                print(f"[{r['id']}] {r['job_id']} {r['kind']}: {r['payload_json'][:300]}")
+                print(format_text(explain(ctx.store, r, graph)) + "\n")
+            if graph is not None:
+                graph.close()
     finally:
         ctx.close()
 

@@ -60,13 +60,16 @@ def stems(text: str, n: int = 5) -> set[str]:
     return {w[:n] for w in re.findall(r"\w+", (text or "").lower()) if len(w) >= 4 and w not in _STOP}
 
 
+# a szótő-egyezésnél csak a kötőszavak esnek ki; a _STOP a munkakörcímekre szól ("munkatárs", "szakember" ott
+# általános szó, de SZER-ELEM-névként – "Munkatárs" – érdemi; 2026-11-05: emiatt jelzett tévesen az R21)
+_KOTO = {"and", "the", "for", "with", "és", "vagy", "egyéb", "including", "other"}
 _FOLD = str.maketrans({"á": "a", "é": "e"})  # tővégi magánhangzó-nyúlás: ábra ~ ábrák, kese ~ kesét
 
 
 def stem_overlap(a: str, b: str) -> bool:
     """Van-e közös szótő, vagy az egyik szó a másik elején (összetétel: programkód ~ program)."""
-    wa = [w.translate(_FOLD) for w in re.findall(r"\w+", (a or "").lower()) if len(w) >= 3 and w not in _STOP]
-    wb = [w.translate(_FOLD) for w in re.findall(r"\w+", (b or "").lower()) if len(w) >= 3 and w not in _STOP]
+    wa = [w.translate(_FOLD) for w in re.findall(r"\w+", (a or "").lower()) if len(w) >= 3 and w not in _KOTO]
+    wb = [w.translate(_FOLD) for w in re.findall(r"\w+", (b or "").lower()) if len(w) >= 3 and w not in _KOTO]
     return any(x[:5] == y[:5] or x.startswith(y[:6]) or y.startswith(x[:6]) for x in wa for y in wb)
 
 

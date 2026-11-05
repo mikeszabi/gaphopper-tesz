@@ -368,6 +368,11 @@ Egyetlen JavaScript-oldal (`web/`), a Python oldalon csak a standard könyvtár 
   fő TESZ-típus-család, hordozhatóság, csak a használt elemek. Elemre kattintva: aliasok, leírás, családarányok, az
   IGENYEL élek (TESZ-nivaló, típus, súly, munkakörök) és a beolvadt hiányjelöltek. A törzset minden kérésnél frissen
   olvassa a yaml-ból, a 2. tengelyt a gráfból.
+- **Szakértői kérések magyarázata** (Futás oldal munkakör-részlete, KÉSZ-ség-sor és a `review` CLI-lista egyformán):
+  a szabály kódja, rövid neve és egymondatos jelentése (`config/szabalyok.yaml`), az érintett TESZ-nivalók teljes
+  megnevezéssel (típus, meghatározó SZER-ELEM, KÉSZ-ségek, SZÍN-ek magyarul; R18-nál a két elem egymás mellett az
+  eltérésekkel), a P2 javításai előtte/utána, a jelzés újraellenőrzése a mostani szabályokkal, és hogy mit jelent
+  az adott tételnél a jóváhagyás és az elutasítás.
 - **KÉSZ-ség-sor:** az új KÉSZ-ség-javaslatok (`kesz_review`), a bizonytalan irányok (`kesz_irany_review`) és a bontási
   javaslatok (`split_review`). Jóváhagyás előtt az új javaslat neve, csoportja és iránya, az iránykérdésnél a javasolt
   irány szerkeszthető (a régi név alias lesz); a jóváhagyás és az elutasítás a `review --approve/--reject` parancsot

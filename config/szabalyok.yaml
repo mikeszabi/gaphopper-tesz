@@ -1,0 +1,53 @@
+# A szabályok és próbák rövid magyar neve és egymondatos jelentése: a szakértői felület (UI) és a `review` CLI-lista
+# innen olvassa. A szabályok működését a gaphopper/rules.py és a prompts/p0_system.md írja le; itt csak a megjelenítés.
+szabalyok:
+  R1:  {nev: "Darabszám-korlát", jelentes: "A TESZ-nivalók (6–12), a TESZ-SZÍN-ek (8–18) vagy a CORE TESZ-nivalók (4–9) száma a sávon kívül esik."}
+  R4:  {nev: "Címke formája", jelentes: "A TESZ-nivaló neve túl rövid vagy hosszú (2–6 szó), vagy tiltott címkemintát tartalmaz."}
+  R5:  {nev: "Túl sok végrehajtás", jelentes: "Az EXECUTE típusú TESZ-nivalók aránya a megengedettnél nagyobb."}
+  R6:  {nev: "Egyoldalú HELY-zet", jelentes: "Az ALAP-SZÍN-ek túlnyomó része a TESZ-típus természetes HELY-zet-párja."}
+  R7:  {nev: "Sok kritikus HELY-zet", jelentes: "A kritikus HELY-zetű változatok aránya a szakterülethez képest túl nagy."}
+  R8:  {nev: "Ismétlődő változat", jelentes: "Két változat azonos ⟨típus, SZER-ELEM, KÖZ-eg, HELY-zet⟩ négyessel."}
+  R9:  {nev: "Üres feladatkör", jelentes: "Van olyan feladatkör, amelyhez nem tartozik TESZ-nivaló."}
+  R10: {nev: "Bizonytalan elem", jelentes: "A modell maga is bizonytalan (alacsony confidence): szakértő döntsön."}
+  R11: {nev: "Kettős TESZ-nivaló", jelentes: "Két TESZ-nivaló azonos típussal és meghatározó SZER-ELEM-mel: valószínűleg egy TESZ-nivaló két SZÍN-e."}
+  R12: {nev: "Túl sok változat", jelentes: "Egy TESZ-nivalónak háromnál több SZÍN-változata van."}
+  R13: {nev: "Indokolatlan változat", jelentes: "A nem ALAP-SZÍN változat nem írja le, mitől más vagy nehezebb (M2)."}
+  R14: {nev: "SZÍN a névben", jelentes: "A TESZ-nivaló neve SZÍN-jelzőt tartalmaz (pl. online, sürgős); a név legyen KÖZ-eg- és HELY-zet-semleges."}
+  R15: {nev: "ALAP-SZÍN hiánya", jelentes: "Egy TESZ-nivalónak nem pontosan egy ALAP-SZÍN-e van."}
+  R16: {nev: "Csak KÖZ-egben eltérő változat", jelentes: "A változat csak a KÖZ-egben tér el, a kísérő SZER-ELEM-ek azonosak: inkább kísérő KÖZ-eg."}
+  R17: {nev: "Szakterületi szó a névben", jelentes: "A munkakör saját címének vagy szakterületének szava a TESZ-nivaló nevében vagy SZER-ELEM-ében (G1)."}
+  R18: {nev: "Összevonási jelölt", jelentes: "Két TESZ-nivaló azonos típusú, és KÉSZ-ségeik legalább 2/3-a közös: lehet, hogy egy TESZ-nivaló (G4)."}
+  R19: {nev: "Kevés újrahasznosítás", jelentes: "Nagy TESZ-törzs mellett a munkakör TESZ-nivalóinak több mint fele új; ha illik, a törzsből kellene választani."}
+  R20: {nev: "Kevés KÉSZ-ség", jelentes: "A TESZ-nivalóhoz kettőnél kevesebb KÉSZ-ség-törzselem tartozik (G2)."}
+  R21: {nev: "A név nem tartalmazza a meghatározó SZER-ELEM-et", jelentes: "A TESZ-nivaló nevéből nem ismerhető fel, mire irányul: hiányzik belőle a meghatározó SZER-ELEM neve vagy töve (G5)."}
+  R23: {nev: "Nem törzsszintű KÉSZ-ség-jelölt", jelentes: "A hiányjelölt neve szakmai, termék-, szint- vagy munkakör-specifikus: TUD-ás- vagy SZER-ELEM-jelölt."}
+  G1:  {nev: "Munkakör-csere próba", jelentes: "A TESZ-nivaló neve legalább 3 munkakörben előfordulhatna."}
+  G2:  {nev: "KÉSZ-ség-illeszthetőség", jelentes: "2–5 törzselem közvetlenül illik a TESZ-nivalóhoz."}
+  G3:  {nev: "SZÍN-semlegesség", jelentes: "A változat címkéje azonos a TESZ-nivalóéval, a SZÍN csak a ⟨KÖZ-eg, HELY-zet⟩-ben jelenik meg."}
+  G4:  {nev: "Összevonás", jelentes: "Azonos típus, ERED-mény és nagy KÉSZ-ség-átfedés: egy TESZ-nivaló."}
+  G5:  {nev: "Felismerhetőségi próba", jelentes: "A szakember a névből ráismer a fő tevékenységére (alapige + meghatározó SZER-ELEM)."}
+  M1:  {nev: "SZÍN-csere próba", jelentes: "Ha a KÖZ-eg vagy HELY-zet cseréjénél az ige, a SZER-ELEM és az ERED-mény marad, ugyanaz a TESZ-nivaló."}
+  M2:  {nev: "Rubrika-különbség", jelentes: "Külön változat csak új vagy szigorúbb értékelési kritériummal."}
+  M3:  {nev: "Előfordulás", jelentes: "Változat csak akkor, ha a munkakörben rendszeresen előfordul."}
+# A szakértői sor tételtípusai: mit jelent a jóváhagyás és az elutasítás.
+tetelek:
+  job_review:
+    nev: "Munkakör jóváhagyása"
+    jovahagyas: "A munkakör végleges (P2 utáni) TESZ-nivalói és TESZ-SZÍN-jei a gráfba kerülnek, a jelzések ellenére."
+    elutasitas: "A munkakör nem kerül a gráfba (állapota: elvetve); a P1/P2 eredménye megmarad, --force-szal újrafuttatható."
+  merge_review:
+    nev: "Bizonytalan egyesítés"
+    jovahagyas: "Tudomásul veszed az egyesítést: a gráfba már beírt kapcsolat marad."
+    elutasitas: "Lezárja a kérést; a gráf nem változik (a hibás egyesítést kézzel kell javítani)."
+  kesz_review:
+    nev: "Új KÉSZ-ség"
+    jovahagyas: "A javaslat új törzselem lesz (következő gh_c szám) a yaml-ban és a gráfban; az igénylő TESZ-nivalók IGENYEL élt kapnak rá."
+    elutasitas: "A jelöltek ELVETVE állapotba kerülnek; a törzs nem változik."
+  kesz_irany_review:
+    nev: "KÉSZ-ség iránya"
+    jovahagyas: "A javasolt irány lesz érvényes a yaml-ban és a gráfban (IRANYUL él)."
+    elutasitas: "Marad a jelenlegi irány; az elem szakértő által ellenőrzöttnek számít."
+  split_review:
+    nev: "Bontási javaslat"
+    jovahagyas: "A split parancs végrehajtja: új TESZ-nivaló jön létre, a felsorolt munkakörök átkötődnek."
+    elutasitas: "A TESZ-nivaló változatlan marad."

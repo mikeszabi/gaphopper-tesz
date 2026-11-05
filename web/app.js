@@ -354,10 +354,8 @@ async function refreshDrawer(force = false) {
   const dropped = d.dropped.map((t) => `<tr><td><s>${esc(t.label_hu)}</s><div class="muted small">${esc(t.reason || "")}</div></td><td>${pill("skip", "P2 kivette")}</td></tr>`).join("");
   const approval = (d.approval_tasks || [])[0];
   const approving = approval?.status === "fut";
-  const queue = d.queue.map((q) => `<div class="card" style="border-color:var(--warn)"><b>Szakértői döntés kell</b> <span class="tag">${esc(q.kind)}</span>
-    ${(q.payload.flags || []).map((f) => `<div class="small">⚑ ${esc(f.rule)}: ${esc(f.message || f.detail || "")}</div>`).join("")}
-    ${(q.payload.questions || []).map((x) => `<div class="small">❓ ${esc(x)}</div>`).join("")}
-    ${(q.payload.items || []).map((x) => `<div class="small">↔ ${esc(x.label)} (${esc(x.id)})</div>`).join("")}
+  const queue = d.queue.map((q) => `<div class="card" style="border-color:var(--warn)"><b>Szakértői döntés kell: ${esc(q.context?.tetel?.nev || q.kind)}</b> <span class="tag">#${q.id}</span>
+    ${q.context ? reviewHtml(q.context) : ""}
     <div class="controls" style="margin-top:8px">${q.kind === "job_review"
       ? `<button class="primary" data-q="${q.id}" data-a="approve" ${approving ? "disabled" : ""}>${approving ? "Gráfba írás folyamatban…" : "Jóváhagyás és gráfba írás"}</button><button class="danger" data-q="${q.id}" data-a="reject" ${approving ? "disabled" : ""}>Elutasítás</button>`
       : `<button data-q="${q.id}" data-a="close">Rendben, lezárom</button>`}</div></div>`).join("");
@@ -404,6 +402,35 @@ async function refreshDrawer(force = false) {
       b.textContent = action === "approve" ? "Jóváhagyás és gráfba írás" : action === "reject" ? "Elutasítás" : "Rendben, lezárom";
     }
   });
+}
+
+// ------------------------------------------------------------------ szakértői kérés magyarázata (review_view.py)
+function nivaloHtml(v) {
+  return `<div class="card" style="margin:6px 0;padding:8px 10px"><b>${esc(v.label_hu)}</b> <span class="muted small">${esc(v.nivalo_id)}${v.torzsbol ? " · törzsből" : ""} · ${esc(v.relevance || "")}</span>
+    <div class="small">${esc(v.tesz_type_hu)} · meghatározó SZER-ELEM: <b>${esc(v.szer)}</b>${v.szer_fajta ? ` (${esc(v.szer_fajta)})` : ""}${v.kontextus_hu ? ` · kontextus: ${esc(v.kontextus_hu)}` : ""}</div>
+    ${v.kesz.length ? `<div class="small">KÉSZ-ség: ${v.kesz.map((k) => esc(k.label_hu)).join(", ")}</div>` : ""}
+    ${v.szinek.length ? `<div class="small">SZÍN: ${v.szinek.map((s) => `${s.alap ? "●" : "○"} ${esc(s.kozeg)} / ${esc(s.helyzet)}`).join("; ")}</div>` : ""}</div>`;
+}
+function reviewHtml(c) {
+  const parts = [];
+  if (c.job) parts.push(`<p class="small">Munkakör: <b>${esc(c.job.label_hu)}</b> (${esc(c.job.label_en)})${c.nivalo_db ? ` · ${c.nivalo_db} TESZ-nivaló, ${c.szin_db} TESZ-SZÍN` : ""}</p>`);
+  for (const f of c.flags || []) {
+    parts.push(`<div style="margin-top:8px"><b>⚑ ${esc(f.kod)} – ${esc(f.nev)}</b>${f.aktualis === false ? ' <span class="tag">a mostani szabályok szerint már nem áll fenn</span>' : ""}
+      <div class="small muted">${esc(f.jelentes)}</div>
+      ${f.elemek.length === 2 && f.kod === "R18" ? `<div class="row">${f.elemek.map((v) => `<div style="flex:1 1 260px">${nivaloHtml(v)}</div>`).join("")}</div>` : f.elemek.map(nivaloHtml).join("")}
+      ${(f.kulonbseg || []).map((x) => `<div class="small">↔ ${esc(x)}</div>`).join("")}</div>`);
+  }
+  if ((c.valtozasok || []).length) parts.push(`<details><summary>A bíráló (P2) javításai: ${c.valtozasok.length}</summary>${c.valtozasok.map((x) =>
+    `<div class="small" style="margin:6px 0"><b>${esc(x.op)}</b> ${x.probak.map((p) => esc(p.kod + " – " + p.nev)).join(", ")}: ${esc(x.indok)}
+     ${x.elotte ? `<div>előtte: ${esc(x.elotte.label_hu)} ‹${esc(x.elotte.szer)}›</div>` : ""}${x.utana ? `<div>utána: <b>${esc(x.utana.label_hu)}</b> ‹${esc(x.utana.szer)}›</div>` : ""}</div>`).join("")}</details>`);
+  if ((c.hianyok || []).length) parts.push(`<div class="small">Lefedetlen tevékenység: ${c.hianyok.map(esc).join("; ")}</div>`);
+  if ((c.kerdesek || []).length) parts.push(c.kerdesek.map((x) => `<div class="small">❓ ${esc(x)}</div>`).join(""));
+  if (c.magyarazat) parts.push(`<p class="small">${esc(c.magyarazat)}</p>${(c.elemek || []).map((e) => `<div class="small">↔ ${esc(e.fajta)}: <b>${esc(e.label_hu)}</b></div>`).join("")}`);
+  if (c.kind === "kesz_irany_review") parts.push(`<p class="small"><b>${esc(c.kesz.label_hu)}</b> (${esc(c.kesz.label_en)}) · ${esc(c.kesz.csoport)} ${esc(c.kesz.csoport_hu)}<br>
+    jelenlegi irány: <b>${esc(c.jelenlegi.join(" + "))}</b> · javasolt: <b>${esc(c.javasolt.join(" + "))}</b><br><span class="muted">${esc(c.indok)}</span>
+    ${c.igenylo_nivalok.length ? `<br>Igénylő TESZ-nivalók: ${c.igenylo_nivalok.map((r) => `${esc(r.nivalo)} (×${r.suly})`).join(", ")}` : "<br>Még egyetlen TESZ-nivaló sem igényli."}</p>`);
+  parts.push(`<div class="small" style="margin-top:8px"><b>Jóváhagyás:</b> ${esc(c.tetel.jovahagyas)}<br><b>Elutasítás:</b> ${esc(c.tetel.elutasitas)}</div>`);
+  return parts.join("");
 }
 
 // ------------------------------------------------------------------ KÉSZ-SÉG: törzs, sor, karbantartás
@@ -491,11 +518,13 @@ pages.keszsor = async (view) => {
       <label class="f">angol név<span><input data-f="label_en" value="${esc(p.label_en)}"></span></label>
       <label class="f">csoport<span><input data-f="csoport" value="${esc(p.csoport)}" size="4"></span></label>
       <label class="f">irány<span>${irSel(p.irany[0], 0)} ${irSel2(p.irany[1] || "", 1)}</span></label></div>
-      <p class="small">${(p.munkakorok || []).length} munkakör igényli: ${(p.munkakorok || []).map(esc).join(", ")}<br>jelöltek: ${(p.nevek || []).map(esc).join(" · ")}<br><span class="muted">${esc(p.indok || "")}</span></p>${btn}</div>`;
-    if (q.kind === "kesz_irany_review") return `<div class="card" data-card="${q.id}"><b>Irány</b> <span class="tag">#${q.id}</span> ${esc(p.kesz_nev || p.label_hu)} <span class="mono small muted">${esc(p.id)}</span>
-      <p class="small">jelenlegi: ${(p.jelenlegi || []).map((i) => esc(d.iranyok[i] || i)).join(" + ")} · javasolt: <span>${irSel(p.javaslat[0], 0)} ${irSel2(p.javaslat[1] || "", 1)}</span><br><span class="muted">${esc(p.indok || "")}</span></p>${btn}</div>`;
+      <p class="small">${(p.munkakorok || []).length} munkakör igényli: ${(p.munkakorok || []).map(esc).join(", ")}<br>jelöltek: ${(p.nevek || []).map(esc).join(" · ")}<br><span class="muted">${esc(p.indok || "")}</span></p>
+      <div class="small"><b>Jóváhagyás:</b> ${esc(q.context.tetel.jovahagyas)}<br><b>Elutasítás:</b> ${esc(q.context.tetel.elutasitas)}</div>${btn}</div>`;
+    if (q.kind === "kesz_irany_review") return `<div class="card" data-card="${q.id}"><b>KÉSZ-ség iránya</b> <span class="tag">#${q.id}</span>
+      ${reviewHtml(q.context)}<p class="small">Javasolt irány módosítása jóváhagyás előtt: ${irSel(p.javaslat[0], 0)} ${irSel2(p.javaslat[1] || "", 1)}</p>${btn}</div>`;
     return `<div class="card" data-card="${q.id}"><b>Bontási javaslat</b> <span class="tag">#${q.id}</span> ${esc(p.nev || p.id)}<p class="small muted">${esc(p.indok || "")}</p>
-      <p class="small">${(p.javaslat || []).map((x) => esc(x.label_hu || JSON.stringify(x))).join(" · ")}</p>${btn}</div>`;
+      <p class="small">${(p.javaslat || []).map((x) => esc(x.label_hu || JSON.stringify(x))).join(" · ")}</p>
+      <div class="small"><b>Jóváhagyás:</b> ${esc(q.context.tetel.jovahagyas)}<br><b>Elutasítás:</b> ${esc(q.context.tetel.elutasitas)}</div>${btn}</div>`;
   };
   $("#qv").innerHTML = d.queue.length ? d.queue.map(card).join("") : '<p class="muted">A KÉSZ-ség-sor üres.</p>';
   $$("#qv button[data-q]").forEach((b) => (b.onclick = async () => {

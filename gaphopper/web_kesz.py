@@ -63,7 +63,7 @@ def kesz_detail(graph, kid: str) -> dict:
     return base | {"igenyel": edges, "beolvadt": hiany}
 
 
-def kesz_queue(S: Store) -> dict:
+def kesz_queue(S: Store, graph=None) -> dict:
     rows = [r for r in S.queue() if r["kind"] in KESZ_KINDS]
     t = kesz_torzs()
     out = []
@@ -71,7 +71,10 @@ def kesz_queue(S: Store) -> dict:
         p = json.loads(r["payload_json"])
         if r["kind"] == "kesz_irany_review":
             p["kesz_nev"] = t.get(p.get("id"), {}).get("label_hu", "")
-        out.append({"id": r["id"], "kind": r["kind"], "payload": p, "created_at": r["created_at"]})
+        from .review_view import explain
+
+        out.append({"id": r["id"], "kind": r["kind"], "payload": p, "created_at": r["created_at"],
+                    "context": explain(S, r, graph)})
     return {"queue": out, "iranyok": {k: x["hu"] for k, x in vocab()["kozeg"].items()}}
 
 
