@@ -215,7 +215,9 @@ def p2_view(p1: P1Output) -> dict:
             if t.helyzet_secondary:
                 x["helyzet_secondary"] = t.helyzet_secondary
             if t.secondary_szer:
-                x["secondary_szer"] = [s.label_hu + (" (fajta)" if s.fajtaja else "") for s in t.secondary_szer]
+                # objektumként, hogy a bíráló új elemnél is a P1 sémáját kövesse (ne puszta szöveget írjon)
+                x["secondary_szer"] = [{"label_hu": s.label_hu, "kind": s.kind, "role": s.role}
+                                       | ({"fajtaja": True} if s.fajtaja else {}) for s in t.secondary_szer]
             x |= {"frequency": t.frequency, "expected_eqf": t.expected_eqf, "confidence": t.confidence}
             if t.open_question:
                 x["open_question"] = t.open_question
