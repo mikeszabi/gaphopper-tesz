@@ -1699,18 +1699,20 @@ def test_kesz_irany_filter_and_stale_reviews(tmp_path, monkeypatch):
     _tmp_torzs(tmp_path, monkeypatch)
     try:
         seen = []
+        dig = {k for k, x in config.kesz_torzs().items() if "KOZ_DIGITALIS" in x["irany"]}
+        kid = sorted(dig)[0]
+        n = int(kid[5:])
 
         def ans(sy, u):
             seen.append(u)
-            return json.dumps({"elemek": [{"n": 147, "irany": ["KOZ_NYELVI"]}]} if "147|" in u else {"elemek": []})
+            return json.dumps({"elemek": [{"n": n, "irany": ["KOZ_NYELVI"]}]} if f"\n{n}|" in "\n" + u else {"elemek": []})
         ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False, llm_override={"P3": FakeLLM(ans)})
         ctx.graph = _KeszGraph([])
-        old = ctx.store.enqueue(None, "kesz_irany_review", {"id": "gh_c_147", "javaslat": ["KOZ_DIGITALIS"]})
+        old = ctx.store.enqueue(None, "kesz_irany_review", {"id": kid, "javaslat": ["KOZ_DIGITALIS"]})
         keep = ctx.store.enqueue(None, "kesz_irany_review", {"id": "gh_c_181", "javaslat": ["KOZ_TARSAS"]})
-        dig = {k for k, x in config.kesz_torzs().items() if "KOZ_DIGITALIS" in x["irany"]}
         out = run_kesz_irany(ctx, chunk=500, only_default=False, iranyok={"KOZ_DIGITALIS"})
         assert out["vizsgalt"] == len(dig) and "|Empátia|" not in seen[0]
-        assert config.kesz_torzs()["gh_c_147"]["irany"] == ["KOZ_NYELVI"] and out["elavult"] == 1
+        assert config.kesz_torzs()[kid]["irany"] == ["KOZ_NYELVI"] and out["elavult"] == 1
         assert [r["id"] for r in ctx.store.queue()] == [keep] and old != keep
     finally:
         config.kesz_cache_clear()

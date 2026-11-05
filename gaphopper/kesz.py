@@ -82,7 +82,8 @@ def hiany_rows(job: dict, nivalo_graph_id: str, hianyok, keys: dict[str, str] | 
 
 # ------------------------------------------------------------------ kesz-irany: 1. tengely elemenként
 def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool = True,
-                   iranyok: set[str] | None = None, log=print) -> dict:
+                   iranyok: set[str] | None = None, csoportok: set[str] | None = None, from_group: bool = False,
+                   log=print) -> dict:
     """A csoportból örökölt irány elemenkénti felülvizsgálata (P3-modell). Biztos eltérés: a yaml-ba (irany_forras
     llm); bizonytalan: szakértői sor (kesz_irany_review); a kiírás nélküli elem az alapirányt megerősíti."""
     from .config import kesz_hierarchia, prompt, render, save_kesz_torzs, kesz_torzs
@@ -94,6 +95,13 @@ def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool 
     items = [x for x in h["items"] if not only_default or x.get("irany_forras", "csoport") == "csoport"]
     if iranyok:  # csak az ilyen irányú elemek (pl. új KÖZ-eg után az érintettek)
         items = [x for x in items if set(torzs[x["id"]]["irany"]) & iranyok]
+    if csoportok:
+        items = [x for x in items if x["csoport"] in csoportok]
+    # alapirány: a jelenlegi, vagy (from_group) a csoporté – pl. ha a csoport alapiránya új KÖZ-egre változott;
+    # a kiírás nélküli elem az alapirányt kapja
+    group = {c["kod"]: list(c.get("irany") or []) for c in h["csoportok"]}
+    alap = {x["id"]: (group.get(x["csoport"]) if from_group and group.get(x["csoport"]) else torzs[x["id"]]["irany"])
+            for x in items}
     out = {"vizsgalt": 0, "valtozott": [], "szakertohoz": [], "hiba": 0, "elavult": 0}
     if apply:
         # a most újravizsgált elemek korábbi, nyitott irány-kérdései elavulnak (az új vizsgálat újakat tehet a sorba)
@@ -106,7 +114,7 @@ def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool 
     for i in range(0, len(items), chunk):
         part = items[i:i + chunk]
         nums = {int(x["id"][5:]) for x in part}
-        lines = "\n".join(f"{x['id'][5:]}|{x['label_hu']}|{x['csoport']}|{','.join(torzs[x['id']]['irany'])}|"
+        lines = "\n".join(f"{x['id'][5:]}|{x['label_hu']}|{x['csoport']}|{','.join(alap[x['id']])}|"
                           f"{(x.get('leiras_hu') or '')[:90]}" for x in part)
 
         def check(o):
@@ -126,7 +134,7 @@ def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool 
         for e in obj.elemek:
             k = f"gh_c_{e.n}"
             seen.add(k)
-            row = {"id": k, "label_hu": by_id[k]["label_hu"], "jelenlegi": torzs[k]["irany"], "javaslat": e.irany,
+            row = {"id": k, "label_hu": by_id[k]["label_hu"], "jelenlegi": alap[k], "javaslat": e.irany,
                    "indok": e.indok_hu}
             if not e.biztos:
                 out["szakertohoz"].append(row)
@@ -140,7 +148,10 @@ def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool 
         if apply:
             for x in part:
                 if x["id"] not in seen:
-                    x["irany_forras"] = "llm"
+                    if alap[x["id"]] != torzs[x["id"]]["irany"]:
+                        out["valtozott"].append({"id": x["id"], "label_hu": x["label_hu"], "jelenlegi": torzs[x["id"]]["irany"],
+                                                 "javaslat": alap[x["id"]], "indok": "a csoport alapiránya"})
+                    x["irany"], x["irany_forras"] = alap[x["id"]], "llm"
     if apply:
         save_kesz_torzs(h)
         if ctx.graph is not None:

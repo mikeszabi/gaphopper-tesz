@@ -400,8 +400,9 @@ def cmd_kesz_irany(a):
 
     ctx = _ctx()
     try:
-        out = run_kesz_irany(ctx, chunk=a.chunk, apply=not a.dry_run, only_default=not (a.all or a.irany),
-                             iranyok=set(a.irany.split(",")) if a.irany else None)
+        out = run_kesz_irany(ctx, chunk=a.chunk, apply=not a.dry_run, only_default=not (a.all or a.irany or a.csoport),
+                             iranyok=set(a.irany.split(",")) if a.irany else None,
+                             csoportok=set(a.csoport.split(",")) if a.csoport else None, from_group=a.alapbol)
     finally:
         ctx.close()
     print(f"{out['vizsgalt']} elem vizsgálva; irány módosítva: {len(out['valtozott'])}, szakértőhöz: "
@@ -563,6 +564,8 @@ def main(argv=None):
     s = sub.add_parser("kesz-irany", help="a KÉSZ-ségek irányultsága elemenként (csoport-alapértékből, P3-modell)")
     s.add_argument("--chunk", type=int, default=60); s.add_argument("--all", action="store_true",
                                                                    help="a már vizsgált elemeket is")
+    s.add_argument("--csoport", help="csak ezen csoportok elemei (vesszővel), pl. H1,H9")
+    s.add_argument("--alapbol", action="store_true", help="az alapirány a csoporté, nem a jelenlegi (új csoport-irány után)")
     s.add_argument("--irany", help="csak ezen irányú elemek (vesszővel), pl. KOZ_DIGITALIS,KOZ_TARSAS; a már vizsgáltakat is")
     s.add_argument("--dry-run", action="store_true"); s.set_defaults(fn=cmd_kesz_irany)
     s = sub.add_parser("kesz-bovit", help="KÉSZ-ség-törzs bővítése a hiányjelöltekből (ALIAS / UJ / ELVET)")
