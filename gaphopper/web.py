@@ -535,7 +535,15 @@ def discover_models(body: dict) -> dict:
     provider = body.get("provider", "local")
     try:
         if provider == "anthropic":
-            ids = [m.id for m in anthropic_client().models.list(limit=100)]
+            try:
+                ids = [m.id for m in anthropic_client().models.list(limit=100)]
+            except Exception as exc:  # hibás munkaterület-fejléc: nélküle újra
+                from .llm import drop_workspace, is_bad_workspace
+
+                if not is_bad_workspace(exc):
+                    raise
+                drop_workspace()
+                ids = [m.id for m in anthropic_client().models.list(limit=100)]
         elif provider == "gemini":
             from google import genai
             ids = [m.name.removeprefix("models/") for m in genai.Client().models.list()

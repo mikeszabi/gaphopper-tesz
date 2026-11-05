@@ -1489,3 +1489,58 @@ def test_kesz_bovit_sensory_is_uj(tmp_path, monkeypatch):
         assert [r["kind"] for r in ctx.store.queue()] == ["kesz_review"]
     finally:
         config.kesz_cache_clear()
+
+
+def test_anthropic_bad_workspace_retries_without_header(monkeypatch):
+    """A UI-ból indított futás a .env ANTHROPIC_WORKSPACE_ID-jét is látja: ha a munkaterület nem létezik (404),
+    a hívás fejléc nélkül megismétlődik, így a CLI-vel azonos eredményt ad. (Az anthropic SDK helyett álmodul:
+    a teszt az SDK nélküli környezetben is fut.)"""
+    import sys
+    import types
+
+    from gaphopper import llm
+    from gaphopper.config import StepModel
+
+    class NotFoundError(Exception):
+        status_code = 404
+
+    class BadRequestError(Exception):
+        pass
+
+    headers = []
+
+    class Msg:
+        stop_reason = "end_turn"
+        content = [SimpleNamespace(type="text", text='{"ok": 1}')]
+        usage = SimpleNamespace(model_dump=lambda: {"input_tokens": 1, "output_tokens": 1})
+
+    class Stream:
+        def __init__(self, ws):
+            self.ws = ws
+
+        def __enter__(self):
+            if self.ws:
+                raise NotFoundError("Workspace `nincs-ilyen` not found.")
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def get_final_message(self):
+            return Msg()
+
+    def fake_client(default_headers=None, **kw):
+        ws = (default_headers or {}).get("anthropic-workspace-id")
+        headers.append(ws)
+        return SimpleNamespace(messages=SimpleNamespace(stream=lambda **k: Stream(ws)))
+
+    fake = types.ModuleType("anthropic")
+    fake.Anthropic, fake.NotFoundError, fake.BadRequestError = fake_client, NotFoundError, BadRequestError
+    monkeypatch.setitem(sys.modules, "anthropic", fake)
+    monkeypatch.setenv("ANTHROPIC_WORKSPACE_ID", "nincs-ilyen")
+    monkeypatch.setattr(llm, "_WS_BAD", False)
+    m = llm.AnthropicLLM(StepModel("anthropic", "claude-haiku-5-5", None, 100))
+    text, _ = m.complete("s", "u")
+    assert text == '{"ok": 1}' and headers == ["nincs-ilyen", None] and llm._WS_BAD
+    llm.anthropic_client()
+    assert headers[-1] is None            # a folyamat további kliensei már fejléc nélkül

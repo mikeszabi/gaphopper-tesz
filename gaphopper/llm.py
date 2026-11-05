@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -53,14 +54,31 @@ def extract_json(text: str) -> Any:
     return json.loads(t[start : end + 1])
 
 
+_WS_BAD = False  # a folyamatban egyszer már kiderült, hogy a beállított munkaterület nem létezik
+
+
 def anthropic_client():
-    """Anthropic-kliens; munkaterülethez nem kötött kulcsnál az ANTHROPIC_WORKSPACE_ID-t fejlécként küldi."""
+    """Anthropic-kliens; munkaterülethez nem kötött kulcsnál az ANTHROPIC_WORKSPACE_ID-t fejlécként küldi
+    (ha az API egyszer már "Workspace ... not found"-dal elutasította, a folyamat további hívásai nélküle mennek)."""
     import os
 
     import anthropic
 
-    ws = os.getenv("ANTHROPIC_WORKSPACE_ID", "").strip()
+    ws = "" if _WS_BAD else os.getenv("ANTHROPIC_WORKSPACE_ID", "").strip()
     return anthropic.Anthropic(default_headers={"anthropic-workspace-id": ws} if ws else None)
+
+
+def is_bad_workspace(exc: Exception) -> bool:
+    return getattr(exc, "status_code", None) == 404 and "workspace" in str(exc).lower()
+
+
+def drop_workspace() -> None:
+    """A hibás munkaterület-fejléc elhagyása (a .env-et nem írja át; figyelmeztet)."""
+    global _WS_BAD
+    if not _WS_BAD:
+        _WS_BAD = True
+        print("Figyelem: az ANTHROPIC_WORKSPACE_ID munkaterület nem létezik (404); a hívások a kulcs saját "
+              "munkaterületén mennek. Javítsd vagy töröld a .env-ben.", file=sys.stderr, flush=True)
 
 
 def anthropic_extra(cfg: StepModel) -> dict:
@@ -104,7 +122,15 @@ class AnthropicLLM:
                 return stream.get_final_message()
 
         try:
-            resp = send()
+            try:
+                resp = send()
+            except anthropic.NotFoundError as exc:
+                # hibás ANTHROPIC_WORKSPACE_ID (pl. a .env-ben): egyszer újra, munkaterület-fejléc nélkül
+                if not is_bad_workspace(exc):
+                    raise
+                drop_workspace()
+                self.client = anthropic_client()
+                resp = send()
         except (anthropic.BadRequestError, TypeError) as exc:
             # Egyes modellek (API) vagy SDK-verziók (TypeError) nem fogadnak temperature paramétert:
             # újrapróbálás nélküle.
