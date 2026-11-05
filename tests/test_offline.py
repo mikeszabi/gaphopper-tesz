@@ -906,7 +906,7 @@ def test_kesz_ids_normalized_and_checked():
     from gaphopper.config import kesz_torzs
     from gaphopper.schemas import TeszNivalo
 
-    assert len(kesz_torzs()) == 291 and kesz_torzs()["gh_c_246"]["label_en"] == "Public speaking (technical)"
+    assert len(kesz_torzs()) >= 291 and kesz_torzs()["gh_c_246"]["label_en"] == "Public speaking (technical)"
     assert kesz_torzs()["gh_c_246"]["label_hu"] == "Szakmai nyilvános beszéd"
     assert all(x["label_hu"] and x["label_hu"] != x["label_en"] or x["label_hu"] in ("Empátia",)
                for x in kesz_torzs().values()) and kesz_torzs()["gh_c_19"]["label_hu"] == "Gyökérok feltárása"
@@ -1334,10 +1334,11 @@ def test_kesz_bovit_alias_uj_elvet_and_approve(tmp_path, monkeypatch):
         assert "hu:Hibakeresés" in config.kesz_torzs()["gh_c_286"]["aliases"]   # a yaml-ba is
         q = [r for r in ctx.store.queue() if r["kind"] == "kesz_review"]
         assert len(q) == 1
+        nxt = f"gh_c_{max(int(k[5:]) for k in config.kesz_torzs()) + 1}"     # 292-től, a törzs méretétől függően
         res = approve_job(ctx, q[0]["id"])
-        assert res["id"] == "gh_c_292" and config.kesz_torzs()["gh_c_292"]["irany"] == ["KOZ_EGYEN"]
-        assert config.kesz_torzs()["gh_c_292"]["forras"] == "kesz-bovit"
-        assert ("resolve", ["gh_kh_b", "gh_kh_c"], "gh_c_292", "BEEMELT") in ctx.graph.calls
+        assert res["id"] == nxt and config.kesz_torzs()[nxt]["irany"] == ["KOZ_EGYEN"]
+        assert config.kesz_torzs()[nxt]["forras"] == "kesz-bovit"
+        assert ("resolve", ["gh_kh_b", "gh_kh_c"], nxt, "BEEMELT") in ctx.graph.calls
         assert not [r for r in ctx.store.queue() if r["kind"] == "kesz_review"]
     finally:
         config.kesz_cache_clear()
@@ -1377,7 +1378,7 @@ def test_kesz_irany_review(tmp_path, monkeypatch):
         ctx.graph = _KeszGraph([])
         out = run_kesz_irany(ctx, chunk=400, only_default=False)
         t = config.kesz_torzs()
-        assert out["vizsgalt"] == 291 and t["gh_c_101"]["irany"] == ["KOZ_DIGITALIS"]
+        assert out["vizsgalt"] == len(t) and t["gh_c_101"]["irany"] == ["KOZ_DIGITALIS"]
         assert t["gh_c_101"]["irany_forras"] == "llm" and t["gh_c_1"]["irany_forras"] == "llm"
         assert t["gh_c_102"]["irany_forras"] == "ellenorzendo"
         q = [r for r in ctx.store.queue() if r["kind"] == "kesz_irany_review"]
@@ -1432,11 +1433,12 @@ def test_kesz_bovit_partial_cover_is_uj(tmp_path, monkeypatch):
         ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False,
                       llm_override={"P3": FakeLLM(lambda a, b: ans)})
         ctx.graph = _KeszGraph(rows)
+        n0 = len(config.kesz_torzs())
         out = run_kesz_bovit(ctx)
         assert not out["alias"] and [u["label_hu"] for u in out["uj"]] == ["Egyéni differenciálás"]
         assert [r["kind"] for r in ctx.store.queue()] == ["kesz_review"]
         assert ("status", ["gh_kh_dif"], "JAVASOLT") in ctx.graph.calls
-        assert "gh_c_292" not in config.kesz_torzs()          # jóváhagyás nélkül nem kerül a törzsbe
+        assert len(config.kesz_torzs()) == n0          # jóváhagyás nélkül nem kerül a törzsbe
     finally:
         config.kesz_cache_clear()
 
