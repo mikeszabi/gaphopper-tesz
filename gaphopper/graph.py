@@ -90,9 +90,15 @@ class Graph:
         self.run("UNWIND $pairs AS p MATCH (a:Helyzet {id: p[0]}), (b:Helyzet {id: p[1]}) MERGE (a)-[:MELYEBB]->(b)",
                  pairs=[[a["id"], b["id"]] for a, b in zip(kisz, kisz[1:])])
         # KÉSZ-ség-törzs: rögzített Keszseg-csomópontok (gh_c_<n>), a TESZ-nivalók IGENYEL éllel kötnek hozzájuk.
-        rows = [{"id": k, "en": x["en"], "hu": x.get("hu") or x["en"], "group": x["group"], "type": x["type"]}
+        # a magyar név a címke, az angol (az eredeti törzsnév) alias marad: illesztésnél mindkettő elfogadott
+        rows = [{"id": k, "en": x["label_en"], "hu": x["label_hu"], "group": x["group"], "type": x["type"],
+                 "aliases": [f"hu:{x['label_hu']}", f"en:{x['label_en']}"],
+                 "keys": [norm_key(x["label_hu"], "hu"), norm_key(x["label_en"], "en")]}
                 for k, x in kesz_torzs().items()]
         self.run("UNWIND $rows AS r MERGE (k:Keszseg {id: r.id}) SET k.label_en = r.en, k.label_hu = r.hu, "
+                 "k.aliases = [x IN coalesce(k.aliases, []) WHERE NOT x IN r.aliases] + r.aliases, "
+                 "k.alias_keys = [x IN coalesce(k.alias_keys, []) WHERE NOT x IN r.keys] + r.keys, "
+                 "k.alias_text = r.hu + ' ' + r.en, "
                  "k.csoport = r.group, k.fajta = r.type, k.forras = 'GH_competency_list', k.status = 'TORZS'", rows=rows)
         # A régi (v1) Szin-csomópontok eltávolítása: a SZÍN a KÖZ-eg és a HELY-zet kombinációja.
         self.run("MATCH (s:Szin) DETACH DELETE s")
@@ -333,7 +339,7 @@ class Graph:
             "OPTIONAL MATCH (g)-[:TIPUSA]->(ty) OPTIONAL MATCH (g)-[:IRANYUL]->(s:SzerElem) "
             "OPTIONAL MATCH (g)-[e:IGENYEL]->(k:Keszseg) "
             "WITH g, mk, n, ty, s, k, e ORDER BY coalesce(e.suly, 0) DESC "
-            "WITH g, mk, n, ty, s, [x IN collect(k.label_en) WHERE x IS NOT NULL][..5] AS kesz "
+            "WITH g, mk, n, ty, s, [x IN collect(k.label_hu) WHERE x IS NOT NULL][..5] AS kesz "
             "RETURN g.id AS id, g.label_hu AS label_hu, g.label_en AS label_en, ty.id AS tesz_type, "
             "s.id AS szer_id, s.label_hu AS primary_szer, n AS munkakor_db, mk AS munkakorok, kesz "
             "ORDER BY n DESC LIMIT $limit", mj=min_jobs, limit=limit)

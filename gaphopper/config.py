@@ -92,11 +92,17 @@ def vocab() -> dict:
 
 @lru_cache(maxsize=1)
 def kesz_torzs() -> dict[str, dict]:
-    """A KÉSZ-ség-törzs: gh_c_<n> -> {id, en, group, type}."""
+    """A KÉSZ-ség-törzs: gh_c_<n> -> {id, label_hu, label_en, group, type} (en/hu rövid kulcsként is)."""
     if not KESZ_PATH.exists():
         return {}
     with open(KESZ_PATH, encoding="utf-8") as fh:
-        return {x["id"]: x for x in (yaml.safe_load(fh) or {}).get("items", [])}
+        items = (yaml.safe_load(fh) or {}).get("items", [])
+    out = {}
+    for x in items:
+        en = x.get("label_en") or x.get("en") or ""
+        hu = x.get("label_hu") or x.get("hu") or en
+        out[x["id"]] = x | {"label_en": en, "label_hu": hu, "en": en, "hu": hu}
+    return out
 
 
 def prompt(name: str) -> str:
@@ -112,7 +118,7 @@ def prompt_version() -> str:
     h.update(VOCAB_PATH.read_bytes())
     if KESZ_PATH.exists():
         # csak a promptba kerülő rész (id, angol név, csoport, típus): a magyar név a gráfé és a felületé
-        h.update("|".join(f"{k}:{x['en']}:{x['group']}{x['type']}" for k, x in kesz_torzs().items()).encode())
+        h.update("|".join(f"{k}:{x['label_hu']}:{x['group']}{x['type']}" for k, x in kesz_torzs().items()).encode())
     return f"{vocab().get('version', 'v')}-{h.hexdigest()[:8]}"
 
 

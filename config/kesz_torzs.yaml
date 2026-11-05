@@ -1,282 +1,282 @@
 # GapHopper KÉSZ-ség-törzs (275 elem). Forrás: a "GapHopper competency DB 2026.xlsx" GH_competency_list lapja
 # a koordinátor üzenetében átadott kivonatként (a fájl nem volt a gépen), 2026-11-04.
-# id: gh_c_<n>; group: H1..H10 (hard), L1..L2 (leadership), P1..P4 (personal), S1..S3 (social);
+# id: gh_c_<n> (nem változik); label_hu: magyar név (2026-11-05, a felhasználó listája), ezt látja a P1 és a felület;
+# label_en: az eredeti angol név (alias). group: H1..H10 (hard), L1..L2 (leadership), P1..P4 (personal), S1..S3 (social);
 # type: K = Knowledge (TUD-ás), S = Skill (KÉSZ-ség), A = Ability (KÉP-esség).
-# hu: magyar név (2026-11-05); a P1 KÉSZ-ség-törzse az angol nevet használja, a gráf és a felület a magyart.
-version: "2026-11-04"
+version: "2026-11-05"
 items:
-  - {id: gh_c_1, en: "Analytical methods", hu: "Elemzési módszerek", group: H1, type: K}
-  - {id: gh_c_2, en: "Analytical reasoning", hu: "Elemző érvelés", group: H1, type: A}
-  - {id: gh_c_3, en: "Analytical thinking", hu: "Elemző gondolkodás", group: H1, type: A}
-  - {id: gh_c_4, en: "Basic statistics", hu: "Statisztikai alapok", group: H1, type: K}
-  - {id: gh_c_5, en: "Complex problem-solving", hu: "Összetett problémák megoldása", group: H1, type: A}
-  - {id: gh_c_6, en: "Conceptual modeling", hu: "Fogalmi modellezés", group: H1, type: S}
-  - {id: gh_c_7, en: "Decision-making analysis", hu: "Döntéselemzés", group: H1, type: S}
-  - {id: gh_c_8, en: "Hypothesis testing", hu: "Hipotézisvizsgálat", group: H1, type: S}
-  - {id: gh_c_9, en: "Information ordering", hu: "Információk rendezése", group: H1, type: A}
-  - {id: gh_c_10, en: "Logical reasoning", hu: "Logikus érvelés", group: H1, type: A}
-  - {id: gh_c_11, en: "Mathematics (applied)", hu: "Alkalmazott matematika", group: H1, type: K}
-  - {id: gh_c_12, en: "Numerical fluency", hu: "Számolási jártasság", group: H1, type: A}
-  - {id: gh_c_13, en: "Numerical reasoning", hu: "Számszerű érvelés", group: H1, type: A}
-  - {id: gh_c_14, en: "Pattern recognition", hu: "Mintázatfelismerés", group: H1, type: A}
-  - {id: gh_c_15, en: "Qualitative analysis", hu: "Minőségi (kvalitatív) elemzés", group: H1, type: S}
-  - {id: gh_c_16, en: "Quality assurance", hu: "Minőségbiztosítás", group: H1, type: S}
-  - {id: gh_c_17, en: "Quantitative analysis", hu: "Mennyiségi (kvantitatív) elemzés", group: H1, type: S}
-  - {id: gh_c_18, en: "Research methodology", hu: "Kutatásmódszertan", group: H1, type: K}
-  - {id: gh_c_19, en: "Root-cause analysis", hu: "Kiváltó ok feltárása", group: H1, type: S}
-  - {id: gh_c_20, en: "Scenario analysis", hu: "Forgatókönyv-elemzés", group: H1, type: S}
-  - {id: gh_c_21, en: "Dexterity", hu: "Ügyesség", group: H10, type: A}
-  - {id: gh_c_22, en: "Equipment operation", hu: "Berendezés kezelése", group: H10, type: S}
-  - {id: gh_c_23, en: "Hazard identification", hu: "Veszélyforrás felismerése", group: H10, type: S}
-  - {id: gh_c_24, en: "Manual dexterity", hu: "Kézügyesség", group: H10, type: A}
-  - {id: gh_c_25, en: "Manual methods", hu: "Kézi munkamódszerek", group: H10, type: K}
-  - {id: gh_c_26, en: "Physical coordination", hu: "Mozgáskoordináció", group: H10, type: A}
-  - {id: gh_c_27, en: "Physical strength", hu: "Testi erő", group: H10, type: A}
-  - {id: gh_c_28, en: "Precision work", hu: "Precíziós munka", group: H10, type: S}
-  - {id: gh_c_29, en: "Safety compliance", hu: "Biztonsági előírások betartása", group: H10, type: S}
-  - {id: gh_c_30, en: "Safety procedures", hu: "Biztonsági eljárások ismerete", group: H10, type: K}
-  - {id: gh_c_31, en: "Sensory processing", hu: "Érzékszervi feldolgozás", group: H10, type: A}
-  - {id: gh_c_32, en: "Tool handling", hu: "Szerszámhasználat", group: H10, type: S}
-  - {id: gh_c_33, en: "Tool operation basics", hu: "Szerszámkezelési alapok", group: H10, type: S}
-  - {id: gh_c_34, en: "Workplace ergonomics", hu: "Munkahelyi ergonómia", group: H10, type: K}
-  - {id: gh_c_35, en: "AI and big data literacy", hu: "MI- és nagyadat-jártasság", group: H2, type: A}
-  - {id: gh_c_36, en: "AI concepts", hu: "MI-fogalmak", group: H2, type: K}
-  - {id: gh_c_37, en: "Automation / RPA fundamentals", hu: "Automatizálás- és RPA-alapok", group: H2, type: K}
-  - {id: gh_c_38, en: "Business intelligence tool use", hu: "Üzletiintelligencia-eszközök használata", group: H2, type: S}
-  - {id: gh_c_39, en: "Cloud computing basics", hu: "Felhőalapú számítás alapjai", group: H2, type: K}
-  - {id: gh_c_40, en: "Computer proficiency", hu: "Számítógépes jártasság", group: H2, type: S}
-  - {id: gh_c_41, en: "Data cleaning", hu: "Adattisztítás", group: H2, type: S}
-  - {id: gh_c_42, en: "Data interpretation", hu: "Adatok értelmezése", group: H2, type: S}
-  - {id: gh_c_43, en: "Data literacy", hu: "Adatjártasság", group: H2, type: A}
-  - {id: gh_c_44, en: "Data presentation", hu: "Adatok bemutatása", group: H2, type: S}
-  - {id: gh_c_45, en: "Data storytelling", hu: "Adattörténet-mesélés", group: H2, type: S}
-  - {id: gh_c_46, en: "Data visualization", hu: "Adatvizualizáció", group: H2, type: S}
-  - {id: gh_c_47, en: "Data-driven decision-making", hu: "Adatvezérelt döntéshozatal", group: H2, type: S}
-  - {id: gh_c_48, en: "Database navigation", hu: "Adatbázisban való eligazodás", group: H2, type: S}
-  - {id: gh_c_49, en: "Databases", hu: "Adatbázisok", group: H2, type: K}
-  - {id: gh_c_50, en: "Digital fluency", hu: "Digitális jártasság", group: H2, type: A}
-  - {id: gh_c_51, en: "Machine learning basics", hu: "Gépi tanulás alapjai", group: H2, type: K}
-  - {id: gh_c_52, en: "Machine learning fundamentals", hu: "Gépi tanulás alapelvei", group: H2, type: K}
-  - {id: gh_c_53, en: "Presentation software use", hu: "Bemutatókészítő szoftver használata", group: H2, type: S}
-  - {id: gh_c_54, en: "Spreadsheet skills", hu: "Táblázatkezelés", group: H2, type: S}
-  - {id: gh_c_55, en: "SQL querying", hu: "SQL-lekérdezés", group: H2, type: S}
-  - {id: gh_c_56, en: "Statistical reasoning", hu: "Statisztikai érvelés", group: H2, type: A}
-  - {id: gh_c_57, en: "Technological literacy", hu: "Technológiai jártasság", group: H2, type: A}
-  - {id: gh_c_58, en: "Understanding digital systems", hu: "Digitális rendszerek megértése", group: H2, type: A}
-  - {id: gh_c_59, en: "Algorithmic thinking", hu: "Algoritmikus gondolkodás", group: H3, type: A}
-  - {id: gh_c_60, en: "API literacy", hu: "API-jártasság", group: H3, type: A}
-  - {id: gh_c_61, en: "Code debugging", hu: "Kódhibakeresés", group: H3, type: S}
-  - {id: gh_c_62, en: "Coding practice", hu: "Kódírás gyakorlata", group: H3, type: S}
-  - {id: gh_c_63, en: "Containerization basics", hu: "Konténerizálás alapjai", group: H3, type: K}
-  - {id: gh_c_64, en: "DevOps literacy", hu: "DevOps-jártasság", group: H3, type: A}
-  - {id: gh_c_65, en: "IT engineering principles", hu: "Informatikai mérnöki elvek", group: H3, type: K}
-  - {id: gh_c_66, en: "IT infrastructure understanding", hu: "Informatikai infrastruktúra ismerete", group: H3, type: K}
-  - {id: gh_c_67, en: "IT troubleshooting", hu: "Informatikai hibaelhárítás", group: H3, type: S}
-  - {id: gh_c_68, en: "Logical architecture design", hu: "Logikai architektúra tervezése", group: H3, type: S}
-  - {id: gh_c_69, en: "Network fundamentals", hu: "Hálózati alapismeretek", group: H3, type: K}
-  - {id: gh_c_70, en: "Operating systems literacy", hu: "Operációsrendszer-ismeret", group: H3, type: K}
-  - {id: gh_c_71, en: "Programming fundamentals", hu: "Programozási alapok", group: H3, type: K}
-  - {id: gh_c_72, en: "Programming languages", hu: "Programozási nyelvek", group: H3, type: K}
-  - {id: gh_c_73, en: "Software development basics", hu: "Szoftverfejlesztési alapok", group: H3, type: K}
-  - {id: gh_c_74, en: "Systems administration basics", hu: "Rendszergazdai alapok", group: H3, type: K}
-  - {id: gh_c_75, en: "Version control", hu: "Verziókezelés", group: H3, type: S}
-  - {id: gh_c_76, en: "Access control & encryption", hu: "Hozzáférés-szabályozás és titkosítás", group: H4, type: K}
-  - {id: gh_c_77, en: "Cloud security", hu: "Felhőbiztonság", group: H4, type: K}
-  - {id: gh_c_78, en: "Cyber hygiene", hu: "Kiberhigiénia", group: H4, type: S}
-  - {id: gh_c_79, en: "Cybersecurity frameworks", hu: "Kiberbiztonsági keretrendszerek", group: H4, type: K}
-  - {id: gh_c_80, en: "Encryption basics", hu: "Titkosítási alapok", group: H4, type: K}
-  - {id: gh_c_81, en: "Identity & access management", hu: "Személyazonosság- és hozzáférés-kezelés", group: H4, type: K}
-  - {id: gh_c_82, en: "Network security basics", hu: "Hálózatbiztonsági alapok", group: H4, type: K}
-  - {id: gh_c_83, en: "Security incident awareness", hu: "Biztonsági incidensek ismerete", group: H4, type: K}
-  - {id: gh_c_84, en: "Security risk analysis", hu: "Biztonsági kockázatelemzés", group: H4, type: S}
-  - {id: gh_c_85, en: "Threat detection", hu: "Fenyegetés észlelése", group: H4, type: A}
-  - {id: gh_c_86, en: "Chemistry fundamentals", hu: "Kémiai alapismeretek", group: H5, type: K}
-  - {id: gh_c_87, en: "Electrical systems basics", hu: "Villamos rendszerek alapjai", group: H5, type: K}
-  - {id: gh_c_88, en: "Engineering principles", hu: "Mérnöki alapelvek", group: H5, type: K}
-  - {id: gh_c_89, en: "Materials science basics", hu: "Anyagtudományi alapok", group: H5, type: K}
-  - {id: gh_c_90, en: "Measurement & calibration", hu: "Mérés és kalibrálás", group: H5, type: S}
-  - {id: gh_c_91, en: "Mechanical systems basics", hu: "Gépészeti rendszerek alapjai", group: H5, type: K}
-  - {id: gh_c_92, en: "Mechanical understanding", hu: "Műszaki érzék", group: H5, type: A}
-  - {id: gh_c_93, en: "Physics fundamentals", hu: "Fizikai alapismeretek", group: H5, type: K}
-  - {id: gh_c_94, en: "Robotics literacy", hu: "Robotikai jártasság", group: H5, type: K}
-  - {id: gh_c_95, en: "Scientific method application", hu: "Tudományos módszer alkalmazása", group: H5, type: S}
-  - {id: gh_c_96, en: "Scientific methodology", hu: "Tudományos módszertan", group: H5, type: K}
-  - {id: gh_c_97, en: "Spatial reasoning", hu: "Térbeli gondolkodás", group: H5, type: A}
-  - {id: gh_c_98, en: "Technical drawing / CAD", hu: "Műszaki rajz / CAD", group: H5, type: S}
-  - {id: gh_c_99, en: "Technical prototyping", hu: "Műszaki prototípus-készítés", group: H5, type: S}
-  - {id: gh_c_100, en: "Budgeting", hu: "Költségvetés-készítés", group: H6, type: S}
-  - {id: gh_c_101, en: "Business analytics", hu: "Üzleti elemzés", group: H6, type: S}
-  - {id: gh_c_102, en: "Business literacy", hu: "Üzleti jártasság", group: H6, type: A}
-  - {id: gh_c_103, en: "Business models", hu: "Üzleti modellek", group: H6, type: K}
-  - {id: gh_c_104, en: "Cost estimation", hu: "Költségbecslés", group: H6, type: S}
-  - {id: gh_c_105, en: "CRM system use", hu: "Ügyfélkapcsolat-kezelő rendszer használata", group: H6, type: S}
-  - {id: gh_c_106, en: "Finance", hu: "Pénzügyek", group: H6, type: K}
-  - {id: gh_c_107, en: "Financial literacy", hu: "Pénzügyi jártasság", group: H6, type: A}
-  - {id: gh_c_108, en: "Lean / Six Sigma basics", hu: "Lean és Six Sigma alapok", group: H6, type: K}
-  - {id: gh_c_109, en: "Operational processes", hu: "Működési folyamatok", group: H6, type: K}
-  - {id: gh_c_110, en: "Operations management", hu: "Működésirányítás", group: H6, type: S}
-  - {id: gh_c_111, en: "Process optimization", hu: "Folyamatfejlesztés", group: H6, type: S}
-  - {id: gh_c_112, en: "Procurement skills", hu: "Beszerzési ismeretek", group: H6, type: S}
-  - {id: gh_c_113, en: "Project management", hu: "Projektvezetés", group: H6, type: S}
-  - {id: gh_c_114, en: "Quality control", hu: "Minőségellenőrzés", group: H6, type: S}
-  - {id: gh_c_115, en: "Reporting", hu: "Jelentéskészítés", group: H6, type: S}
-  - {id: gh_c_116, en: "Risk management", hu: "Kockázatkezelés", group: H6, type: S}
-  - {id: gh_c_117, en: "Supply chain basics", hu: "Ellátási lánc alapjai", group: H6, type: K}
-  - {id: gh_c_118, en: "Task coordination", hu: "Feladatok összehangolása", group: H6, type: S}
-  - {id: gh_c_119, en: "Vendor management", hu: "Beszállítókezelés", group: H6, type: S}
-  - {id: gh_c_120, en: "Ad campaign basics", hu: "Reklámkampány-alapok", group: H7, type: K}
-  - {id: gh_c_121, en: "Branding", hu: "Márkaépítés", group: H7, type: S}
-  - {id: gh_c_122, en: "Consumer insight generation", hu: "Fogyasztói belátás kialakítása", group: H7, type: S}
-  - {id: gh_c_123, en: "Content creation", hu: "Tartalomkészítés", group: H7, type: S}
-  - {id: gh_c_124, en: "Customer insights", hu: "Vevői ismeretek", group: H7, type: K}
-  - {id: gh_c_125, en: "Digital advertising", hu: "Digitális hirdetés", group: H7, type: S}
-  - {id: gh_c_126, en: "Digital marketing", hu: "Digitális marketing", group: H7, type: S}
-  - {id: gh_c_127, en: "Lead generation", hu: "Érdeklődő-szerzés", group: H7, type: S}
-  - {id: gh_c_128, en: "Market analysis", hu: "Piacelemzés", group: H7, type: S}
-  - {id: gh_c_129, en: "Marketing fundamentals", hu: "Marketingalapok", group: H7, type: K}
-  - {id: gh_c_130, en: "Marketing strategy", hu: "Marketingstratégia", group: H7, type: K}
-  - {id: gh_c_131, en: "Sales pipelines", hu: "Értékesítési folyamat", group: H7, type: K}
-  - {id: gh_c_132, en: "Sales planning", hu: "Értékesítéstervezés", group: H7, type: S}
-  - {id: gh_c_133, en: "SEO / SEM basics", hu: "Keresőoptimalizálás és -hirdetés alapjai", group: H7, type: K}
-  - {id: gh_c_134, en: "Social media analytics", hu: "Közösségimédia-elemzés", group: H7, type: S}
-  - {id: gh_c_135, en: "Audit literacy", hu: "Auditjártasság", group: H8, type: A}
-  - {id: gh_c_136, en: "Contract literacy", hu: "Szerződésismeret", group: H8, type: K}
-  - {id: gh_c_137, en: "Data protection & GDPR", hu: "Adatvédelem és GDPR", group: H8, type: K}
-  - {id: gh_c_138, en: "Document management", hu: "Dokumentumkezelés", group: H8, type: S}
-  - {id: gh_c_139, en: "Documentation accuracy", hu: "Pontos dokumentálás", group: H8, type: A}
-  - {id: gh_c_140, en: "Ethics & compliance knowledge", hu: "Etikai és megfelelési ismeretek", group: H8, type: K}
-  - {id: gh_c_141, en: "Legal basics", hu: "Jogi alapismeretek", group: H8, type: K}
-  - {id: gh_c_142, en: "Legal compliance basics", hu: "Jogszabályi megfelelés alapjai", group: H8, type: K}
-  - {id: gh_c_143, en: "Policy frameworks", hu: "Szabályozási keretek", group: H8, type: K}
-  - {id: gh_c_144, en: "Process coordination", hu: "Folyamatok összehangolása", group: H8, type: A}
-  - {id: gh_c_145, en: "Quality documentation", hu: "Minőségi dokumentáció", group: H8, type: S}
-  - {id: gh_c_146, en: "Regulatory understanding", hu: "Szabályozás ismerete", group: H8, type: K}
-  - {id: gh_c_147, en: "Academic writing", hu: "Tudományos írás", group: H9, type: S}
-  - {id: gh_c_148, en: "Discourse analysis", hu: "Diskurzuselemzés", group: H9, type: S}
-  - {id: gh_c_149, en: "Editing & proofreading", hu: "Szerkesztés és korrektúra", group: H9, type: S}
-  - {id: gh_c_150, en: "Grammar", hu: "Nyelvtan", group: H9, type: K}
-  - {id: gh_c_151, en: "Linguistic reasoning", hu: "Nyelvi érvelés", group: H9, type: A}
-  - {id: gh_c_152, en: "Multilingual communication", hu: "Többnyelvű kommunikáció", group: H9, type: S}
-  - {id: gh_c_153, en: "Presentation building", hu: "Előadás felépítése", group: H9, type: S}
-  - {id: gh_c_154, en: "Reading comprehension", hu: "Szövegértés", group: H9, type: A}
-  - {id: gh_c_155, en: "Rhetoric", hu: "Retorika", group: H9, type: K}
-  - {id: gh_c_156, en: "Technical writing", hu: "Műszaki írás", group: H9, type: S}
-  - {id: gh_c_157, en: "Terminology management", hu: "Szakszókincs-kezelés", group: H9, type: S}
-  - {id: gh_c_158, en: "Translation & interpretation", hu: "Fordítás és tolmácsolás", group: H9, type: S}
-  - {id: gh_c_159, en: "Translation aptitude", hu: "Fordítói rátermettség", group: H9, type: A}
-  - {id: gh_c_160, en: "Writing comprehension", hu: "Íráskészség", group: H9, type: A}
-  - {id: gh_c_161, en: "Coaching", hu: "Személyes fejlesztő kísérés (coaching)", group: L1, type: S}
-  - {id: gh_c_162, en: "Delegation", hu: "Feladatátadás (delegálás)", group: L1, type: S}
-  - {id: gh_c_163, en: "Feedback giving", hu: "Visszajelzés adása", group: L1, type: S}
-  - {id: gh_c_164, en: "Leadership & social influence", hu: "Vezetés és társas hatás", group: L1, type: S}
-  - {id: gh_c_165, en: "Leadership styles", hu: "Vezetési stílusok", group: L1, type: K}
-  - {id: gh_c_166, en: "Mentoring", hu: "Mentorálás", group: L1, type: S}
-  - {id: gh_c_167, en: "Performance feedback", hu: "Teljesítmény-visszajelzés", group: L1, type: S}
-  - {id: gh_c_168, en: "Talent recognition", hu: "Tehetség felismerése", group: L1, type: S}
-  - {id: gh_c_169, en: "Team development theory", hu: "Csapatfejlődés elmélete", group: L1, type: K}
-  - {id: gh_c_170, en: "Team motivation", hu: "Csapat motiválása", group: L1, type: S}
-  - {id: gh_c_171, en: "Change implementation & alignment", hu: "Változás bevezetése és összehangolása", group: L2, type: S}
-  - {id: gh_c_172, en: "Change leadership", hu: "Változásvezetés", group: L2, type: S}
-  - {id: gh_c_173, en: "Change management models", hu: "Változáskezelési modellek", group: L2, type: K}
-  - {id: gh_c_174, en: "Organizational behavior", hu: "Szervezeti viselkedés", group: L2, type: K}
-  - {id: gh_c_175, en: "Strategic decision-making", hu: "Stratégiai döntéshozatal", group: L2, type: S}
-  - {id: gh_c_176, en: "Strategic thinking", hu: "Stratégiai gondolkodás", group: L2, type: A}
-  - {id: gh_c_177, en: "Strategy frameworks", hu: "Stratégiai keretrendszerek", group: L2, type: K}
-  - {id: gh_c_178, en: "Systems thinking", hu: "Rendszerszemlélet", group: L2, type: A}
-  - {id: gh_c_179, en: "Vision creation", hu: "Jövőkép alkotása", group: L2, type: S}
-  - {id: gh_c_180, en: "Workforce planning", hu: "Munkaerő-tervezés", group: L2, type: S}
-  - {id: gh_c_181, en: "Adaptability", hu: "Alkalmazkodóképesség", group: P1, type: A}
-  - {id: gh_c_182, en: "Attention management", hu: "Figyelemirányítás", group: P1, type: S}
-  - {id: gh_c_183, en: "Basic psychology of emotions", hu: "Az érzelmek pszichológiájának alapjai", group: P1, type: K}
-  - {id: gh_c_184, en: "Delay of gratification", hu: "Késleltetett jutalom elfogadása", group: P1, type: A}
-  - {id: gh_c_185, en: "Discipline", hu: "Fegyelem", group: P1, type: A}
-  - {id: gh_c_186, en: "Emotional control", hu: "Érzelmi önuralom", group: P1, type: S}
-  - {id: gh_c_187, en: "Emotional regulation", hu: "Érzelemszabályozás", group: P1, type: S}
-  - {id: gh_c_188, en: "Flexibility", hu: "Rugalmasság", group: P1, type: A}
-  - {id: gh_c_189, en: "Focus & attention management", hu: "Összpontosítás és figyelemirányítás", group: P1, type: S}
-  - {id: gh_c_190, en: "Impulse regulation", hu: "Késztetésszabályozás", group: P1, type: S}
-  - {id: gh_c_191, en: "Motivation management", hu: "Motiváció kezelése", group: P1, type: S}
-  - {id: gh_c_192, en: "Proactivity", hu: "Kezdeményezőkészség", group: P1, type: A}
-  - {id: gh_c_193, en: "Self-control", hu: "Önuralom", group: P1, type: S}
-  - {id: gh_c_194, en: "Self-regulation strategies & routines", hu: "Önszabályozási stratégiák és szokások", group: P1, type: K}
-  - {id: gh_c_195, en: "Stress tolerance", hu: "Stressztűrés", group: P1, type: S}
-  - {id: gh_c_196, en: "Critical thinking", hu: "Kritikai gondolkodás", group: P2, type: A}
-  - {id: gh_c_197, en: "Curiosity & lifelong learning", hu: "Kíváncsiság és élethosszig tartó tanulás", group: P2, type: A}
-  - {id: gh_c_198, en: "Goal setting", hu: "Célkitűzés", group: P2, type: S}
-  - {id: gh_c_199, en: "Growth mindset", hu: "Fejlődésközpontú szemlélet", group: P2, type: A}
-  - {id: gh_c_200, en: "Heuristics & biases", hu: "Heurisztikák és torzítások", group: P2, type: K}
-  - {id: gh_c_201, en: "Learning agility", hu: "Tanulási mozgékonyság", group: P2, type: A}
-  - {id: gh_c_202, en: "Learning theory", hu: "Tanuláselmélet", group: P2, type: K}
-  - {id: gh_c_203, en: "Logic & reasoning frameworks", hu: "Logikai és érvelési keretek", group: P2, type: K}
-  - {id: gh_c_204, en: "Memory skills", hu: "Emlékezeti képességek", group: P2, type: A}
-  - {id: gh_c_205, en: "Metacognition", hu: "Metakogníció", group: P2, type: A}
-  - {id: gh_c_206, en: "Openness to feedback", hu: "Nyitottság a visszajelzésre", group: P2, type: A}
-  - {id: gh_c_207, en: "Problem sensitivity", hu: "Problémaérzékenység", group: P2, type: A}
-  - {id: gh_c_208, en: "Reflective thinking", hu: "Reflektív gondolkodás", group: P2, type: S}
-  - {id: gh_c_209, en: "Self-awareness", hu: "Önismeret", group: P2, type: S}
-  - {id: gh_c_210, en: "Self-development awareness", hu: "Önfejlesztési tudatosság", group: P2, type: S}
-  - {id: gh_c_211, en: "Basic health & well-being principles", hu: "Az egészség és jóllét alapelvei", group: P3, type: K}
-  - {id: gh_c_212, en: "Burnout awareness", hu: "Kiégés felismerése", group: P3, type: K}
-  - {id: gh_c_213, en: "Confidence & self-efficacy", hu: "Önbizalom és énhatékonyság", group: P3, type: A}
-  - {id: gh_c_214, en: "Emotional resilience", hu: "Érzelmi ellenálló képesség", group: P3, type: A}
-  - {id: gh_c_215, en: "Energy management", hu: "Energiagazdálkodás", group: P3, type: S}
-  - {id: gh_c_216, en: "Healthy routines", hu: "Egészséges szokások", group: P3, type: S}
-  - {id: gh_c_217, en: "Mindfulness", hu: "Tudatos jelenlét", group: P3, type: S}
-  - {id: gh_c_218, en: "Motivation & initiative", hu: "Motiváció és kezdeményezés", group: P3, type: A}
-  - {id: gh_c_219, en: "Persistence", hu: "Kitartás", group: P3, type: A}
-  - {id: gh_c_220, en: "Personal boundary-setting", hu: "Személyes határok kijelölése", group: P3, type: S}
-  - {id: gh_c_221, en: "Resilience", hu: "Ellenálló képesség (reziliencia)", group: P3, type: A}
-  - {id: gh_c_222, en: "Sleep, nutrition, cognitive load theory", hu: "Alvás, táplálkozás, kognitív terhelés elmélete", group: P3, type: K}
-  - {id: gh_c_223, en: "Stress recovery habits", hu: "Stresszből való feltöltődés szokásai", group: P3, type: S}
-  - {id: gh_c_224, en: "Stress responses", hu: "Stresszreakciók", group: P3, type: K}
-  - {id: gh_c_225, en: "Work-life balance habits", hu: "Munka–magánélet egyensúlyának szokásai", group: P3, type: S}
-  - {id: gh_c_226, en: "Work\u2013life balance strategies", hu: "Munka–magánélet egyensúlyának stratégiái", group: P3, type: K}
-  - {id: gh_c_227, en: "Accountability", hu: "Felelősségvállalás", group: P4, type: A}
-  - {id: gh_c_228, en: "Accountability frameworks", hu: "Elszámoltathatósági keretek", group: P4, type: K}
-  - {id: gh_c_229, en: "Confidentiality", hu: "Titoktartás", group: P4, type: A}
-  - {id: gh_c_230, en: "Dependability", hu: "Megbízhatóság", group: P4, type: A}
-  - {id: gh_c_231, en: "Ethical principles", hu: "Etikai alapelvek", group: P4, type: K}
-  - {id: gh_c_232, en: "Ethical responsibility", hu: "Etikai felelősség", group: P4, type: A}
-  - {id: gh_c_233, en: "Integrity", hu: "Feddhetetlenség", group: P4, type: A}
-  - {id: gh_c_234, en: "Professional etiquette", hu: "Szakmai illem", group: P4, type: K}
-  - {id: gh_c_235, en: "Professional responsibility", hu: "Szakmai felelősség", group: P4, type: A}
-  - {id: gh_c_236, en: "Reliability & dependability", hu: "Megbízhatóság és kiszámíthatóság", group: P4, type: A}
-  - {id: gh_c_237, en: "Time management", hu: "Időgazdálkodás", group: P4, type: S}
-  - {id: gh_c_238, en: "Active listening", hu: "Aktív figyelem", group: S1, type: S}
-  - {id: gh_c_239, en: "Audience awareness", hu: "Közönségtudatosság", group: S1, type: S}
-  - {id: gh_c_240, en: "Communication strategies", hu: "Kommunikációs stratégiák", group: S1, type: K}
-  - {id: gh_c_241, en: "Conflict communication basics", hu: "Konfliktuskommunikációs alapok", group: S1, type: K}
-  - {id: gh_c_242, en: "Conversation management", hu: "Beszélgetésvezetés", group: S1, type: S}
-  - {id: gh_c_243, en: "Cross-cultural communication", hu: "Kultúraközi kommunikáció", group: S1, type: S}
-  - {id: gh_c_244, en: "Nonverbal communication", hu: "Nem verbális kommunikáció", group: S1, type: S}
-  - {id: gh_c_245, en: "Persuasion (non-leadership)", hu: "Meggyőzés (nem vezetői)", group: S1, type: S}
-  - {id: gh_c_246, en: "Public speaking (technical)", hu: "Nyilvános (szakmai) előadás", group: S1, type: S}
-  - {id: gh_c_247, en: "Questioning skills", hu: "Kérdezéstechnika", group: S1, type: S}
-  - {id: gh_c_248, en: "Rapport building", hu: "Kapcsolatteremtés", group: S1, type: S}
-  - {id: gh_c_249, en: "Speaking clearly", hu: "Érthető beszéd", group: S1, type: S}
-  - {id: gh_c_250, en: "Co-creation", hu: "Közös alkotás", group: S2, type: S}
-  - {id: gh_c_251, en: "Conflict de-escalation", hu: "Konfliktus enyhítése", group: S2, type: S}
-  - {id: gh_c_252, en: "Conflict resolution", hu: "Konfliktuskezelés", group: S2, type: S}
-  - {id: gh_c_253, en: "Cooperation", hu: "Együttműködés", group: S2, type: A}
-  - {id: gh_c_254, en: "Coordination", hu: "Összehangolás", group: S2, type: S}
-  - {id: gh_c_255, en: "Group dynamics", hu: "Csoportdinamika", group: S2, type: K}
-  - {id: gh_c_256, en: "Interpersonal adaptability", hu: "Személyközi alkalmazkodás", group: S2, type: A}
-  - {id: gh_c_257, en: "Negotiation (technical)", hu: "Tárgyalás (szakmai)", group: S2, type: S}
-  - {id: gh_c_258, en: "Networking", hu: "Kapcsolatépítés", group: S2, type: S}
-  - {id: gh_c_259, en: "Shared decision-making", hu: "Közös döntéshozatal", group: S2, type: S}
-  - {id: gh_c_260, en: "Shared problem-solving", hu: "Közös problémamegoldás", group: S2, type: S}
-  - {id: gh_c_261, en: "Team roles & responsibilities", hu: "Csapatszerepek és felelősségek", group: S2, type: K}
-  - {id: gh_c_262, en: "Teamwork", hu: "Csapatmunka", group: S2, type: S}
-  - {id: gh_c_263, en: "Trust-building", hu: "Bizalomépítés", group: S2, type: S}
-  - {id: gh_c_264, en: "Client relationship management", hu: "Ügyfélkapcsolat-kezelés", group: S3, type: S}
-  - {id: gh_c_265, en: "Consultative interactions", hu: "Tanácsadó jellegű interakció", group: S3, type: S}
-  - {id: gh_c_266, en: "Customer journey", hu: "Ügyfélút", group: S3, type: K}
-  - {id: gh_c_267, en: "Customer journey mapping", hu: "Ügyfélút-térképezés", group: S3, type: S}
-  - {id: gh_c_268, en: "Customer service", hu: "Ügyfélszolgálat", group: S3, type: S}
-  - {id: gh_c_269, en: "Empathy", hu: "Együttérzés", group: S3, type: A}
-  - {id: gh_c_270, en: "Needs assessment", hu: "Igényfelmérés", group: S3, type: S}
-  - {id: gh_c_271, en: "Problem resolution", hu: "Problémarendezés", group: S3, type: S}
-  - {id: gh_c_272, en: "Quality focus in service", hu: "Minőségközpontúság a szolgáltatásban", group: S3, type: A}
-  - {id: gh_c_273, en: "Service orientation", hu: "Szolgáltatói szemlélet", group: S3, type: A}
-  - {id: gh_c_274, en: "Service quality standards", hu: "Szolgáltatásminőségi szabványok", group: S3, type: K}
-  - {id: gh_c_275, en: "User empathy", hu: "Felhasználói együttérzés", group: S3, type: A}
+  - {id: gh_c_1, label_hu: "Elemzési módszerek ismerete", label_en: "Analytical methods", group: H1, type: K}
+  - {id: gh_c_2, label_hu: "Elemző következtetés", label_en: "Analytical reasoning", group: H1, type: A}
+  - {id: gh_c_3, label_hu: "Elemző gondolkodás", label_en: "Analytical thinking", group: H1, type: A}
+  - {id: gh_c_4, label_hu: "Statisztikai alapismeretek", label_en: "Basic statistics", group: H1, type: K}
+  - {id: gh_c_5, label_hu: "Összetett problémák megoldása", label_en: "Complex problem-solving", group: H1, type: A}
+  - {id: gh_c_6, label_hu: "Fogalmi modellezés", label_en: "Conceptual modeling", group: H1, type: S}
+  - {id: gh_c_7, label_hu: "Döntési lehetőségek elemzése", label_en: "Decision-making analysis", group: H1, type: S}
+  - {id: gh_c_8, label_hu: "Hipotézisvizsgálat", label_en: "Hypothesis testing", group: H1, type: S}
+  - {id: gh_c_9, label_hu: "Információk rendezése", label_en: "Information ordering", group: H1, type: A}
+  - {id: gh_c_10, label_hu: "Logikus következtetés", label_en: "Logical reasoning", group: H1, type: A}
+  - {id: gh_c_11, label_hu: "Alkalmazott matematika", label_en: "Mathematics (applied)", group: H1, type: K}
+  - {id: gh_c_12, label_hu: "Számolási jártasság", label_en: "Numerical fluency", group: H1, type: A}
+  - {id: gh_c_13, label_hu: "Számszerű következtetés", label_en: "Numerical reasoning", group: H1, type: A}
+  - {id: gh_c_14, label_hu: "Mintázatok felismerése", label_en: "Pattern recognition", group: H1, type: A}
+  - {id: gh_c_15, label_hu: "Minőségi elemzés", label_en: "Qualitative analysis", group: H1, type: S}
+  - {id: gh_c_16, label_hu: "Minőségbiztosítás", label_en: "Quality assurance", group: H1, type: S}
+  - {id: gh_c_17, label_hu: "Mennyiségi elemzés", label_en: "Quantitative analysis", group: H1, type: S}
+  - {id: gh_c_18, label_hu: "Kutatásmódszertan ismerete", label_en: "Research methodology", group: H1, type: K}
+  - {id: gh_c_19, label_hu: "Gyökérok feltárása", label_en: "Root-cause analysis", group: H1, type: S}
+  - {id: gh_c_20, label_hu: "Forgatókönyv-elemzés", label_en: "Scenario analysis", group: H1, type: S}
+  - {id: gh_c_21, label_hu: "Ügyesség", label_en: "Dexterity", group: H10, type: A}
+  - {id: gh_c_22, label_hu: "Berendezéskezelés", label_en: "Equipment operation", group: H10, type: S}
+  - {id: gh_c_23, label_hu: "Veszélyek felismerése", label_en: "Hazard identification", group: H10, type: S}
+  - {id: gh_c_24, label_hu: "Kézügyesség", label_en: "Manual dexterity", group: H10, type: A}
+  - {id: gh_c_25, label_hu: "Kézi munkamódszerek ismerete", label_en: "Manual methods", group: H10, type: K}
+  - {id: gh_c_26, label_hu: "Mozgáskoordináció", label_en: "Physical coordination", group: H10, type: A}
+  - {id: gh_c_27, label_hu: "Testi erő", label_en: "Physical strength", group: H10, type: A}
+  - {id: gh_c_28, label_hu: "Pontos kivitelezés", label_en: "Precision work", group: H10, type: S}
+  - {id: gh_c_29, label_hu: "Biztonsági előírások követése", label_en: "Safety compliance", group: H10, type: S}
+  - {id: gh_c_30, label_hu: "Biztonsági eljárások ismerete", label_en: "Safety procedures", group: H10, type: K}
+  - {id: gh_c_31, label_hu: "Érzékszervi észlelés feldolgozása", label_en: "Sensory processing", group: H10, type: A}
+  - {id: gh_c_32, label_hu: "Szerszámkezelés", label_en: "Tool handling", group: H10, type: S}
+  - {id: gh_c_33, label_hu: "Szerszámhasználati alapok", label_en: "Tool operation basics", group: H10, type: S}
+  - {id: gh_c_34, label_hu: "Munkahelyi ergonómia ismerete", label_en: "Workplace ergonomics", group: H10, type: K}
+  - {id: gh_c_35, label_hu: "MI- és nagyadat-jártasság", label_en: "AI and big data literacy", group: H2, type: A}
+  - {id: gh_c_36, label_hu: "AI-alapismeretek", label_en: "AI concepts", group: H2, type: K}
+  - {id: gh_c_37, label_hu: "Automatizálási (RPA) alapismeretek", label_en: "Automation / RPA fundamentals", group: H2, type: K}
+  - {id: gh_c_38, label_hu: "Üzleti intelligencia eszközök használata", label_en: "Business intelligence tool use", group: H2, type: S}
+  - {id: gh_c_39, label_hu: "Felhőalapú számítástechnikai alapismeretek", label_en: "Cloud computing basics", group: H2, type: K}
+  - {id: gh_c_40, label_hu: "Számítógép-használati jártasság", label_en: "Computer proficiency", group: H2, type: S}
+  - {id: gh_c_41, label_hu: "Adattisztítás", label_en: "Data cleaning", group: H2, type: S}
+  - {id: gh_c_42, label_hu: "Adatok értelmezése", label_en: "Data interpretation", group: H2, type: S}
+  - {id: gh_c_43, label_hu: "Adatértés", label_en: "Data literacy", group: H2, type: A}
+  - {id: gh_c_44, label_hu: "Adatok bemutatása", label_en: "Data presentation", group: H2, type: S}
+  - {id: gh_c_45, label_hu: "Adatokkal történő elbeszélés", label_en: "Data storytelling", group: H2, type: S}
+  - {id: gh_c_46, label_hu: "Adatok megjelenítése", label_en: "Data visualization", group: H2, type: S}
+  - {id: gh_c_47, label_hu: "Adatokra épülő döntéshozatal", label_en: "Data-driven decision-making", group: H2, type: S}
+  - {id: gh_c_48, label_hu: "Adatbázisban való eligazodás", label_en: "Database navigation", group: H2, type: S}
+  - {id: gh_c_49, label_hu: "Adatbázisok ismerete", label_en: "Databases", group: H2, type: K}
+  - {id: gh_c_50, label_hu: "Digitális jártasság", label_en: "Digital fluency", group: H2, type: A}
+  - {id: gh_c_51, label_hu: "Gépi tanulási alapok", label_en: "Machine learning basics", group: H2, type: K}
+  - {id: gh_c_52, label_hu: "Gépi tanulási alapismeretek", label_en: "Machine learning fundamentals", group: H2, type: K}
+  - {id: gh_c_53, label_hu: "Bemutatókészítő program használata", label_en: "Presentation software use", group: H2, type: S}
+  - {id: gh_c_54, label_hu: "Táblázatkezelés", label_en: "Spreadsheet skills", group: H2, type: S}
+  - {id: gh_c_55, label_hu: "SQL-lekérdezés", label_en: "SQL querying", group: H2, type: S}
+  - {id: gh_c_56, label_hu: "Statisztikai következtetés", label_en: "Statistical reasoning", group: H2, type: A}
+  - {id: gh_c_57, label_hu: "Műszaki-technológiai jártasság", label_en: "Technological literacy", group: H2, type: A}
+  - {id: gh_c_58, label_hu: "Digitális rendszerek megértése", label_en: "Understanding digital systems", group: H2, type: A}
+  - {id: gh_c_59, label_hu: "Algoritmikus gondolkodás", label_en: "Algorithmic thinking", group: H3, type: A}
+  - {id: gh_c_60, label_hu: "API-jártasság", label_en: "API literacy", group: H3, type: A}
+  - {id: gh_c_61, label_hu: "Kódhibakeresés", label_en: "Code debugging", group: H3, type: S}
+  - {id: gh_c_62, label_hu: "Gyakorlati programozás", label_en: "Coding practice", group: H3, type: S}
+  - {id: gh_c_63, label_hu: "Konténerizációs alapismeretek", label_en: "Containerization basics", group: H3, type: K}
+  - {id: gh_c_64, label_hu: "DevOps-jártasság", label_en: "DevOps literacy", group: H3, type: A}
+  - {id: gh_c_65, label_hu: "Informatikai tervezési alapelvek", label_en: "IT engineering principles", group: H3, type: K}
+  - {id: gh_c_66, label_hu: "Informatikai infrastruktúra ismerete", label_en: "IT infrastructure understanding", group: H3, type: K}
+  - {id: gh_c_67, label_hu: "Informatikai hibakeresés", label_en: "IT troubleshooting", group: H3, type: S}
+  - {id: gh_c_68, label_hu: "Rendszerarchitektúra tervezése", label_en: "Logical architecture design", group: H3, type: S}
+  - {id: gh_c_69, label_hu: "Hálózati alapismeretek", label_en: "Network fundamentals", group: H3, type: K}
+  - {id: gh_c_70, label_hu: "Operációs rendszerek ismerete", label_en: "Operating systems literacy", group: H3, type: K}
+  - {id: gh_c_71, label_hu: "Programozási alapismeretek", label_en: "Programming fundamentals", group: H3, type: K}
+  - {id: gh_c_72, label_hu: "Programnyelvek ismerete", label_en: "Programming languages", group: H3, type: K}
+  - {id: gh_c_73, label_hu: "Szoftverfejlesztési alapismeretek", label_en: "Software development basics", group: H3, type: K}
+  - {id: gh_c_74, label_hu: "Rendszergazdai alapismeretek", label_en: "Systems administration basics", group: H3, type: K}
+  - {id: gh_c_75, label_hu: "Verziókezelés", label_en: "Version control", group: H3, type: S}
+  - {id: gh_c_76, label_hu: "Hozzáférés-védelem és titkosítás", label_en: "Access control & encryption", group: H4, type: K}
+  - {id: gh_c_77, label_hu: "Felhőbiztonsági ismeretek", label_en: "Cloud security", group: H4, type: K}
+  - {id: gh_c_78, label_hu: "Digitális biztonsági alapgyakorlatok", label_en: "Cyber hygiene", group: H4, type: S}
+  - {id: gh_c_79, label_hu: "Kiberbiztonsági keretrendszerek ismerete", label_en: "Cybersecurity frameworks", group: H4, type: K}
+  - {id: gh_c_80, label_hu: "Titkosítási alapismeretek", label_en: "Encryption basics", group: H4, type: K}
+  - {id: gh_c_81, label_hu: "Azonosság- és hozzáférés-kezelés ismerete", label_en: "Identity & access management", group: H4, type: K}
+  - {id: gh_c_82, label_hu: "Hálózatbiztonsági alapismeretek", label_en: "Network security basics", group: H4, type: K}
+  - {id: gh_c_83, label_hu: "Biztonsági incidensek ismerete", label_en: "Security incident awareness", group: H4, type: K}
+  - {id: gh_c_84, label_hu: "Biztonsági kockázatelemzés", label_en: "Security risk analysis", group: H4, type: S}
+  - {id: gh_c_85, label_hu: "Fenyegetések felismerése", label_en: "Threat detection", group: H4, type: A}
+  - {id: gh_c_86, label_hu: "Kémiai alapismeretek", label_en: "Chemistry fundamentals", group: H5, type: K}
+  - {id: gh_c_87, label_hu: "Villamos rendszerek alapismerete", label_en: "Electrical systems basics", group: H5, type: K}
+  - {id: gh_c_88, label_hu: "Mérnöki alapelvek", label_en: "Engineering principles", group: H5, type: K}
+  - {id: gh_c_89, label_hu: "Anyagtudományi alapismeretek", label_en: "Materials science basics", group: H5, type: K}
+  - {id: gh_c_90, label_hu: "Mérés és kalibrálás", label_en: "Measurement & calibration", group: H5, type: S}
+  - {id: gh_c_91, label_hu: "Mechanikai rendszerek alapismerete", label_en: "Mechanical systems basics", group: H5, type: K}
+  - {id: gh_c_92, label_hu: "Mechanikai összefüggések megértése", label_en: "Mechanical understanding", group: H5, type: A}
+  - {id: gh_c_93, label_hu: "Fizikai alapismeretek", label_en: "Physics fundamentals", group: H5, type: K}
+  - {id: gh_c_94, label_hu: "Robotikai alapismeretek", label_en: "Robotics literacy", group: H5, type: K}
+  - {id: gh_c_95, label_hu: "Tudományos módszer alkalmazása", label_en: "Scientific method application", group: H5, type: S}
+  - {id: gh_c_96, label_hu: "Tudományos módszertan ismerete", label_en: "Scientific methodology", group: H5, type: K}
+  - {id: gh_c_97, label_hu: "Térbeli következtetés", label_en: "Spatial reasoning", group: H5, type: A}
+  - {id: gh_c_98, label_hu: "Műszaki rajzolás és CAD", label_en: "Technical drawing / CAD", group: H5, type: S}
+  - {id: gh_c_99, label_hu: "Műszaki prototípus készítése", label_en: "Technical prototyping", group: H5, type: S}
+  - {id: gh_c_100, label_hu: "Költségvetés-készítés", label_en: "Budgeting", group: H6, type: S}
+  - {id: gh_c_101, label_hu: "Üzleti elemzés", label_en: "Business analytics", group: H6, type: S}
+  - {id: gh_c_102, label_hu: "Üzleti jártasság", label_en: "Business literacy", group: H6, type: A}
+  - {id: gh_c_103, label_hu: "Üzleti modellek ismerete", label_en: "Business models", group: H6, type: K}
+  - {id: gh_c_104, label_hu: "Költségbecslés", label_en: "Cost estimation", group: H6, type: S}
+  - {id: gh_c_105, label_hu: "Ügyfélkezelő (CRM) rendszer használata", label_en: "CRM system use", group: H6, type: S}
+  - {id: gh_c_106, label_hu: "Pénzügyi ismeretek", label_en: "Finance", group: H6, type: K}
+  - {id: gh_c_107, label_hu: "Pénzügyi jártasság", label_en: "Financial literacy", group: H6, type: A}
+  - {id: gh_c_108, label_hu: "Lean és Six Sigma alapismeretek", label_en: "Lean / Six Sigma basics", group: H6, type: K}
+  - {id: gh_c_109, label_hu: "Működési folyamatok ismerete", label_en: "Operational processes", group: H6, type: K}
+  - {id: gh_c_110, label_hu: "Működésirányítás", label_en: "Operations management", group: H6, type: S}
+  - {id: gh_c_111, label_hu: "Folyamatjavítás", label_en: "Process optimization", group: H6, type: S}
+  - {id: gh_c_112, label_hu: "Beszerzés", label_en: "Procurement skills", group: H6, type: S}
+  - {id: gh_c_113, label_hu: "Projektvezetés", label_en: "Project management", group: H6, type: S}
+  - {id: gh_c_114, label_hu: "Minőségellenőrzés", label_en: "Quality control", group: H6, type: S}
+  - {id: gh_c_115, label_hu: "Jelentéskészítés", label_en: "Reporting", group: H6, type: S}
+  - {id: gh_c_116, label_hu: "Kockázatkezelés", label_en: "Risk management", group: H6, type: S}
+  - {id: gh_c_117, label_hu: "Ellátási lánc alapismeretei", label_en: "Supply chain basics", group: H6, type: K}
+  - {id: gh_c_118, label_hu: "Feladatok összehangolása", label_en: "Task coordination", group: H6, type: S}
+  - {id: gh_c_119, label_hu: "Beszállítókezelés", label_en: "Vendor management", group: H6, type: S}
+  - {id: gh_c_120, label_hu: "Hirdetési kampány alapismeretei", label_en: "Ad campaign basics", group: H7, type: K}
+  - {id: gh_c_121, label_hu: "Márkaépítés", label_en: "Branding", group: H7, type: S}
+  - {id: gh_c_122, label_hu: "Fogyasztói belátások kialakítása", label_en: "Consumer insight generation", group: H7, type: S}
+  - {id: gh_c_123, label_hu: "Tartalomkészítés", label_en: "Content creation", group: H7, type: S}
+  - {id: gh_c_124, label_hu: "Vevői ismeretek", label_en: "Customer insights", group: H7, type: K}
+  - {id: gh_c_125, label_hu: "Digitális hirdetés", label_en: "Digital advertising", group: H7, type: S}
+  - {id: gh_c_126, label_hu: "Digitális marketing", label_en: "Digital marketing", group: H7, type: S}
+  - {id: gh_c_127, label_hu: "Érdeklődők megszerzése", label_en: "Lead generation", group: H7, type: S}
+  - {id: gh_c_128, label_hu: "Piacelemzés", label_en: "Market analysis", group: H7, type: S}
+  - {id: gh_c_129, label_hu: "Marketing alapismeretek", label_en: "Marketing fundamentals", group: H7, type: K}
+  - {id: gh_c_130, label_hu: "Marketingstratégia ismerete", label_en: "Marketing strategy", group: H7, type: K}
+  - {id: gh_c_131, label_hu: "Értékesítési folyamat ismerete", label_en: "Sales pipelines", group: H7, type: K}
+  - {id: gh_c_132, label_hu: "Értékesítés tervezése", label_en: "Sales planning", group: H7, type: S}
+  - {id: gh_c_133, label_hu: "Keresőoptimalizálási (SEO/SEM) alapismeretek", label_en: "SEO / SEM basics", group: H7, type: K}
+  - {id: gh_c_134, label_hu: "Közösségimédia-elemzés", label_en: "Social media analytics", group: H7, type: S}
+  - {id: gh_c_135, label_hu: "Auditálási jártasság", label_en: "Audit literacy", group: H8, type: A}
+  - {id: gh_c_136, label_hu: "Szerződések értése", label_en: "Contract literacy", group: H8, type: K}
+  - {id: gh_c_137, label_hu: "Adatvédelem és GDPR ismerete", label_en: "Data protection & GDPR", group: H8, type: K}
+  - {id: gh_c_138, label_hu: "Iratkezelés", label_en: "Document management", group: H8, type: S}
+  - {id: gh_c_139, label_hu: "Pontos adatrögzítés", label_en: "Documentation accuracy", group: H8, type: A}
+  - {id: gh_c_140, label_hu: "Etikai és megfelelőségi ismeretek", label_en: "Ethics & compliance knowledge", group: H8, type: K}
+  - {id: gh_c_141, label_hu: "Jogi alapismeretek", label_en: "Legal basics", group: H8, type: K}
+  - {id: gh_c_142, label_hu: "Jogszabályi megfelelés alapjai", label_en: "Legal compliance basics", group: H8, type: K}
+  - {id: gh_c_143, label_hu: "Szabályozási keretek ismerete", label_en: "Policy frameworks", group: H8, type: K}
+  - {id: gh_c_144, label_hu: "Folyamatok összehangolása", label_en: "Process coordination", group: H8, type: A}
+  - {id: gh_c_145, label_hu: "Minőségügyi dokumentáció", label_en: "Quality documentation", group: H8, type: S}
+  - {id: gh_c_146, label_hu: "Szakterületi előírások ismerete", label_en: "Regulatory understanding", group: H8, type: K}
+  - {id: gh_c_147, label_hu: "Tudományos írás", label_en: "Academic writing", group: H9, type: S}
+  - {id: gh_c_148, label_hu: "Diskurzuselemzés", label_en: "Discourse analysis", group: H9, type: S}
+  - {id: gh_c_149, label_hu: "Szerkesztés és korrektúra", label_en: "Editing & proofreading", group: H9, type: S}
+  - {id: gh_c_150, label_hu: "Nyelvtani ismeretek", label_en: "Grammar", group: H9, type: K}
+  - {id: gh_c_151, label_hu: "Nyelvi következtetés", label_en: "Linguistic reasoning", group: H9, type: A}
+  - {id: gh_c_152, label_hu: "Többnyelvű közlés", label_en: "Multilingual communication", group: H9, type: S}
+  - {id: gh_c_153, label_hu: "Előadás felépítése", label_en: "Presentation building", group: H9, type: S}
+  - {id: gh_c_154, label_hu: "Szövegértés", label_en: "Reading comprehension", group: H9, type: A}
+  - {id: gh_c_155, label_hu: "Retorika ismerete", label_en: "Rhetoric", group: H9, type: K}
+  - {id: gh_c_156, label_hu: "Műszaki írás", label_en: "Technical writing", group: H9, type: S}
+  - {id: gh_c_157, label_hu: "Szakszókincs kezelése", label_en: "Terminology management", group: H9, type: S}
+  - {id: gh_c_158, label_hu: "Fordítás és tolmácsolás", label_en: "Translation & interpretation", group: H9, type: S}
+  - {id: gh_c_159, label_hu: "Fordítói képesség", label_en: "Translation aptitude", group: H9, type: A}
+  - {id: gh_c_160, label_hu: "Írott szöveg megértése", label_en: "Writing comprehension", group: H9, type: A}
+  - {id: gh_c_161, label_hu: "Fejlődést segítő támogatás", label_en: "Coaching", group: L1, type: S}
+  - {id: gh_c_162, label_hu: "Feladatok átadása", label_en: "Delegation", group: L1, type: S}
+  - {id: gh_c_163, label_hu: "Fejlesztő visszajelzés", label_en: "Feedback giving", group: L1, type: S}
+  - {id: gh_c_164, label_hu: "Vezetés és társas befolyásolás", label_en: "Leadership & social influence", group: L1, type: S}
+  - {id: gh_c_165, label_hu: "Vezetési stílusok ismerete", label_en: "Leadership styles", group: L1, type: K}
+  - {id: gh_c_166, label_hu: "Mentorálás", label_en: "Mentoring", group: L1, type: S}
+  - {id: gh_c_167, label_hu: "Teljesítményértékelő visszajelzés", label_en: "Performance feedback", group: L1, type: S}
+  - {id: gh_c_168, label_hu: "Tehetségek felismerése", label_en: "Talent recognition", group: L1, type: S}
+  - {id: gh_c_169, label_hu: "Csapatfejlődési elméletek ismerete", label_en: "Team development theory", group: L1, type: K}
+  - {id: gh_c_170, label_hu: "Csapat motiválása", label_en: "Team motivation", group: L1, type: S}
+  - {id: gh_c_171, label_hu: "Változás bevezetése és összehangolása", label_en: "Change implementation & alignment", group: L2, type: S}
+  - {id: gh_c_172, label_hu: "Változás vezetése", label_en: "Change leadership", group: L2, type: S}
+  - {id: gh_c_173, label_hu: "Változáskezelési modellek ismerete", label_en: "Change management models", group: L2, type: K}
+  - {id: gh_c_174, label_hu: "Szervezeti viselkedés ismerete", label_en: "Organizational behavior", group: L2, type: K}
+  - {id: gh_c_175, label_hu: "Stratégiai döntéshozatal", label_en: "Strategic decision-making", group: L2, type: S}
+  - {id: gh_c_176, label_hu: "Stratégiai gondolkodás", label_en: "Strategic thinking", group: L2, type: A}
+  - {id: gh_c_177, label_hu: "Stratégiai keretrendszerek ismerete", label_en: "Strategy frameworks", group: L2, type: K}
+  - {id: gh_c_178, label_hu: "Rendszerszemlélet", label_en: "Systems thinking", group: L2, type: A}
+  - {id: gh_c_179, label_hu: "Jövőkép alkotása", label_en: "Vision creation", group: L2, type: S}
+  - {id: gh_c_180, label_hu: "Munkaerő-tervezés", label_en: "Workforce planning", group: L2, type: S}
+  - {id: gh_c_181, label_hu: "Alkalmazkodóképesség", label_en: "Adaptability", group: P1, type: A}
+  - {id: gh_c_182, label_hu: "Figyelem irányítása", label_en: "Attention management", group: P1, type: S}
+  - {id: gh_c_183, label_hu: "Az érzelmek lélektanának alapjai", label_en: "Basic psychology of emotions", group: P1, type: K}
+  - {id: gh_c_184, label_hu: "Késleltetett jutalom vállalása", label_en: "Delay of gratification", group: P1, type: A}
+  - {id: gh_c_185, label_hu: "Fegyelem", label_en: "Discipline", group: P1, type: A}
+  - {id: gh_c_186, label_hu: "Érzelmek kordában tartása", label_en: "Emotional control", group: P1, type: S}
+  - {id: gh_c_187, label_hu: "Érzelemszabályozás", label_en: "Emotional regulation", group: P1, type: S}
+  - {id: gh_c_188, label_hu: "Rugalmasság", label_en: "Flexibility", group: P1, type: A}
+  - {id: gh_c_189, label_hu: "Figyelem irányítása és fenntartása", label_en: "Focus & attention management", group: P1, type: S}
+  - {id: gh_c_190, label_hu: "Késztetések szabályozása", label_en: "Impulse regulation", group: P1, type: S}
+  - {id: gh_c_191, label_hu: "Motiváció fenntartása", label_en: "Motivation management", group: P1, type: S}
+  - {id: gh_c_192, label_hu: "Kezdeményezőkészség", label_en: "Proactivity", group: P1, type: A}
+  - {id: gh_c_193, label_hu: "Önuralom", label_en: "Self-control", group: P1, type: S}
+  - {id: gh_c_194, label_hu: "Önszabályozási módszerek és szokások ismerete", label_en: "Self-regulation strategies & routines", group: P1, type: K}
+  - {id: gh_c_195, label_hu: "Stressztűrés", label_en: "Stress tolerance", group: P1, type: S}
+  - {id: gh_c_196, label_hu: "Kritikai gondolkodás", label_en: "Critical thinking", group: P2, type: A}
+  - {id: gh_c_197, label_hu: "Kíváncsiság és élethosszig tartó tanulás", label_en: "Curiosity & lifelong learning", group: P2, type: A}
+  - {id: gh_c_198, label_hu: "Célkitűzés", label_en: "Goal setting", group: P2, type: S}
+  - {id: gh_c_199, label_hu: "Fejlődésközpontú szemlélet", label_en: "Growth mindset", group: P2, type: A}
+  - {id: gh_c_200, label_hu: "Gondolkodási torzítások ismerete", label_en: "Heuristics & biases", group: P2, type: K}
+  - {id: gh_c_201, label_hu: "Tanulási mozgékonyság", label_en: "Learning agility", group: P2, type: A}
+  - {id: gh_c_202, label_hu: "Tanuláselméletek ismerete", label_en: "Learning theory", group: P2, type: K}
+  - {id: gh_c_203, label_hu: "Logikai és érvelési keretek ismerete", label_en: "Logic & reasoning frameworks", group: P2, type: K}
+  - {id: gh_c_204, label_hu: "Emlékezőképesség", label_en: "Memory skills", group: P2, type: A}
+  - {id: gh_c_205, label_hu: "Önmegfigyelő gondolkodás (metakogníció)", label_en: "Metacognition", group: P2, type: A}
+  - {id: gh_c_206, label_hu: "Nyitottság a visszajelzésre", label_en: "Openness to feedback", group: P2, type: A}
+  - {id: gh_c_207, label_hu: "Problémák észlelése", label_en: "Problem sensitivity", group: P2, type: A}
+  - {id: gh_c_208, label_hu: "Tapasztalatok átgondolása", label_en: "Reflective thinking", group: P2, type: S}
+  - {id: gh_c_209, label_hu: "Önismeret", label_en: "Self-awareness", group: P2, type: S}
+  - {id: gh_c_210, label_hu: "Önfejlesztési tudatosság", label_en: "Self-development awareness", group: P2, type: S}
+  - {id: gh_c_211, label_hu: "Egészség és jóllét alapelvei", label_en: "Basic health & well-being principles", group: P3, type: K}
+  - {id: gh_c_212, label_hu: "A kiégés ismerete", label_en: "Burnout awareness", group: P3, type: K}
+  - {id: gh_c_213, label_hu: "Önbizalom és énhatékonyság", label_en: "Confidence & self-efficacy", group: P3, type: A}
+  - {id: gh_c_214, label_hu: "Érzelmi ellenállóképesség", label_en: "Emotional resilience", group: P3, type: A}
+  - {id: gh_c_215, label_hu: "Energiagazdálkodás", label_en: "Energy management", group: P3, type: S}
+  - {id: gh_c_216, label_hu: "Egészséges szokások", label_en: "Healthy routines", group: P3, type: S}
+  - {id: gh_c_217, label_hu: "Tudatos jelenlét", label_en: "Mindfulness", group: P3, type: S}
+  - {id: gh_c_218, label_hu: "Motiváltság és kezdeményezés", label_en: "Motivation & initiative", group: P3, type: A}
+  - {id: gh_c_219, label_hu: "Kitartás", label_en: "Persistence", group: P3, type: A}
+  - {id: gh_c_220, label_hu: "Személyes határok kijelölése", label_en: "Personal boundary-setting", group: P3, type: S}
+  - {id: gh_c_221, label_hu: "Ellenállóképesség (reziliencia)", label_en: "Resilience", group: P3, type: A}
+  - {id: gh_c_222, label_hu: "Alvás, táplálkozás és kognitív terhelés ismerete", label_en: "Sleep, nutrition, cognitive load theory", group: P3, type: K}
+  - {id: gh_c_223, label_hu: "Stressz utáni regenerálódás szokásai", label_en: "Stress recovery habits", group: P3, type: S}
+  - {id: gh_c_224, label_hu: "Stresszválaszok ismerete", label_en: "Stress responses", group: P3, type: K}
+  - {id: gh_c_225, label_hu: "A munka és magánélet egyensúlyának szokásai", label_en: "Work-life balance habits", group: P3, type: S}
+  - {id: gh_c_226, label_hu: "A munka és magánélet egyensúlyának módszerei", label_en: "Work–life balance strategies", group: P3, type: K}
+  - {id: gh_c_227, label_hu: "Felelősségvállalás", label_en: "Accountability", group: P4, type: A}
+  - {id: gh_c_228, label_hu: "Elszámoltathatósági keretek ismerete", label_en: "Accountability frameworks", group: P4, type: K}
+  - {id: gh_c_229, label_hu: "Titoktartás", label_en: "Confidentiality", group: P4, type: A}
+  - {id: gh_c_230, label_hu: "Megbízhatóság", label_en: "Dependability", group: P4, type: A}
+  - {id: gh_c_231, label_hu: "Etikai alapelvek ismerete", label_en: "Ethical principles", group: P4, type: K}
+  - {id: gh_c_232, label_hu: "Etikai felelősség", label_en: "Ethical responsibility", group: P4, type: A}
+  - {id: gh_c_233, label_hu: "Feddhetetlenség", label_en: "Integrity", group: P4, type: A}
+  - {id: gh_c_234, label_hu: "Szakmai illem ismerete", label_en: "Professional etiquette", group: P4, type: K}
+  - {id: gh_c_235, label_hu: "Szakmai felelősség", label_en: "Professional responsibility", group: P4, type: A}
+  - {id: gh_c_236, label_hu: "Megbízhatóság és kiszámíthatóság", label_en: "Reliability & dependability", group: P4, type: A}
+  - {id: gh_c_237, label_hu: "Időgazdálkodás", label_en: "Time management", group: P4, type: S}
+  - {id: gh_c_238, label_hu: "Értő figyelem", label_en: "Active listening", group: S1, type: S}
+  - {id: gh_c_239, label_hu: "Címzetthez igazított közlés", label_en: "Audience awareness", group: S1, type: S}
+  - {id: gh_c_240, label_hu: "Közlési stratégiák ismerete", label_en: "Communication strategies", group: S1, type: K}
+  - {id: gh_c_241, label_hu: "Konfliktuskezelő közlés alapjai", label_en: "Conflict communication basics", group: S1, type: K}
+  - {id: gh_c_242, label_hu: "Beszélgetés vezetése", label_en: "Conversation management", group: S1, type: S}
+  - {id: gh_c_243, label_hu: "Kultúrák közötti közlés", label_en: "Cross-cultural communication", group: S1, type: S}
+  - {id: gh_c_244, label_hu: "Nem szóbeli közlés", label_en: "Nonverbal communication", group: S1, type: S}
+  - {id: gh_c_245, label_hu: "Meggyőzés", label_en: "Persuasion (non-leadership)", group: S1, type: S}
+  - {id: gh_c_246, label_hu: "Szakmai nyilvános beszéd", label_en: "Public speaking (technical)", group: S1, type: S}
+  - {id: gh_c_247, label_hu: "Célzott kérdezés", label_en: "Questioning skills", group: S1, type: S}
+  - {id: gh_c_248, label_hu: "Kapcsolatteremtés", label_en: "Rapport building", group: S1, type: S}
+  - {id: gh_c_249, label_hu: "Érthető beszéd", label_en: "Speaking clearly", group: S1, type: S}
+  - {id: gh_c_250, label_hu: "Közös alkotás", label_en: "Co-creation", group: S2, type: S}
+  - {id: gh_c_251, label_hu: "Konfliktus csillapítása", label_en: "Conflict de-escalation", group: S2, type: S}
+  - {id: gh_c_252, label_hu: "Konfliktusok megoldása", label_en: "Conflict resolution", group: S2, type: S}
+  - {id: gh_c_253, label_hu: "Együttműködési készség", label_en: "Cooperation", group: S2, type: A}
+  - {id: gh_c_254, label_hu: "Összehangolás", label_en: "Coordination", group: S2, type: S}
+  - {id: gh_c_255, label_hu: "Csoportdinamika ismerete", label_en: "Group dynamics", group: S2, type: K}
+  - {id: gh_c_256, label_hu: "Társas alkalmazkodóképesség", label_en: "Interpersonal adaptability", group: S2, type: A}
+  - {id: gh_c_257, label_hu: "Szakmai tárgyalás", label_en: "Negotiation (technical)", group: S2, type: S}
+  - {id: gh_c_258, label_hu: "Kapcsolati háló építése", label_en: "Networking", group: S2, type: S}
+  - {id: gh_c_259, label_hu: "Közös döntéshozatal", label_en: "Shared decision-making", group: S2, type: S}
+  - {id: gh_c_260, label_hu: "Közös problémamegoldás", label_en: "Shared problem-solving", group: S2, type: S}
+  - {id: gh_c_261, label_hu: "Csapatszerepek és felelősségek ismerete", label_en: "Team roles & responsibilities", group: S2, type: K}
+  - {id: gh_c_262, label_hu: "Csapatmunka", label_en: "Teamwork", group: S2, type: S}
+  - {id: gh_c_263, label_hu: "Bizalomépítés", label_en: "Trust-building", group: S2, type: S}
+  - {id: gh_c_264, label_hu: "Ügyfélkapcsolat-kezelés", label_en: "Client relationship management", group: S3, type: S}
+  - {id: gh_c_265, label_hu: "Tanácsadó jellegű beszélgetés", label_en: "Consultative interactions", group: S3, type: S}
+  - {id: gh_c_266, label_hu: "Ügyfélút ismerete", label_en: "Customer journey", group: S3, type: K}
+  - {id: gh_c_267, label_hu: "Ügyfélút feltérképezése", label_en: "Customer journey mapping", group: S3, type: S}
+  - {id: gh_c_268, label_hu: "Ügyfélszolgálat", label_en: "Customer service", group: S3, type: S}
+  - {id: gh_c_269, label_hu: "Empátia", label_en: "Empathy", group: S3, type: A}
+  - {id: gh_c_270, label_hu: "Szükségletfelmérés", label_en: "Needs assessment", group: S3, type: S}
+  - {id: gh_c_271, label_hu: "Problémák rendezése", label_en: "Problem resolution", group: S3, type: S}
+  - {id: gh_c_272, label_hu: "Minőségtudat a szolgáltatásban", label_en: "Quality focus in service", group: S3, type: A}
+  - {id: gh_c_273, label_hu: "Szolgálatkészség", label_en: "Service orientation", group: S3, type: A}
+  - {id: gh_c_274, label_hu: "Szolgáltatásminőségi követelmények", label_en: "Service quality standards", group: S3, type: K}
+  - {id: gh_c_275, label_hu: "Felhasználói empátia", label_en: "User empathy", group: S3, type: A}

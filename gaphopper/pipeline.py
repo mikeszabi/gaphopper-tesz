@@ -60,7 +60,7 @@ class Context:
 
     def p1_system(self) -> str:
         """P0 + KÉSZ-ség-törzs (statikus, gyorsítótárazott) | TESZ-törzs (futásonként)."""
-        kesz = "\n".join(f"{k[5:]}|{x['en']}|{x['group']}{x['type']}" for k, x in kesz_torzs().items())
+        kesz = "\n".join(f"{k[5:]}|{x['label_hu']}|{x['group']}{x['type']}" for k, x in kesz_torzs().items())
         torzs = self.tesz_torzs()
         mags = "\n".join(f"{c}|{r['label_hu']}|{r['tesz_type']}" for c, r in torzs.items()) or "(még üres)"
         return (self.system + "\n\nKÉSZ-SÉG-TÖRZS (a kesz_ids-be a sorszám kerül; sorszám|név|csoport+típus, "
@@ -198,7 +198,7 @@ def p2_view(p1: P1Output) -> dict:
         d = {"nivalo_id": m.nivalo_id, "kor_id": m.kor_id, "label_hu": m.label_hu, "outcome_hu": m.outcome_hu,
              "tesz_type": m.tesz_type, "runner_up": m.tesz_type_runner_up, "primary_szer": szer(m.primary_szer, True),
              "relevance": m.relevance,
-             "kesz": [f"{k[5:]} {kesz_torzs().get(k, {}).get('en', '')}" for k in m.kesz_ids],
+             "kesz": [f"{k[5:]} {kesz_torzs().get(k, {}).get('label_hu', '')}" for k in m.kesz_ids],
              "kontextus_hu": m.kontextus_hu, "nivalo_ref": m.nivalo_ref}
         if m.melyites_jeloltek:
             d["melyites_jeloltek"] = [x.model_dump() for x in m.melyites_jeloltek]

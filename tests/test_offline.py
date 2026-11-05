@@ -904,8 +904,10 @@ def test_kesz_ids_normalized_and_checked():
     from gaphopper.config import kesz_torzs
     from gaphopper.schemas import TeszNivalo
 
-    assert len(kesz_torzs()) == 275 and kesz_torzs()["gh_c_246"]["en"] == "Public speaking (technical)"
-    assert all(x.get("hu") for x in kesz_torzs().values()) and kesz_torzs()["gh_c_19"]["hu"] == "Kiváltó ok feltárása"
+    assert len(kesz_torzs()) == 275 and kesz_torzs()["gh_c_246"]["label_en"] == "Public speaking (technical)"
+    assert kesz_torzs()["gh_c_246"]["label_hu"] == "Szakmai nyilvános beszéd"
+    assert all(x["label_hu"] and x["label_hu"] != x["label_en"] or x["label_hu"] in ("Empátia",)
+               for x in kesz_torzs().values()) and kesz_torzs()["gh_c_19"]["label_hu"] == "Gyökérok feltárása"
     d = p1_fixture()["nivalok"][0] | {"kesz_ids": [3, "270", "gh_c_42", 3]}
     assert TeszNivalo.model_validate(d).kesz_ids == ["gh_c_3", "gh_c_270", "gh_c_42"]
     with pytest.raises(Exception, match="nincs a KÉSZ-ség-törzsben"):
@@ -923,7 +925,7 @@ def test_p1_system_has_torzs_and_two_cache_blocks(tmp_path):
     ctx.extra_torzs = [_torzs_rec()]
     sys_ = ctx.p1_system()
     static, dynamic = sys_.split(CACHE_SPLIT)
-    assert "246|Public speaking (technical)|S1S" in static and static.startswith(prompt("p0_system")[:40])
+    assert "246|Szakmai nyilvános beszéd|S1S" in static     # a P1 a magyar nevet látja and static.startswith(prompt("p0_system")[:40])
     assert dynamic.endswith("T01|Tanóra vagy foglalkozás megtartása|SUPPORT_SERVE")
     blocks = system_blocks(sys_)
     assert len(blocks) == 2 and all(b["cache_control"] == {"type": "ephemeral"} for b in blocks)
