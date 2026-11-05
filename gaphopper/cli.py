@@ -415,12 +415,13 @@ def cmd_kesz_bovit(a):
     ctx = _ctx(with_graph=not a.from_dryrun)
     try:
         rows = candidates_from_dryrun(a.from_dryrun) if a.from_dryrun else None
-        out = run_kesz_bovit(ctx, rows, chunk=a.chunk, apply=not (a.dry_run or a.from_dryrun))
+        out = run_kesz_bovit(ctx, rows, chunk=a.chunk, apply=not (a.dry_run or a.from_dryrun), queue=a.queue)
     finally:
         ctx.close()
     print(f"{out['jeloltek']} hiányjelölt; ALIAS: {len(out['alias'])}, UJ (szakértőhöz): {len(out['uj'])}, "
           f"vár (kevés munkakör): {len(out['var'])}, ELVET: {len(out['elvet'])}, hiba: {out['hiba']}"
-          + ("  [PRÓBA: semmi nem íródott]" if a.dry_run or a.from_dryrun else ""))
+          + ("  [PRÓBA: a gráf és a yaml nem változott" + ("; UJ a szakértői sorban]" if a.queue else "]")
+             if a.dry_run or a.from_dryrun else ""))
     for c in out["alias"]:
         print(f"  ALIAS {', '.join(c['nevek'])} -> {c['kesz'][5:]} {c['kesz_nev']}")
     for c in out["uj"] + out["var"]:
@@ -560,7 +561,8 @@ def main(argv=None):
     s.add_argument("--dry-run", action="store_true"); s.set_defaults(fn=cmd_kesz_irany)
     s = sub.add_parser("kesz-bovit", help="KÉSZ-ség-törzs bővítése a hiányjelöltekből (ALIAS / UJ / ELVET)")
     s.add_argument("--chunk", type=int, default=40); s.add_argument("--dry-run", action="store_true")
-    s.add_argument("--from-dryrun", nargs="+", help="próbafutás-kimenetek (runs/dryrun/*.json); semmi nem íródik")
+    s.add_argument("--from-dryrun", nargs="+", help="próbafutás-kimenetek (runs/dryrun/*.json); a gráf nem változik")
+    s.add_argument("--queue", action="store_true", help="--from-dryrun mellett: az UJ-javaslatok a szakértői sorba")
     s.set_defaults(fn=cmd_kesz_bovit)
     s = sub.add_parser("split", help="jóváhagyott bontási javaslat (split_review) végrehajtása")
     s.add_argument("--review", type=int, action="append", help="a szakértői sor azonosítója (alapból mind)")

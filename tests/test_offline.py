@@ -1439,3 +1439,22 @@ def test_kesz_bovit_partial_cover_is_uj(tmp_path, monkeypatch):
         assert "gh_c_292" not in config.kesz_torzs()          # jóváhagyás nélkül nem kerül a törzsbe
     finally:
         config.kesz_cache_clear()
+
+
+def test_kesz_bovit_queue_from_dryrun_no_graph(tmp_path, monkeypatch):
+    from gaphopper import config
+    from gaphopper.kesz import run_kesz_bovit
+    from gaphopper.pipeline import Context
+
+    _tmp_torzs(tmp_path, monkeypatch)
+    try:
+        rows = [{"id": "gh_kh_x", "label_hu": "Differenciált oktatás", "label_en": "", "csoport": "L1", "irany": [],
+                 "nivalok": [], "munkakorok": ["a", "b"]}]
+        ans = json.dumps({"csoportok": [{"ids": ["gh_kh_x"], "dontes": "UJ", "label_hu": "Differenciált támogatás",
+                                         "label_en": "Differentiated support", "csoport": "L1", "irany": ["KOZ_TARSAS"]}]})
+        ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False,
+                      llm_override={"P3": FakeLLM(lambda a, b: ans)})
+        out = run_kesz_bovit(ctx, rows, apply=False, queue=True)     # ctx.graph None: nem is írhat
+        assert len(out["uj"]) == 1 and [r["kind"] for r in ctx.store.queue()] == ["kesz_review"]
+    finally:
+        config.kesz_cache_clear()

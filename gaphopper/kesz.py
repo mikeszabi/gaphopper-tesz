@@ -172,10 +172,13 @@ def candidates_from_dryrun(paths) -> list[dict]:
     return list(by.values())
 
 
-def run_kesz_bovit(ctx, rows: list[dict] | None = None, chunk: int = 40, apply: bool = True, log=print) -> dict:
+def run_kesz_bovit(ctx, rows: list[dict] | None = None, chunk: int = 40, apply: bool = True, queue: bool = False,
+                   log=print) -> dict:
     """Hiányjelöltek csoportosítása és döntés (P3-modell, a törzs a gyorsítótárazott rendszerpromptban).
     ALIAS: azonnal a törzselem aliasa lesz (yaml + gráf, IGENYEL élek). UJ: szakértői sorba (kesz_review), ha
-    legalább rules.kesz_bovit_min_munkakor munkakör igényli, különben vár. ELVET: a jelölt állapota ELVETVE."""
+    legalább rules.kesz_bovit_min_munkakor munkakör igényli, különben vár. ELVET: a jelölt állapota ELVETVE.
+    queue (apply nélkül, pl. próbafutás-kimenetekből): csak az UJ-javaslatok kerülnek a szakértői sorba, a gráf és a
+    yaml nem változik."""
     from .config import kesz_block, kesz_hierarchia, prompt, render, save_kesz_torzs, kesz_torzs, vocab
     from .llm import CACHE_SPLIT, LLMError, call_json
     from .schemas import P8Output
@@ -239,8 +242,9 @@ def run_kesz_bovit(ctx, rows: list[dict] | None = None, chunk: int = 40, apply: 
                     out["var"].append(prop)   # kevés bizonyíték: a jelölt marad, a következő futás újra nézi
                     continue
                 out["uj"].append(prop)
-                if apply:
+                if apply or queue:
                     ctx.store.enqueue(None, "kesz_review", prop)
+                if apply:
                     ctx.graph.kesz_hiany_status(c.ids, "JAVASOLT", c.indok_hu)
             else:
                 out["elvet"].append({"ids": c.ids, "nevek": names, "indok": c.indok_hu})
@@ -268,6 +272,7 @@ def approve_kesz(ctx, row: dict, payload: dict) -> dict:
                        "forras": "kesz-bovit", "aliases": aliases})
     save_kesz_torzs(h)
     ctx.graph.upsert_keszseg([kid])
+    # próbafutásból sorba tett javaslatnál a jelöltek nincsenek a gráfban: IGENYEL él a munkakör valódi futásakor lesz
     n = ctx.graph.kesz_hiany_resolve(payload["ids"], kid, "BEEMELT")
     ctx.graph.update_kesz_profil()
     ctx.store.decide(row["id"], "JOVAHAGYVA", {"kesz_id": kid})
