@@ -508,3 +508,20 @@ mintát adtak. Próbafutásban, üres törzzsel ugyanez a munkakör jó neveket 
    legjobb illesztés is távoli”; a törzsszintű korlátok maradnak. Próba (séf, állatorvos-asszisztens,
    gyógypedagógus): 1 hiányjelölt („Egyéni differenciálás”, gyógypedagógus), a `kesz-bovit` ALIAS-nak ítélte
    (161 „Fejlődést segítő támogatás”). A P1 a hiány jelzésére a szabály enyhítése után is ritkán vállalkozik.
+
+## 13. Két új KÖZ-eg: Tudományos és Nyelvi (2026-11-05, felhasználói döntés)
+
+A régi `KOZ_DIGITALIS` („JEL-közeg”) túl sokat fedett: a KÉSZ-ségek közül 106 irányult ide, kb. a felük elméletre,
+modellre, módszerre vagy szövegre. Két új KÖZ-eg a TESZ-SZÍN-ben és a KÉSZ-ség-iránynál is:
+
+| kód | gyök | mi a közvetítő tér | példa |
+|---|---|---|---|
+| `KOZ_TUDOMANYOS` | TUD-ományos közeg | elmélet, modell, módszer, kísérlet, bizonyíték, tudományos érvelés | hipotézis tesztelése |
+| `KOZ_NYELVI` | NYELV-i közeg | szöveg, beszéd, nyelvi forma, fordítás | szakszöveg fordítása |
+| `KOZ_DIGITALIS` (szűkült) | DIGIT-ális közeg | szoftver, adat, hálózat, digitális rendszer | adatbázis-lekérdezés |
+
+A `KOZ_TARSAS` marad a másik ember (ügyféllel beszélgetés). A szöveg nyelve (magyar, angol) nem SZÍN; a NYELVI
+akkor közeg, ha a TESZ maga a nyelvi forma. A HELY-zet tengely nem változott. Csoport-alapirány: H1 → Tudományos,
+H9 → Nyelvi; a `kesz-irany --irany ... ` és `--csoport ... --alapbol` újravizsgálta az érintett elemeket (a régi
+nyitott irány-kérdések ELAVULT állapotba kerültek). A TOP10 gráfja ezután újraépült (`db-reset --graph-only`,
+`run --force`), lásd a jelentést.

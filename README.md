@@ -9,7 +9,7 @@ Ez a teljes beállítási referencia. A [futtatási segédlet](docs/Gaphopper%20
 
 ```
 gaphopper-tesz/
-├─ config/vocab.yaml       zárt szótárak (TESZ-típus, KÖZ-eg, HELY-zet, SZER-ELEM) + szabálykuszöbök
+├─ config/vocab.yaml       zárt szótárak (TESZ-típus, KÖZ-eg – 7 + egy-ÉN, köztük Tudományos és Nyelvi –, HELY-zet, SZER-ELEM) + küszöbök
 ├─ config/kesz_torzs.yaml  KÉSZ-ség-törzs: 291 elem (gh_c_<n>; GH_competency_list + v3), kategória → csoport → elem,
 │                          irányultság (KÖZ-eg); Keszseg-csomópontként. A program is írja (kesz-irany, kesz-bovit)
 ├─ prompts/                E0 kinyerés, P0 rendszerprompt, P1 felbontás, P2 bírálat, P3 egyesítés, P4a/P4b
@@ -283,7 +283,8 @@ python -m gaphopper run --dry-run --job <id>   # kalibráció
 python -m gaphopper run --workers 4
 python -m gaphopper generalize       # P6 törzskarbantartás: túl szűk nevek általánosítása, gyűjtő-nevek bontási javaslata
 python -m gaphopper split            # a jóváhagyott bontási javaslatok végrehajtása (új TESZ-nivaló, munkakörök átkötése)
-python -m gaphopper kesz-irany       # KÉSZ-ségek irányultsága elemenként (a csoport-alapértékből; --all: mind)
+python -m gaphopper kesz-irany       # KÉSZ-ségek irányultsága elemenként (a csoport-alapértékből; --all: mind;
+                                     # --irany KOZ_DIGITALIS,...: csak ezek; --csoport H1 --alapbol: a csoport új iránya)
 python -m gaphopper kesz-bovit       # KÉSZ-ség-törzs bővítése a hiányjelöltekből; --from-dryrun runs/dryrun/*.json: próba
 python -m gaphopper review --approve <qid>   # kesz_review / kesz_irany_review / split_review / munkakör
 python -m gaphopper certify
