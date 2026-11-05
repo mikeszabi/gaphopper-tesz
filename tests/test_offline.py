@@ -1421,6 +1421,8 @@ def test_kesz_bovit_partial_cover_is_uj(tmp_path, monkeypatch):
 
     _tmp_torzs(tmp_path, monkeypatch)
     try:
+        assert "ízérzékelés" in prompt("p8_kesz_bovit")             # érzékszervi képesség törzsszintű (2026-11-05)
+        assert config.kesz_torzs()["gh_c_293"]["csoport"] == "H10" and "hu:Ízlés" in config.kesz_torzs()["gh_c_293"]["aliases"]
         assert "csak teljes jelentésfedésnél" in prompt("p8_kesz_bovit") and "Ha kétséges, ALIAS" not in prompt("p8_kesz_bovit")
         assert "kesz_hiany" in prompt("p1_felbontas").split("KIMENET")[1]      # példa a kimeneti mintában ...
         assert "Egyéni differenciálás" not in prompt("p1_felbontas")           # ... helyőrzővel (szivárgás ellen)

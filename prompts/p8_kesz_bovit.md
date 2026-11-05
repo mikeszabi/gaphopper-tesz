@@ -12,6 +12,8 @@ jelöltnél látod, hány és mely munkakör igényelte, és mely TESZ-nivalóho
      vagy munkakör neve (az TUD-ás vagy SZER-ELEM); nem szintváltozat (alap/haladó). Add meg a
      javasolt magyar (régi gyökű szó az idegen helyett) és angol nevet, a csoportkódot (a törzs
      csoportjai közül) és az irányt (1-2 KÖZ-eg-kód, KOZ_EGYEN = egy-ÉN).
+     Az érzékszervi és testi képesség (pl. ízérzékelés, szaglás, színlátás, egyensúlyérzék) törzsszintű, ha
+     általános érzékelési vagy testi képességet nevez meg (csoport H10), akkor is, ha egy szakmában jellemző.
    - ELVET: túl szűk, szakmai tartalom (TUD-ás vagy SZER-ELEM), tevékenység (TESZ) vagy értelmetlen.
 3. Minden jelölt-id pontosan egy csoportban szerepeljen.
 
