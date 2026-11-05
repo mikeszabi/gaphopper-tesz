@@ -904,7 +904,7 @@ def test_kesz_ids_normalized_and_checked():
     from gaphopper.config import kesz_torzs
     from gaphopper.schemas import TeszNivalo
 
-    assert len(kesz_torzs()) == 275 and kesz_torzs()["gh_c_246"]["label_en"] == "Public speaking (technical)"
+    assert len(kesz_torzs()) == 291 and kesz_torzs()["gh_c_246"]["label_en"] == "Public speaking (technical)"
     assert kesz_torzs()["gh_c_246"]["label_hu"] == "Szakmai nyilvános beszéd"
     assert all(x["label_hu"] and x["label_hu"] != x["label_en"] or x["label_hu"] in ("Empátia",)
                for x in kesz_torzs().values()) and kesz_torzs()["gh_c_19"]["label_hu"] == "Gyökérok feltárása"
@@ -917,6 +917,23 @@ def test_kesz_ids_normalized_and_checked():
     assert len(TeszNivalo.model_validate(d | {"kesz_ids": [1, 2, 3, 4, 5]}).kesz_ids) == 5
 
 
+def test_kesz_hierarchy_v3():
+    from gaphopper.config import KESZ_TIPUS, kesz_hierarchia, kesz_torzs
+
+    h, t = kesz_hierarchia(), kesz_torzs()
+    kat = {k["kod"] for k in h["kategoriak"]}
+    cs = {c["kod"]: c["kategoria"] for c in h["csoportok"]}
+    assert kat == {"SZEM", "TARS", "VEZ", "KOG", "TECH"} and len(cs) == 19 and set(cs.values()) <= kat
+    assert all(x["csoport"] in cs and x["tipus"] in KESZ_TIPUS for x in t.values())
+    att = {k for k, x in t.items() if x["tipus"] == "HOZZAALLAS"}
+    assert len(att) == 26 and "gh_c_181" in att and t["gh_c_181"]["betu"] == "A"
+    assert t["gh_c_286"]["label_hu"] == "Hibaelhárítás" and t["gh_c_286"]["csoport"] == "H10"
+    assert "en:Troubleshooting (advanced)" in t["gh_c_286"]["aliases"] and "en:Problem solving" in t["gh_c_5"]["aliases"]
+    assert t["gh_c_290"]["tipus"] == "KEPESSEG" and t["gh_c_290"]["csoport"] == "P2"
+    assert all(f"gh_c_{n}" in t for n in [*range(21, 42), 44, 45, 51, 55])   # a v3-ból hiányzók maradnak
+    assert t["gh_c_1"]["tipus"] == "TUDAS" and t["gh_c_1"]["leiras_hu"]
+
+
 def test_p1_system_has_torzs_and_two_cache_blocks(tmp_path):
     from gaphopper.llm import CACHE_SPLIT, plain_system, system_blocks
     from gaphopper.pipeline import Context
@@ -925,7 +942,9 @@ def test_p1_system_has_torzs_and_two_cache_blocks(tmp_path):
     ctx.extra_torzs = [_torzs_rec()]
     sys_ = ctx.p1_system()
     static, dynamic = sys_.split(CACHE_SPLIT)
-    assert "246|Szakmai nyilvános beszéd|S1S" in static     # a P1 a magyar nevet látja and static.startswith(prompt("p0_system")[:40])
+    assert "246|Szakmai nyilvános beszéd|K" in static     # a P1 a magyar nevet látja, csoportfejléc alatt
+    s1 = static.index("# S1 Kommunikációs készségek")
+    assert s1 < static.index("246|Szakmai") and "leiras" not in static and "Technikák és megközelítések" not in static
     assert dynamic.endswith("T01|Tanóra vagy foglalkozás megtartása|SUPPORT_SERVE")
     blocks = system_blocks(sys_)
     assert len(blocks) == 2 and all(b["cache_control"] == {"type": "ephemeral"} for b in blocks)

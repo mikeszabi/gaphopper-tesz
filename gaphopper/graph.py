@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import re
 
-from .config import Settings, kesz_torzs, vocab
+from .config import Settings, kesz_hierarchia, kesz_torzs, vocab
 from .normalize import alias_tag, norm_key
 
 LABELS = {"MUNKA_KOR": "MunkaKor", "TESZ_SZIN": "TeszSzin", "TESZ_NIVALO": "TeszNivalo", "SZER_ELEM": "SzerElem",
@@ -63,6 +63,8 @@ class Graph:
     def setup(self, embed_dim: int | None = None) -> None:
         for lbl in NODE_LABELS:
             self.run(f"CREATE CONSTRAINT {lbl.lower()}_id IF NOT EXISTS FOR (n:{lbl}) REQUIRE n.id IS UNIQUE")
+        for lbl in ("KeszsegCsoport", "KeszsegKategoria"):
+            self.run(f"CREATE CONSTRAINT {lbl.lower()}_kod IF NOT EXISTS FOR (n:{lbl}) REQUIRE n.kod IS UNIQUE")
         for lbl, idx in FULLTEXT.items():
             self.run(f"CREATE FULLTEXT INDEX {idx} IF NOT EXISTS FOR (n:{lbl}) "
                      f"ON EACH [n.label_hu, n.label_en, n.alias_text]")
@@ -91,15 +93,28 @@ class Graph:
                  pairs=[[a["id"], b["id"]] for a, b in zip(kisz, kisz[1:])])
         # KÉSZ-ség-törzs: rögzített Keszseg-csomópontok (gh_c_<n>), a TESZ-nivalók IGENYEL éllel kötnek hozzájuk.
         # a magyar név a címke, az angol (az eredeti törzsnév) alias marad: illesztésnél mindkettő elfogadott
-        rows = [{"id": k, "en": x["label_en"], "hu": x["label_hu"], "group": x["group"], "type": x["type"],
-                 "aliases": [f"hu:{x['label_hu']}", f"en:{x['label_en']}"],
-                 "keys": [norm_key(x["label_hu"], "hu"), norm_key(x["label_en"], "en")]}
+        h = kesz_hierarchia()
+        self.run("UNWIND $rows AS r MERGE (n:KeszsegKategoria {kod: r.kod}) SET n.label_hu = r.label_hu, "
+                 "n.label_en = r.label_en", rows=[{k: x.get(k, "") for k in ("kod", "label_hu", "label_en")}
+                                                  for x in h["kategoriak"]])
+        self.run("UNWIND $rows AS r MERGE (n:KeszsegCsoport {kod: r.kod}) SET n.label_hu = r.label_hu, "
+                 "n.label_en = r.label_en WITH n, r MATCH (k:KeszsegKategoria {kod: r.kategoria}) "
+                 "OPTIONAL MATCH (n)-[old:KATEGORIAJA]->() DELETE old MERGE (n)-[:KATEGORIAJA]->(k)",
+                 rows=[{k: x.get(k, "") for k in ("kod", "label_hu", "label_en", "kategoria")} for x in h["csoportok"]])
+        rows = [{"id": k, "en": x["label_en"], "hu": x["label_hu"], "csoport": x["csoport"], "tipus": x["tipus"],
+                 "leiras": x.get("leiras_hu", ""), "forras": x.get("forras", "GH_competency_list"),
+                 "aliases": [f"hu:{x['label_hu']}", f"en:{x['label_en']}"] + list(x.get("aliases") or []),
+                 "keys": [norm_key(x["label_hu"], "hu"), norm_key(x["label_en"], "en")]
+                 + [norm_key(a[3:], a[:2]) for a in x.get("aliases") or []]}
                 for k, x in kesz_torzs().items()]
         self.run("UNWIND $rows AS r MERGE (k:Keszseg {id: r.id}) SET k.label_en = r.en, k.label_hu = r.hu, "
                  "k.aliases = [x IN coalesce(k.aliases, []) WHERE NOT x IN r.aliases] + r.aliases, "
                  "k.alias_keys = [x IN coalesce(k.alias_keys, []) WHERE NOT x IN r.keys] + r.keys, "
-                 "k.alias_text = r.hu + ' ' + r.en, "
-                 "k.csoport = r.group, k.fajta = r.type, k.forras = 'GH_competency_list', k.status = 'TORZS'", rows=rows)
+                 "k.alias_text = r.hu + ' ' + r.en, k.leiras_hu = r.leiras, "
+                 "k.csoport = r.csoport, k.tipus = r.tipus, k.forras = r.forras, k.status = 'TORZS' "
+                 "REMOVE k.fajta "
+                 "WITH k, r OPTIONAL MATCH (k)-[old:CSOPORTJA]->() DELETE old "
+                 "WITH k, r MATCH (c:KeszsegCsoport {kod: r.csoport}) MERGE (k)-[:CSOPORTJA]->(c)", rows=rows)
         # A régi (v1) Szin-csomópontok eltávolítása: a SZÍN a KÖZ-eg és a HELY-zet kombinációja.
         self.run("MATCH (s:Szin) DETACH DELETE s")
 

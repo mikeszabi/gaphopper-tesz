@@ -1,0 +1,2683 @@
+{
+  "Title": "GapHopper Competency Hierarchy (Theory v3)",
+  "Type": "root",
+  "children": [
+    {
+      "gh_code": "gh_dcaa9b5c0182",
+      "Title": "Personal competencies",
+      "Type": "competency_category",
+      "children": [
+        {
+          "gh_code": "gh_aaf9950a7a82",
+          "Title": "Self-management & self-regulation",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_323c713c19f9",
+              "Title": "Attention management",
+              "Description": "Applying strategies to direct and maintain focus on priorities.",
+              "group_code": "P1",
+              "Type": "Skill",
+              "Title_HU": "Figyelemirányítás",
+              "Description_HU": "A fókusz tudatos irányítása és fenntartása a fontos feladatokon."
+            },
+            {
+              "gh_code": "gh_1bbd5a0d2fc8",
+              "Title": "Emotional control",
+              "Description": "Actively managing emotional reactions in challenging situations.",
+              "group_code": "P1",
+              "Type": "Skill",
+              "Title_HU": "Érzelemszabályozás",
+              "Description_HU": "Érzelmi reakciók tudatos kezelése megterhelő helyzetekben."
+            },
+            {
+              "gh_code": "gh_709cd52d156e",
+              "Title": "Emotional regulation",
+              "Description": "Applying strategies to modulate emotional responses over time.",
+              "group_code": "P1",
+              "Type": "Skill",
+              "Title_HU": "Érzelmi önszabályozás",
+              "Description_HU": "Stratégiák alkalmazása az érzelmi reakciók kiegyensúlyozására és kontrolljára."
+            },
+            {
+              "gh_code": "gh_86dea7a86b1d",
+              "Title": "Focus & attention management",
+              "Description": "Directing and sustaining concentration on relevant tasks.",
+              "group_code": "P1",
+              "Type": "Skill",
+              "Title_HU": "Fókusz- és figyelemmenedzsment",
+              "Description_HU": "A figyelem tartós összpontosítása a lényeges feladatokra."
+            },
+            {
+              "gh_code": "gh_c75b73fd2f45",
+              "Title": "Impulse regulation",
+              "Description": "Controlling urges to act without forethought.",
+              "group_code": "P1",
+              "Type": "Skill",
+              "Title_HU": "Impulzuskontroll",
+              "Description_HU": "A hirtelen késztetések tudatos fékezése és kontrollálása."
+            },
+            {
+              "gh_code": "gh_3e27c5a38c57",
+              "Title": "Motivation management",
+              "Description": "Regulating one’s own motivation to sustain effort over time.",
+              "group_code": "P1",
+              "Type": "Skill",
+              "Title_HU": "Motivációmenedzsment",
+              "Description_HU": "A saját motiváció fenntartása és tudatos irányítása hosszabb távon."
+            },
+            {
+              "gh_code": "gh_172348fa3f81",
+              "Title": "Self-control",
+              "Description": "Managing impulses, emotions and behaviours consciously.",
+              "group_code": "P1",
+              "Type": "Skill",
+              "Title_HU": "Önkontroll",
+              "Description_HU": "A viselkedés, érzelmek és késztetések tudatos szabályozása."
+            },
+            {
+              "gh_code": "gh_8f5dd80a528f",
+              "Title": "Stress tolerance",
+              "Description": "Functioning effectively under pressure and emotional strain.",
+              "group_code": "P1",
+              "Type": "Skill",
+              "Title_HU": "Stressztűrés",
+              "Description_HU": "Hatékony működés fenntartása nagy nyomás alatt is."
+            },
+            {
+              "gh_code": "gh_93ca84bf5ab5",
+              "Title": "Basic psychology of emotions",
+              "Description": "Understanding emotional processes and their impact on behaviour.",
+              "group_code": "P1",
+              "Type": "Knowledge",
+              "Title_HU": "Alapvető érzelempszichológia",
+              "Description_HU": "Az érzelmi folyamatok és viselkedésre gyakorolt hatásuk ismerete."
+            },
+            {
+              "gh_code": "gh_18084b1bc9d6",
+              "Title": "Self-regulation strategies & routines",
+              "Description": "Concepts and methods for structuring self-regulation habits.",
+              "group_code": "P1",
+              "Type": "Knowledge",
+              "Title_HU": "Önszabályozási stratégiák és rutinok",
+              "Description_HU": "Az önszabályozási szokások kialakítását támogató módszerek és szemléletek."
+            },
+            {
+              "gh_code": "gh_0d33bdd08bce",
+              "Title": "Adaptability",
+              "Description": "Readiness to adjust behaviour and plans in changing situations.",
+              "group_code": "P1",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Alkalmazkodókészség",
+              "Description_HU": "Rugalmasság és nyitottság a viselkedés és tervek módosítására változó helyzetekben."
+            },
+            {
+              "gh_code": "gh_47859d7b6b45",
+              "Title": "Delay of gratification",
+              "Description": "Capacity to postpone immediate rewards for longer-term goals.",
+              "group_code": "P1",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Késleltetett jutalmazás képessége",
+              "Description_HU": "Az azonnali jutalom elhalasztásának képessége hosszabb távú célok érdekében."
+            },
+            {
+              "gh_code": "gh_5bfc0ea6075f",
+              "Title": "Discipline",
+              "Description": "Self-imposed order and consistency in following plans and rules.",
+              "group_code": "P1",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Fegyelmezettség",
+              "Description_HU": "Következetesség és önfegyelem a tervek és szabályok betartásában."
+            },
+            {
+              "gh_code": "gh_4444ed60c017",
+              "Title": "Flexibility",
+              "Description": "Willingness to adjust plans and behaviours in response to change.",
+              "group_code": "P1",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Rugalmasság",
+              "Description_HU": "Nyitottság a munkamódszerek és viselkedések módosítására változások esetén."
+            },
+            {
+              "gh_code": "gh_5505bd5aa7ec",
+              "Title": "Proactivity",
+              "Description": "Tendency to take initiative without external prompting.",
+              "group_code": "P1",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Proaktivitás",
+              "Description_HU": "Kezdeményezőkészség és előrelátó cselekvés külső ösztönzés nélkül."
+            }
+          ],
+          "Title_HU": "Önmenedzsment és önszabályozás"
+        },
+        {
+          "gh_code": "gh_15baf7ea01f1",
+          "Title": "Cognitive–personal competencies",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_76773733e637",
+              "Title": "Goal setting",
+              "Description": "Defining specific, measurable and time-bound personal or work objectives.",
+              "group_code": "P2",
+              "Type": "Skill",
+              "Title_HU": "Célkitűzés",
+              "Description_HU": "Konkrét, mérhető és határidőhöz kötött célok meghatározása."
+            },
+            {
+              "gh_code": "gh_790d86b9279d",
+              "Title": "Reflective thinking",
+              "Description": "Stepping back to analyse one’s experiences and assumptions.",
+              "group_code": "P2",
+              "Type": "Skill",
+              "Title_HU": "Reflektív gondolkodás",
+              "Description_HU": "A saját tapasztalatok és feltételezések tudatos átgondolása."
+            },
+            {
+              "gh_code": "gh_7b5927d453b9",
+              "Title": "Self-awareness",
+              "Description": "Recognizing one’s own emotions, traits, strengths and limits.",
+              "group_code": "P2",
+              "Type": "Skill",
+              "Title_HU": "Önismeret",
+              "Description_HU": "A saját érzelmek, erősségek és fejlesztendő területek felismerése."
+            },
+            {
+              "gh_code": "gh_b02599b86ebd",
+              "Title": "Self-development awareness",
+              "Description": "Recognizing one’s growth needs and opportunities.",
+              "group_code": "P2",
+              "Type": "Skill",
+              "Title_HU": "Fejlődéstudatosság",
+              "Description_HU": "A fejlődési igények és lehetőségek tudatos felismerése."
+            },
+            {
+              "gh_code": "gh_8cdaceca4840",
+              "Title": "Heuristics & biases",
+              "Description": "Concepts describing mental shortcuts and systematic thinking errors.",
+              "group_code": "P2",
+              "Type": "Knowledge",
+              "Title_HU": "Heurisztikák és torzítások",
+              "Description_HU": "A gondolkodási rövidítések és tipikus kognitív torzítások ismerete."
+            },
+            {
+              "gh_code": "gh_e500dd434ee8",
+              "Title": "Learning theory",
+              "Description": "Concepts explaining how people acquire and retain knowledge and skills.",
+              "group_code": "P2",
+              "Type": "Knowledge",
+              "Title_HU": "Tanuláselmélet",
+              "Description_HU": "Azok a szemléletek és modellek, amelyek bemutatják, hogyan sajátítanak el és tartanak fenn tudást és készségeket az emberek."
+            },
+            {
+              "gh_code": "gh_70f899a561ae",
+              "Title": "Logic & reasoning frameworks",
+              "Description": "Structured approaches to logical analysis and argumentation.",
+              "group_code": "P2",
+              "Type": "Knowledge",
+              "Title_HU": "Logikai és érvelési keretrendszerek",
+              "Description_HU": "A logikai elemzést és érvelést támogató rendszerezett módszerek ismerete."
+            },
+            {
+              "gh_code": "gh_a5dbad68caae",
+              "Title": "Critical thinking",
+              "Description": "Capacity to evaluate information objectively and challenge assumptions.",
+              "group_code": "P2",
+              "Type": "Ability",
+              "Title_HU": "Kritikai gondolkodás",
+              "Description_HU": "Az információk objektív értékelésének és a feltételezések megkérdőjelezésének képessége."
+            },
+            {
+              "gh_code": "gh_63fed29cbf43",
+              "Title": "Learning agility",
+              "Description": "Capacity to quickly learn from experience and apply lessons to new situations.",
+              "group_code": "P2",
+              "Type": "Ability",
+              "Title_HU": "Tanulási agilitás",
+              "Description_HU": "Az új helyzetekben való gyors tanulás és a tapasztalatok azonnali alkalmazásának képessége."
+            },
+            {
+              "gh_code": "gh_2105400a3cc9",
+              "Title": "Memory skills",
+              "Description": "Capacity to encode, store and recall information effectively.",
+              "group_code": "P2",
+              "Type": "Ability",
+              "Title_HU": "Memóriakapacitás",
+              "Description_HU": "Információk hatékony rögzítésének, tárolásának és felidézésének képessége."
+            },
+            {
+              "gh_code": "gh_2aad3edf65f1",
+              "Title": "Metacognition",
+              "Description": "Awareness and regulation of one’s own thinking and learning processes.",
+              "group_code": "P2",
+              "Type": "Ability",
+              "Title_HU": "Metakogníció",
+              "Description_HU": "A gondolkodási és tanulási folyamatok tudatos figyelemmel kísérése és irányítása."
+            },
+            {
+              "gh_code": "gh_b3da404da52c",
+              "Title": "Problem sensitivity",
+              "Description": "Capacity to detect when something is wrong or likely to go wrong.",
+              "group_code": "P2",
+              "Type": "Ability",
+              "Title_HU": "Problémaérzékenység",
+              "Description_HU": "A problémák vagy potenciális hibák korai felismerésének képessége."
+            },
+            {
+              "gh_code": "gh_7c900116ff90",
+              "Title": "Curiosity & lifelong learning",
+              "Description": "Enduring drive to explore, ask questions and continuously learn.",
+              "group_code": "P2",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Kíváncsiság és élethosszig tartó tanulás",
+              "Description_HU": "Tartós motiváció az új ismeretek keresésére, kérdésfeltevésre és folyamatos fejlődésre."
+            },
+            {
+              "gh_code": "gh_d48e80eb99a8",
+              "Title": "Growth mindset",
+              "Description": "Belief that abilities can be developed through effort and learning.",
+              "group_code": "P2",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Fejlődési szemlélet",
+              "Description_HU": "Annak meggyőződése, hogy a képességek fejleszthetők kitartó munkával és tanulással."
+            },
+            {
+              "gh_code": "gh_2f2d18433230",
+              "Title": "Openness to feedback",
+              "Description": "Receptive attitude toward input and critique from others.",
+              "group_code": "P2",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Visszajelzésre való nyitottság",
+              "Description_HU": "Nyitott és konstruktív hozzáállás mások visszajelzéseihez és kritikáihoz."
+            }
+          ],
+          "Title_HU": "Kognitív-személyes kompetenciák"
+        },
+        {
+          "gh_code": "gh_adf6d423674b",
+          "Title": "Well-being & personal stability",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_0c0bd4965f34",
+              "Title": "Energy management",
+              "Description": "Planning and balancing activities to maintain sustainable energy levels.",
+              "group_code": "P3",
+              "Type": "Skill",
+              "Title_HU": "Energiagazdálkodás",
+              "Description_HU": "A napi tevékenységek tudatos szervezése a kiegyensúlyozott energiaszint fenntartása érdekében."
+            },
+            {
+              "gh_code": "gh_5061e36dbb48",
+              "Title": "Healthy routines",
+              "Description": "Establishing regular habits that support health and stability.",
+              "group_code": "P3",
+              "Type": "Skill",
+              "Title_HU": "Egészséges napi rutinok",
+              "Description_HU": "Az egészséget és mentális stabilitást támogató rendszeres szokások kialakítása."
+            },
+            {
+              "gh_code": "gh_a3710a2ddc08",
+              "Title": "Mindfulness",
+              "Description": "Practising present-moment attention and non-judgmental awareness.",
+              "group_code": "P3",
+              "Type": "Skill",
+              "Title_HU": "Tudatos jelenlét (mindfulness)",
+              "Description_HU": "A jelenre irányuló figyelem és ítélkezésmentes tudatosság gyakorlása."
+            },
+            {
+              "gh_code": "gh_b09a4cdba03a",
+              "Title": "Personal boundary-setting",
+              "Description": "Defining and communicating limits to protect well-being and focus.",
+              "group_code": "P3",
+              "Type": "Skill",
+              "Title_HU": "Személyes határszabás",
+              "Description_HU": "A jólét és fókusz megőrzése érdekében szükséges határok meghúzása és kommunikálása."
+            },
+            {
+              "gh_code": "gh_5b00504c4a47",
+              "Title": "Stress recovery habits",
+              "Description": "Practising routines that support recovery after stress.",
+              "group_code": "P3",
+              "Type": "Skill",
+              "Title_HU": "Stresszkezelési és regenerációs rutinok",
+              "Description_HU": "A stressz utáni regenerációt segítő tudatos szokások alkalmazása."
+            },
+            {
+              "gh_code": "gh_d9027177beed",
+              "Title": "Work-life balance habits",
+              "Description": "Embedding daily behaviours that support a healthy work–life balance.",
+              "group_code": "P3",
+              "Type": "Skill",
+              "Title_HU": "Munkamagánélet egyensúlyát támogató szokások",
+              "Description_HU": "A kiegyensúlyozott munkamagánéletet támogató mindennapi viselkedési minták."
+            },
+            {
+              "gh_code": "gh_048cef361137",
+              "Title": "Basic health & well-being principles",
+              "Description": "Foundational knowledge of lifestyle factors influencing health and performance.",
+              "group_code": "P3",
+              "Type": "Knowledge",
+              "Title_HU": "Alapvető egészség- és jólléti ismeretek",
+              "Description_HU": "Az egészséget és teljesítményt befolyásoló életmódbeli tényezők alapvető ismerete."
+            },
+            {
+              "gh_code": "gh_c41589c5b5f7",
+              "Title": "Burnout awareness",
+              "Description": "Recognition of burnout risks, symptoms and contributing factors.",
+              "group_code": "P3",
+              "Type": "Knowledge",
+              "Title_HU": "Kiégés-megelőzési tudatosság",
+              "Description_HU": "A kiégés kockázatainak, jeleinek és okainak felismerésére irányuló tudatosság."
+            },
+            {
+              "gh_code": "gh_cae6dc7bfc3c",
+              "Title": "Sleep, nutrition, cognitive load theory",
+              "Description": "Concepts linking rest, diet and mental load to performance.",
+              "group_code": "P3",
+              "Type": "Knowledge",
+              "Title_HU": "Alvás, táplálkozás és kognitív terhelés elmélete",
+              "Description_HU": "Az alvás, táplálkozás és mentális terhelés teljesítményre gyakorolt hatásának összefüggései."
+            },
+            {
+              "gh_code": "gh_20393f3101a6",
+              "Title": "Stress responses",
+              "Description": "Understanding physiological and psychological reactions to stress.",
+              "group_code": "P3",
+              "Type": "Knowledge",
+              "Title_HU": "Stresszreakciók",
+              "Description_HU": "A stresszhelyzetekben jelentkező fizikai és pszichés reakciók megértése."
+            },
+            {
+              "gh_code": "gh_bfd7eb075ca3",
+              "Title": "Work–life balance strategies",
+              "Description": "Concepts and approaches to balancing professional and personal demands.",
+              "group_code": "P3",
+              "Type": "Knowledge",
+              "Title_HU": "Munkamagánélet-egyensúly stratégiák",
+              "Description_HU": "A munkahelyi és személyes kötelezettségek összehangolását segítő stratégiák."
+            },
+            {
+              "gh_code": "gh_c4a7319dc044",
+              "Title": "Confidence & self-efficacy",
+              "Description": "Belief in one’s capability to perform tasks and handle challenges.",
+              "group_code": "P3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Magabiztosság és önhatékonyság",
+              "Description_HU": "A saját kompetencia és problémamegoldó képesség iránti bizalom."
+            },
+            {
+              "gh_code": "gh_2d4497f323bf",
+              "Title": "Emotional resilience",
+              "Description": "Enduring capacity to recover emotionally from setbacks.",
+              "group_code": "P3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Érzelmi ellenállóképesség",
+              "Description_HU": "Érzelmi megterhelések utáni gyors regeneráció képessége."
+            },
+            {
+              "gh_code": "gh_f5029e9707b6",
+              "Title": "Motivation & initiative",
+              "Description": "Drive to start actions proactively and pursue goals.",
+              "group_code": "P3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Motiváció és kezdeményezőkészség",
+              "Description_HU": "Proaktív cselekvés és célorientált hozzáállás."
+            },
+            {
+              "gh_code": "gh_bfd769e7e9cf",
+              "Title": "Persistence",
+              "Description": "Continuing effort despite difficulties or slow progress.",
+              "group_code": "P3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Kitartás",
+              "Description_HU": "Az erőfeszítés fenntartása akadályok vagy lassú előrehaladás mellett is."
+            },
+            {
+              "gh_code": "gh_e4293c51251c",
+              "Title": "Resilience",
+              "Description": "Enduring capacity to recover and adapt after adversity.",
+              "group_code": "P3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Rugalmasság és lelki ellenállóképesség",
+              "Description_HU": "A nehézségek utáni alkalmazkodás és helyreállás képessége."
+            }
+          ],
+          "Title_HU": "Jólét és személyes stabilitás"
+        },
+        {
+          "gh_code": "gh_d983c0548899",
+          "Title": "Personal professionalism",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_15ffc2878cc4",
+              "Title": "Time management",
+              "Description": "Planning and allocating time to tasks to meet deadlines.",
+              "group_code": "P4",
+              "Type": "Skill",
+              "Title_HU": "Időmenedzsment",
+              "Description_HU": "A feladatokhoz szükséges idő tudatos megtervezése és beosztása a határidők teljesítése érdekében."
+            },
+            {
+              "gh_code": "gh_18946126089b",
+              "Title": "Accountability frameworks",
+              "Description": "Conceptual models for defining and measuring accountability in professional contexts.",
+              "group_code": "P4",
+              "Type": "Knowledge",
+              "Title_HU": "Felelősségi keretrendszerek",
+              "Description_HU": "A felelősségek meghatározását és értékelését támogató modellek és szemléletek."
+            },
+            {
+              "gh_code": "gh_cfc85131067d",
+              "Title": "Ethical principles",
+              "Description": "Conceptual understanding of moral standards and professional ethics.",
+              "group_code": "P4",
+              "Type": "Knowledge",
+              "Title_HU": "Etikai alapelvek",
+              "Description_HU": "A szakmai és erkölcsi normák alapelveinek ismerete."
+            },
+            {
+              "gh_code": "gh_19c6c9d0bc13",
+              "Title": "Professional etiquette",
+              "Description": "Norms and expectations for appropriate professional behaviour.",
+              "group_code": "P4",
+              "Type": "Knowledge",
+              "Title_HU": "Szakmai etikett",
+              "Description_HU": "A munkahelyi viselkedés és együttműködés elvárt normáinak ismerete."
+            },
+            {
+              "gh_code": "gh_c688cc8e6cb6",
+              "Title": "Accountability",
+              "Description": "Value-driven responsibility for one's actions and outcomes.",
+              "group_code": "P4",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Felelősségvállalás",
+              "Description_HU": "A saját döntésekért és eredményekért való felelősség felvállalása."
+            },
+            {
+              "gh_code": "gh_bd274055b4e5",
+              "Title": "Confidentiality",
+              "Description": "Commitment to protecting sensitive information from unauthorized disclosure.",
+              "group_code": "P4",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Bizalmasság",
+              "Description_HU": "Elkötelezettség az érzékeny információk illetéktelen hozzáféréstől való megóvására."
+            },
+            {
+              "gh_code": "gh_b42549a62ce6",
+              "Title": "Dependability",
+              "Description": "Consistently being reliable and trustworthy in fulfilling commitments.",
+              "group_code": "P4",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Megbízhatóság",
+              "Description_HU": "Következetesen megbízható és pontos munkavégzés, a vállalások teljesítése."
+            },
+            {
+              "gh_code": "gh_9be19c765ae5",
+              "Title": "Ethical responsibility",
+              "Description": "Commitment to acting in line with ethical standards.",
+              "group_code": "P4",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Etikai felelősség",
+              "Description_HU": "Elkötelezettség az etikai normáknak megfelelő döntéshozatal és viselkedés iránt."
+            },
+            {
+              "gh_code": "gh_bd55b1856d82",
+              "Title": "Integrity",
+              "Description": "Consistent adherence to moral and professional principles.",
+              "group_code": "P4",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Integritás",
+              "Description_HU": "Következetes kiállás a szakmai és erkölcsi elvek mellett."
+            },
+            {
+              "gh_code": "gh_bd427a1e226e",
+              "Title": "Professional responsibility",
+              "Description": "Commitment to fulfilling role-related duties reliably and ethically.",
+              "group_code": "P4",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Szakmai felelősség",
+              "Description_HU": "Az adott szerepkörhöz kapcsolódó feladatok etikus és megbízható ellátása."
+            },
+            {
+              "gh_code": "gh_62c99ac2a9d1",
+              "Title": "Reliability & dependability",
+              "Description": "Stable pattern of fulfilling obligations accurately and on time.",
+              "group_code": "P4",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Megbízhatóság és állhatatosság",
+              "Description_HU": "Következetes, pontos és határidőket tartó munkavégzés."
+            }
+          ],
+          "Title_HU": "Személyes professzionalizmus"
+        }
+      ],
+      "Title_HU": "Személyes kompetenciák"
+    },
+    {
+      "gh_code": "gh_2dede86c3884",
+      "Title": "Interpersonal competencies",
+      "Type": "competency_category",
+      "children": [
+        {
+          "gh_code": "gh_19f2cce052c2",
+          "Title": "Communication skills",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_ab0ec38c6847",
+              "Title": "Active listening",
+              "Description": "Deliberate listening behaviour to understand speakers and respond appropriately.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Aktív figyelem",
+              "Description_HU": "A beszélő szándékának megértését segítő tudatos, figyelmes hallgatás."
+            },
+            {
+              "gh_code": "gh_a75408866cbc",
+              "Title": "Audience awareness",
+              "Description": "Adjusting communication to the needs and expectations of listeners.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Célközönség-érzékenység",
+              "Description_HU": "A kommunikáció igazítása a hallgatóság elvárásaihoz és igényeihez."
+            },
+            {
+              "gh_code": "gh_ad29285d7cea",
+              "Title": "Conversation management",
+              "Description": "Structuring and steering dialogues to productive outcomes.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Beszélgetésirányítás",
+              "Description_HU": "A párbeszédek tudatos vezetése, a konstruktív eredmények támogatása."
+            },
+            {
+              "gh_code": "gh_12a796c9f4ba",
+              "Title": "Cross-cultural communication",
+              "Description": "Communicating effectively across different cultural backgrounds.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Kultúrák közötti kommunikáció",
+              "Description_HU": "Hatékony kommunikáció eltérő kulturális hátterű személyekkel."
+            },
+            {
+              "gh_code": "gh_b55e714a9b6e",
+              "Title": "Nonverbal communication",
+              "Description": "Using and interpreting body language, facial expressions and tone.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Nonverbális kommunikáció",
+              "Description_HU": "A testbeszéd, arckifejezések és hangszín értelmezése és tudatos alkalmazása."
+            },
+            {
+              "gh_code": "gh_4d17ad87e0ec",
+              "Title": "Persuasion (non-leadership)",
+              "Description": "Influencing others’ attitudes or decisions through communication.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Meggyőzés (nem vezetői kontextusban)",
+              "Description_HU": "Mások döntéseinek vagy hozzáállásának befolyásolása kommunikációval."
+            },
+            {
+              "gh_code": "gh_5bfefb8cb271",
+              "Title": "Public speaking (technical)",
+              "Description": "Presenting complex or technical topics clearly to audiences.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Technikai jellegű prezentáció",
+              "Description_HU": "Összetett vagy technikai témák közérthető előadása."
+            },
+            {
+              "gh_code": "gh_955ccbc9cda2",
+              "Title": "Questioning skills",
+              "Description": "Using targeted questions to gather information and deepen understanding.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Kérdezéstechnika",
+              "Description_HU": "Célzott kérdések alkalmazása információgyűjtésre és a megértés mélyítésére."
+            },
+            {
+              "gh_code": "gh_3eb92a4b5f29",
+              "Title": "Rapport building",
+              "Description": "Creating a sense of connection and trust in interactions.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Bizalmi kapcsolat kialakítása",
+              "Description_HU": "Olyan légkör kialakítása, amely támogatja a bizalmat és együttműködést."
+            },
+            {
+              "gh_code": "gh_ecda8ea6cf84",
+              "Title": "Speaking clearly",
+              "Description": "Articulating speech in an understandable and coherent way.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Tiszta és érthető beszéd",
+              "Description_HU": "Érthető, követhető és jól strukturált beszédmód alkalmazása."
+            },
+            {
+              "gh_code": "gh_9c2a1d4f7b33",
+              "Title": "Foreign language speaking",
+              "Description": "Communicating verbally in non-native languages with adequate fluency and pronunciation.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Idegen nyelvű beszéd",
+              "Description_HU": "Szóbeli kommunikáció idegen nyelven, megfelelő folyékonysággal és kiejtéssel."
+            },
+            {
+              "gh_code": "gh_5f7f4a8a1c2d",
+              "Title": "Foreign language writing",
+              "Description": "Producing written communication in non-native languages with clarity and correct usage.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Idegen nyelvű írás",
+              "Description_HU": "Írásbeli kommunikáció idegen nyelven, érthetően és helyes nyelvhasználattal."
+            },
+            {
+              "gh_code": "gh_7b3d9c5e4f1a",
+              "Title": "Foreign language comprehension",
+              "Description": "Understanding spoken or written information in non-native languages accurately.",
+              "group_code": "S1",
+              "Type": "Skill",
+              "Title_HU": "Idegen nyelvű megértés",
+              "Description_HU": "Beszélt vagy írott információk pontos megértése idegen nyelveken."
+            },
+            {
+              "gh_code": "gh_226c64df15fd",
+              "Title": "Communication strategies",
+              "Description": "Conceptual approaches for planning and structuring effective communication.",
+              "group_code": "S1",
+              "Type": "Knowledge",
+              "Title_HU": "Kommunikációs stratégiák",
+              "Description_HU": "A hatékony kommunikáció tervezését és felépítését támogató módszerek."
+            },
+            {
+              "gh_code": "gh_daf0b1da2e77",
+              "Title": "Conflict communication basics",
+              "Description": "Principles of communicating constructively in conflict situations.",
+              "group_code": "S1",
+              "Type": "Knowledge",
+              "Title_HU": "Konfliktuskezelési kommunikáció alapjai",
+              "Description_HU": "A konfliktushelyzetekben alkalmazandó konstruktív kommunikáció alapjai."
+            }
+          ],
+          "Title_HU": "Kommunikációs készségek"
+        },
+        {
+          "gh_code": "gh_01c8afd0837c",
+          "Title": "Collaboration skills",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_c0d415411381",
+              "Title": "Co-creation",
+              "Description": "Collaborating with others to jointly design solutions, products or services.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Közös értékteremtés",
+              "Description_HU": "Együttműködés másokkal közös megoldások, szolgáltatások vagy termékek kialakításában."
+            },
+            {
+              "gh_code": "gh_031cf976b55e",
+              "Title": "Conflict de-escalation",
+              "Description": "Active behaviours that reduce tension and move conflicts toward resolution.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Konfliktus-deeszkaláció",
+              "Description_HU": "A feszültség csökkentését és a konfliktus konstruktív irányba terelését támogató viselkedések."
+            },
+            {
+              "gh_code": "gh_144895271d09",
+              "Title": "Conflict resolution",
+              "Description": "Facilitating mutually acceptable solutions to disagreements.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Konfliktusmegoldás",
+              "Description_HU": "Olyan megoldások elősegítése, amelyek mindkét fél számára elfogadhatók."
+            },
+            {
+              "gh_code": "gh_f2158a54ba38",
+              "Title": "Coordination",
+              "Description": "Aligning tasks, people and resources so work flows effectively.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Koordináció",
+              "Description_HU": "Feladatok, erőforrások és szereplők összehangolása a hatékony munkavégzés érdekében."
+            },
+            {
+              "gh_code": "gh_750a286ba60c",
+              "Title": "Negotiation (technical)",
+              "Description": "Reaching agreements in technical or specialist contexts.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Technikai tárgyalási készség",
+              "Description_HU": "Megállapodások elérése technikai vagy szakmai jellegű helyzetekben."
+            },
+            {
+              "gh_code": "gh_dda7d7d0c263",
+              "Title": "Networking",
+              "Description": "Building and maintaining professional relationships and contacts.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Kapcsolatépítés",
+              "Description_HU": "Szakmai kapcsolatok kiépítése és ápolása hosszú távon."
+            },
+            {
+              "gh_code": "gh_335111094709",
+              "Title": "Shared decision-making",
+              "Description": "Jointly making choices with others based on shared information.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Közös döntéshozatal",
+              "Description_HU": "Döntések közös meghozatala átlátható információmegosztás mellett."
+            },
+            {
+              "gh_code": "gh_8a546108bbaf",
+              "Title": "Shared problem-solving",
+              "Description": "Collaboratively analysing and solving issues with others.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Közös problémamegoldás",
+              "Description_HU": "Problémák közös elemzése és megoldása csapatmunkában."
+            },
+            {
+              "gh_code": "gh_0e9ca013026f",
+              "Title": "Teamwork",
+              "Description": "Working effectively and cooperatively with others.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Csapatmunka",
+              "Description_HU": "Hatékony és együttműködő munkavégzés csapatban."
+            },
+            {
+              "gh_code": "gh_97c2f30af368",
+              "Title": "Trust-building",
+              "Description": "Creating and maintaining trust in relationships over time.",
+              "group_code": "S2",
+              "Type": "Skill",
+              "Title_HU": "Bizalomépítés",
+              "Description_HU": "Bizalmat erősítő kapcsolatok kialakítása és fenntartása."
+            },
+            {
+              "gh_code": "gh_c168b0b5b72a",
+              "Title": "Group dynamics",
+              "Description": "Concepts describing how groups form, interact and function.",
+              "group_code": "S2",
+              "Type": "Knowledge",
+              "Title_HU": "Csoportdinamika",
+              "Description_HU": "A csoportok működését, kölcsönhatásait és fejlődését leíró alapelvek."
+            },
+            {
+              "gh_code": "gh_e12341cd07ae",
+              "Title": "Team roles & responsibilities",
+              "Description": "Understanding distinct roles and expectations within teams.",
+              "group_code": "S2",
+              "Type": "Knowledge",
+              "Title_HU": "Csapatszerepek és felelősségek",
+              "Description_HU": "A csapaton belüli szerepek és elvárások tisztázása és megértése."
+            },
+            {
+              "gh_code": "gh_f34196a261e7",
+              "Title": "Cooperation",
+              "Description": "Willingness to work jointly with others towards shared goals.",
+              "group_code": "S2",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Együttműködési készség",
+              "Description_HU": "Készség együtt dolgozni másokkal a közös célok elérése érdekében."
+            },
+            {
+              "gh_code": "gh_f46951cbd065",
+              "Title": "Interpersonal adaptability",
+              "Description": "Flexibility in behaviour when interacting with different people and contexts.",
+              "group_code": "S2",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Interperszonális alkalmazkodóképesség",
+              "Description_HU": "Rugalmasság a kommunikációban és viselkedésben különböző helyzetekben és személyekkel."
+            }
+          ],
+          "Title_HU": "Együttműködési készségek"
+        },
+        {
+          "gh_code": "gh_69020901cde5",
+          "Title": "Service & customer skills",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_3053adbb83c3",
+              "Title": "Client relationship management",
+              "Description": "Maintaining and developing productive, trust-based client relationships.",
+              "group_code": "S3",
+              "Type": "Skill",
+              "Title_HU": "Ügyfélkapcsolat-kezelés",
+              "Description_HU": "Eredményes, bizalmon alapuló ügyfélkapcsolatok kialakítása és fenntartása."
+            },
+            {
+              "gh_code": "gh_fbcb13e2fb73",
+              "Title": "Consultative interactions",
+              "Description": "Engaging stakeholders through questioning and advising to identify needs and solutions.",
+              "group_code": "S3",
+              "Type": "Skill",
+              "Title_HU": "Tanácsadói szemléletű kommunikáció",
+              "Description_HU": "Kérdezésen és közös gondolkodáson alapuló, ügyféligényeket feltáró kommunikáció."
+            },
+            {
+              "gh_code": "gh_cfa8f55b0f8a",
+              "Title": "Customer journey mapping",
+              "Description": "Visually mapping customer experiences to identify needs and pain points.",
+              "group_code": "S3",
+              "Type": "Skill",
+              "Title_HU": "Ügyfélút feltérképezése",
+              "Description_HU": "Az ügyfélélmény vizuális feltérképezése a kulcspontok és igények azonosítására."
+            },
+            {
+              "gh_code": "gh_bbd0112015bb",
+              "Title": "Customer service",
+              "Description": "Interacting with customers to resolve issues and provide helpful support.",
+              "group_code": "S3",
+              "Type": "Skill",
+              "Title_HU": "Ügyfélkiszolgálás",
+              "Description_HU": "Ügyfelekkel való együttműködés problémák kezelése és támogatás biztosítása érdekében."
+            },
+            {
+              "gh_code": "gh_4a9bfdc9785c",
+              "Title": "Needs assessment",
+              "Description": "Systematically identifying stakeholder or customer needs.",
+              "group_code": "S3",
+              "Type": "Skill",
+              "Title_HU": "Igényfelmérés",
+              "Description_HU": "Az ügyféligények strukturált feltárása és azonosítása."
+            },
+            {
+              "gh_code": "gh_ea4605ecb9c1",
+              "Title": "Problem resolution",
+              "Description": "Addressing and solving issues raised by customers or stakeholders.",
+              "group_code": "S3",
+              "Type": "Skill",
+              "Title_HU": "Problémamegoldás (ügyfélkontextus)",
+              "Description_HU": "Ügyfelek vagy érintettek által felvetett problémák hatékony rendezése."
+            },
+            {
+              "gh_code": "gh_8211dbca6a5e",
+              "Title": "Customer journey",
+              "Description": "Conceptual understanding of end-to-end customer interactions with a service.",
+              "group_code": "S3",
+              "Type": "Knowledge",
+              "Title_HU": "Ügyfélút",
+              "Description_HU": "Az ügyfél és a szolgáltatás közötti teljes interakciós folyamat ismerete."
+            },
+            {
+              "gh_code": "gh_bc43ecf89ba8",
+              "Title": "Service quality standards",
+              "Description": "Defined criteria for evaluating service performance.",
+              "group_code": "S3",
+              "Type": "Knowledge",
+              "Title_HU": "Szolgáltatásminőségi standardok",
+              "Description_HU": "Szolgáltatás teljesítményének értékelésére szolgáló minőségi követelmények."
+            },
+            {
+              "gh_code": "gh_c0fe52abf243",
+              "Title": "Empathy",
+              "Description": "Tendency to understand and share others’ feelings and perspectives.",
+              "group_code": "S3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Empátia",
+              "Description_HU": "Készség mások érzéseinek és nézőpontjának megértésére és átérezésére."
+            },
+            {
+              "gh_code": "gh_e8751b773938",
+              "Title": "Quality focus in service",
+              "Description": "Consistent orientation toward delivering high service quality.",
+              "group_code": "S3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Szolgáltatásminőségi fókusz",
+              "Description_HU": "Elkötelezett hozzáállás a magas minőségű szolgáltatás biztosításához."
+            },
+            {
+              "gh_code": "gh_6adc3511c098",
+              "Title": "Service orientation",
+              "Description": "Enduring focus on helping and adding value to customers or stakeholders.",
+              "group_code": "S3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Szolgáltatásorientáltság",
+              "Description_HU": "Hosszú távú elkötelezettség az ügyfélérték-teremtés iránt."
+            },
+            {
+              "gh_code": "gh_2baec0f24529",
+              "Title": "User empathy",
+              "Description": "Orientation toward understanding users’ emotions, needs and constraints.",
+              "group_code": "S3",
+              "Type": "Attitude/Behaviour",
+              "Title_HU": "Felhasználói empátia",
+              "Description_HU": "A felhasználók érzéseinek, igényeinek és korlátainak megértésére irányuló szemlélet."
+            }
+          ],
+          "Title_HU": "Szolgáltatási és ügyfélkészségek"
+        }
+      ],
+      "Title_HU": "Interperszonális kompetenciák"
+    },
+    {
+      "gh_code": "gh_278760451ffb",
+      "Title": "Leadership competencies",
+      "Type": "competency_category",
+      "children": [
+        {
+          "gh_code": "gh_4ceae9170713",
+          "Title": "People leadership",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_3d4d93008480",
+              "Title": "Coaching",
+              "Description": "Guiding and supporting others to develop their performance and potential.",
+              "group_code": "L1",
+              "Type": "Skill",
+              "Title_HU": "Coaching készség",
+              "Description_HU": "Mások teljesítményének és fejlődési potenciáljának támogatása irányítással és visszajelzéssel."
+            },
+            {
+              "gh_code": "gh_85ebaa83b11d",
+              "Title": "Delegation",
+              "Description": "Assigning tasks and responsibilities to others while retaining accountability.",
+              "group_code": "L1",
+              "Type": "Skill",
+              "Title_HU": "Delegálás",
+              "Description_HU": "Feladatok és felelősségek átadása másoknak a végső felelősség megtartása mellett."
+            },
+            {
+              "gh_code": "gh_6fb5a3f87634",
+              "Title": "Feedback giving",
+              "Description": "Providing constructive, actionable input on others’ performance.",
+              "group_code": "L1",
+              "Type": "Skill",
+              "Title_HU": "Visszajelzésadás",
+              "Description_HU": "Építő jellegű, fejlesztést támogató visszajelzések adása."
+            },
+            {
+              "gh_code": "gh_ba274e896bbf",
+              "Title": "Leadership & social influence",
+              "Description": "Guiding others’ behaviour and gaining buy-in for directions or ideas.",
+              "group_code": "L1",
+              "Type": "Skill",
+              "Title_HU": "Vezetés és befolyásolás",
+              "Description_HU": "Mások irányítása és támogatásának elnyerése egy cél, irány vagy ötlet érdekében."
+            },
+            {
+              "gh_code": "gh_ea0f61eab7f0",
+              "Title": "Mentoring",
+              "Description": "Supporting ongoing development of less experienced individuals.",
+              "group_code": "L1",
+              "Type": "Skill",
+              "Title_HU": "Mentorálás",
+              "Description_HU": "Kevésbé tapasztalt kollégák fejlődésének folyamatos támogatása."
+            },
+            {
+              "gh_code": "gh_d3159dbd99c0",
+              "Title": "Performance feedback",
+              "Description": "Delivering observations on performance to support improvement.",
+              "group_code": "L1",
+              "Type": "Skill",
+              "Title_HU": "Teljesítmény-visszajelzés",
+              "Description_HU": "A teljesítményre irányuló, fejlődést segítő visszajelzések nyújtása."
+            },
+            {
+              "gh_code": "gh_8b47a68466ec",
+              "Title": "Talent recognition",
+              "Description": "Identifying potential and strengths in others.",
+              "group_code": "L1",
+              "Type": "Skill",
+              "Title_HU": "Tehetségfelismerés",
+              "Description_HU": "A munkatársak erősségeinek, potenciáljának felismerése és támogatása."
+            },
+            {
+              "gh_code": "gh_e050a0652ee5",
+              "Title": "Team motivation",
+              "Description": "Encouraging and energizing teams to reach goals.",
+              "group_code": "L1",
+              "Type": "Skill",
+              "Title_HU": "Csapatmotiváció",
+              "Description_HU": "A csapat ösztönzése és energizálása a kitűzött célok elérése érdekében."
+            },
+            {
+              "gh_code": "gh_e23618845a08",
+              "Title": "Leadership styles",
+              "Description": "Concepts describing different approaches to leading people.",
+              "group_code": "L1",
+              "Type": "Knowledge",
+              "Title_HU": "Vezetési stílusok",
+              "Description_HU": "A különböző vezetési megközelítések és stílusok ismerete."
+            },
+            {
+              "gh_code": "gh_866f67ef055d",
+              "Title": "Team development theory",
+              "Description": "Concepts describing stages and processes of team growth.",
+              "group_code": "L1",
+              "Type": "Knowledge",
+              "Title_HU": "Csapatfejlődési elméletek",
+              "Description_HU": "A csapatok fejlődési szakaszait és működési folyamatait leíró modellek ismerete."
+            }
+          ],
+          "Title_HU": "Emberi vezetés"
+        },
+        {
+          "gh_code": "gh_d33dbc559550",
+          "Title": "Strategic & organizational leadership",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_a4fc3832dee6",
+              "Title": "Change implementation & alignment",
+              "Description": "Executing change initiatives and aligning stakeholders with new directions.",
+              "group_code": "L2",
+              "Type": "Skill",
+              "Title_HU": "Változásmegvalósítás és összehangolás",
+              "Description_HU": "Változási kezdeményezések végrehajtása és az érintettek összehangolása az új iránnyal."
+            },
+            {
+              "gh_code": "gh_1dbaf185f955",
+              "Title": "Change leadership",
+              "Description": "Guiding people and organizations through change processes.",
+              "group_code": "L2",
+              "Type": "Skill",
+              "Title_HU": "Változásvezetés",
+              "Description_HU": "Emberek és szervezetek támogatása és irányítása a változási folyamatok során."
+            },
+            {
+              "gh_code": "gh_0095dea53c63",
+              "Title": "Strategic decision-making",
+              "Description": "Making choices that align with long-term goals and priorities.",
+              "group_code": "L2",
+              "Type": "Skill",
+              "Title_HU": "Stratégiai döntéshozatal",
+              "Description_HU": "A hosszú távú célokkal és prioritásokkal összhangban lévő döntések meghozatala."
+            },
+            {
+              "gh_code": "gh_11371c01398e",
+              "Title": "Vision creation",
+              "Description": "Formulating a compelling future direction or picture for a team or organization.",
+              "group_code": "L2",
+              "Type": "Skill",
+              "Title_HU": "Vízióalkotás",
+              "Description_HU": "A csapat vagy szervezet jövőképének kialakítása és kommunikálása."
+            },
+            {
+              "gh_code": "gh_441d6a8054f5",
+              "Title": "Workforce planning",
+              "Description": "Anticipating and organizing workforce needs for future goals.",
+              "group_code": "L2",
+              "Type": "Skill",
+              "Title_HU": "Munkaerő-tervezés",
+              "Description_HU": "A jövőbeli célokhoz igazodó munkaerőigény meghatározása és tervezése."
+            },
+            {
+              "gh_code": "gh_05d08fc7e168",
+              "Title": "Change management models",
+              "Description": "Frameworks and theories describing structured change processes.",
+              "group_code": "L2",
+              "Type": "Knowledge",
+              "Title_HU": "Változásmenedzsment modellek",
+              "Description_HU": "A változási folyamatok felépítését és kezelését leíró modellek ismerete."
+            },
+            {
+              "gh_code": "gh_bde8e6aec232",
+              "Title": "Organizational behavior",
+              "Description": "Concepts explaining how individuals and groups act in organizations.",
+              "group_code": "L2",
+              "Type": "Knowledge",
+              "Title_HU": "Szervezeti viselkedés",
+              "Description_HU": "Az emberek és csoportok szervezeti környezetben való viselkedését leíró elméletek."
+            },
+            {
+              "gh_code": "gh_b752907fd559",
+              "Title": "Strategy frameworks",
+              "Description": "Conceptual models used to design and evaluate strategies.",
+              "group_code": "L2",
+              "Type": "Knowledge",
+              "Title_HU": "Stratégiai keretrendszerek",
+              "Description_HU": "A stratégiaalkotást és értékelést támogató elméleti modellek."
+            },
+            {
+              "gh_code": "gh_187eb1158af2",
+              "Title": "Strategic thinking",
+              "Description": "Seeing the big picture and connecting actions to long-term outcomes.",
+              "group_code": "L2",
+              "Type": "Ability",
+              "Title_HU": "Stratégiai gondolkodás",
+              "Description_HU": "A nagy összefüggések felismerése és a cselekvések hosszú távú következményeinek értelmezése."
+            },
+            {
+              "gh_code": "gh_046e50980588",
+              "Title": "Systems thinking",
+              "Description": "Understanding how parts of a system interact and influence each other.",
+              "group_code": "L2",
+              "Type": "Ability",
+              "Title_HU": "Rendszerszintű gondolkodás",
+              "Description_HU": "A rendszerelemek közötti kapcsolatok és hatások átlátása és értelmezése."
+            }
+          ],
+          "Title_HU": "Stratégiai és szervezeti vezetés"
+        }
+      ],
+      "Title_HU": "Vezetői kompetenciák"
+    },
+    {
+      "gh_code": "gh_52cb66c8fee0",
+      "Title": "Cognitive competencies",
+      "Type": "competency_category",
+      "children": [
+        {
+          "gh_code": "gh_f51d29ade19b",
+          "Title": "Cognitive & analytical technical competencies",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_596cbec3d245",
+              "Title": "Conceptual modeling",
+              "Description": "Designing abstract representations of systems, processes or domains.",
+              "group_code": "H1",
+              "Type": "Skill",
+              "Title_HU": "Koncepcionális modellezés",
+              "Description_HU": "Rendszerek, folyamatok vagy tématerületek absztrakt modelljeinek kialakítása."
+            },
+            {
+              "gh_code": "gh_62c662e154dd",
+              "Title": "Decision-making analysis",
+              "Description": "Evaluating options and consequences to support well-founded decisions.",
+              "group_code": "H1",
+              "Type": "Skill",
+              "Title_HU": "Döntéselemzés",
+              "Description_HU": "Döntési alternatívák és következmények elemzése megalapozott döntéshozatal érdekében."
+            },
+            {
+              "gh_code": "gh_145a5899953f",
+              "Title": "Hypothesis testing",
+              "Description": "Using statistical tests to evaluate assumptions or claims.",
+              "group_code": "H1",
+              "Type": "Skill",
+              "Title_HU": "Hipotézisvizsgálat",
+              "Description_HU": "Statisztikai módszerek alkalmazása feltételezések és állítások ellenőrzésére."
+            },
+            {
+              "gh_code": "gh_c2b91b139ebb",
+              "Title": "Qualitative analysis",
+              "Description": "Interpreting non-numerical data such as interviews or texts.",
+              "group_code": "H1",
+              "Type": "Skill",
+              "Title_HU": "Kvalitatív elemzés",
+              "Description_HU": "Nem számszerű adatok — például interjúk vagy szövegek — értelmezése."
+            },
+            {
+              "gh_code": "gh_84bcb2ee0b05",
+              "Title": "Quality assurance",
+              "Description": "Applying methods to ensure products or processes meet defined standards.",
+              "group_code": "H1",
+              "Type": "Skill",
+              "Title_HU": "Minőségbiztosítás",
+              "Description_HU": "A minőségi követelmények teljesülését biztosító módszerek alkalmazása."
+            },
+            {
+              "gh_code": "gh_6766c2c702eb",
+              "Title": "Quantitative analysis",
+              "Description": "Working with numeric data to identify patterns and test hypotheses.",
+              "group_code": "H1",
+              "Type": "Skill",
+              "Title_HU": "Kvantitatív elemzés",
+              "Description_HU": "Számszerű adatok elemzése mintázatok és összefüggések azonosítása érdekében."
+            },
+            {
+              "gh_code": "gh_7746a91635d8",
+              "Title": "Root-cause analysis",
+              "Description": "Identifying underlying causes of problems beyond surface symptoms.",
+              "group_code": "H1",
+              "Type": "Skill",
+              "Title_HU": "Gyökérok elemzés",
+              "Description_HU": "Problémák mélyebb okainak azonosítása a tünetek mögött."
+            },
+            {
+              "gh_code": "gh_500211fcb8c0",
+              "Title": "Scenario analysis",
+              "Description": "Evaluating alternative future situations and their implications.",
+              "group_code": "H1",
+              "Type": "Skill",
+              "Title_HU": "Forgatókönyv-elemzés",
+              "Description_HU": "Lehetséges jövőbeli forgatókönyvek elemzése és hatásaik értékelése."
+            },
+            {
+              "gh_code": "gh_8f197bebbef7",
+              "Title": "Analytical methods",
+              "Description": "Techniques and approaches used for systematic data and problem analysis.",
+              "group_code": "H1",
+              "Type": "Knowledge",
+              "Title_HU": "Analitikai módszerek",
+              "Description_HU": "Technikák és megközelítések, amelyeket szisztematikus adat- és problémaelemzéshez használnak."
+            },
+            {
+              "gh_code": "gh_22ec8ed168cc",
+              "Title": "Basic statistics",
+              "Description": "Core concepts of descriptive and inferential statistics.",
+              "group_code": "H1",
+              "Type": "Knowledge",
+              "Title_HU": "Alapvető statisztika",
+              "Description_HU": "A leíró és következtetési statisztika alapfogalmai."
+            },
+            {
+              "gh_code": "gh_b26d6e147d46",
+              "Title": "Mathematics (applied)",
+              "Description": "Use of mathematical concepts to solve practical problems.",
+              "group_code": "H1",
+              "Type": "Knowledge",
+              "Title_HU": "Matematika (alkalmazott)",
+              "Description_HU": "Matematikai fogalmak használata gyakorlati problémák megoldására."
+            },
+            {
+              "gh_code": "gh_c5e0bcd20119",
+              "Title": "Research methodology",
+              "Description": "Concepts and designs used for systematic investigation.",
+              "group_code": "H1",
+              "Type": "Knowledge",
+              "Title_HU": "Kutatási módszertan",
+              "Description_HU": "Fogalmak és tervezetek, amelyeket szisztematikus vizsgálathoz használnak."
+            },
+            {
+              "gh_code": "gh_e8f0659a7b50",
+              "Title": "Analytical reasoning",
+              "Description": "Capacity to interpret information and draw logical conclusions.",
+              "group_code": "H1",
+              "Type": "Ability",
+              "Title_HU": "Analitikai érvelés",
+              "Description_HU": "Az információk értelmezésének és logikai következtetések levonásának képessége."
+            },
+            {
+              "gh_code": "gh_dc4d72058e05",
+              "Title": "Analytical thinking",
+              "Description": "General aptitude for breaking down complex issues into components.",
+              "group_code": "H1",
+              "Type": "Ability",
+              "Title_HU": "Analitikus gondolkodás",
+              "Description_HU": "Általános képesség a komplex kérdések összetevőkre bontására."
+            },
+            {
+              "gh_code": "gh_582331fdf0b9",
+              "Title": "Complex problem-solving",
+              "Description": "Capacity to address novel, ill-defined problems with multiple constraints.",
+              "group_code": "H1",
+              "Type": "Ability",
+              "Title_HU": "Komplex problémamegoldás",
+              "Description_HU": "Képesség új, rosszul meghatározott problémák kezelésére többféle korlátozással."
+            },
+            {
+              "gh_code": "gh_a7fe8bfd956a",
+              "Title": "Information ordering",
+              "Description": "Capacity to arrange information according to rules or patterns.",
+              "group_code": "H1",
+              "Type": "Ability",
+              "Title_HU": "Információ rendezése",
+              "Description_HU": "Képesség információk szabályok vagy minták szerinti elrendezésére."
+            },
+            {
+              "gh_code": "gh_15ab52c476d2",
+              "Title": "Logical reasoning",
+              "Description": "Capacity to derive valid conclusions from premises.",
+              "group_code": "H1",
+              "Type": "Ability",
+              "Title_HU": "Logikai érvelés",
+              "Description_HU": "Képesség érvényes következtetések levonására premisszákból."
+            },
+            {
+              "gh_code": "gh_3d73458d9327",
+              "Title": "Numerical fluency",
+              "Description": "Comfort and speed in working with numbers.",
+              "group_code": "H1",
+              "Type": "Ability",
+              "Title_HU": "Számolási folyékonyság",
+              "Description_HU": "Kényelem és gyorsaság a számokkal való munkában."
+            },
+            {
+              "gh_code": "gh_18947e6b9d44",
+              "Title": "Numerical reasoning",
+              "Description": "Capacity to draw conclusions from numerical information.",
+              "group_code": "H1",
+              "Type": "Ability",
+              "Title_HU": "Számolási érvelés",
+              "Description_HU": "Képesség következtetések levonására számszerű információkból."
+            },
+            {
+              "gh_code": "gh_60b0435dafd9",
+              "Title": "Pattern recognition",
+              "Description": "Capacity to detect regularities and structures in data or situations.",
+              "group_code": "H1",
+              "Type": "Ability",
+              "Title_HU": "Minta felismerés",
+              "Description_HU": "Képesség szabályosságok és struktúrák felismerésére adatokban vagy helyzetekben."
+            }
+          ],
+          "Title_HU": "Kognitív és analitikai technikai kompetenciák"
+        },
+        {
+          "gh_code": "gh_626a705e59f9",
+          "Title": "Linguistic & Communication competencies",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_87126cbe9cdf",
+              "Title": "Academic writing",
+              "Description": "Producing structured academic texts using language and formatting conventions.",
+              "group_code": "H9",
+              "Type": "Skill",
+              "Title_HU": "Akadémiai írás",
+              "Description_HU": "Strukturált akadémiai szövegek készítése nyelvi és formázási konvenciók alkalmazásával."
+            },
+            {
+              "gh_code": "gh_7e7eeafc7225",
+              "Title": "Discourse analysis",
+              "Description": "Analyzing written or spoken texts to understand structure and meaning.",
+              "group_code": "H9",
+              "Type": "Skill",
+              "Title_HU": "Diskurzus elemzés",
+              "Description_HU": "Írott vagy beszélt szövegek elemzése a szerkezet és jelentés megértése érdekében."
+            },
+            {
+              "gh_code": "gh_3bc0a5c697df",
+              "Title": "Editing & proofreading",
+              "Description": "Reviewing and correcting text for clarity, grammar and style.",
+              "group_code": "H9",
+              "Type": "Skill",
+              "Title_HU": "Szerkesztés és korrektúra",
+              "Description_HU": "Szöveg átnézése és javítása a világosság, nyelvtan és stílus érdekében."
+            },
+            {
+              "gh_code": "gh_89d9f7744dbf",
+              "Title": "Multilingual communication",
+              "Description": "Using multiple languages to convey information and interact.",
+              "group_code": "H9",
+              "Type": "Skill",
+              "Title_HU": "Többnyelvű kommunikáció",
+              "Description_HU": "Több nyelv használata információ közvetítésére és interakcióra."
+            },
+            {
+              "gh_code": "gh_a51a579d6226",
+              "Title": "Presentation building",
+              "Description": "Designing structured and visually coherent presentations.",
+              "group_code": "H9",
+              "Type": "Skill",
+              "Title_HU": "Prezentáció készítés",
+              "Description_HU": "Strukturált és vizuálisan koherens prezentációk tervezése."
+            },
+            {
+              "gh_code": "gh_8e6dad0c59a9",
+              "Title": "Technical writing",
+              "Description": "Producing clear documentation about technical topics.",
+              "group_code": "H9",
+              "Type": "Skill",
+              "Title_HU": "Technikai írás",
+              "Description_HU": "Világos dokumentáció készítése technikai témákról."
+            },
+            {
+              "gh_code": "gh_c46c6a1aa98c",
+              "Title": "Terminology management",
+              "Description": "Controlling and standardizing specialized terms in documentation.",
+              "group_code": "H9",
+              "Type": "Skill",
+              "Title_HU": "Terminológia menedzsment",
+              "Description_HU": "Speciális kifejezések ellenőrzése és szabványosítása a dokumentációban."
+            },
+            {
+              "gh_code": "gh_c7c93b4519fe",
+              "Title": "Translation & interpretation",
+              "Description": "Converting meaning between languages in spoken or written form.",
+              "group_code": "H9",
+              "Type": "Skill",
+              "Title_HU": "Fordítás és tolmácsolás",
+              "Description_HU": "Jelentés átvitele nyelvek között beszélt vagy írott formában."
+            },
+            {
+              "gh_code": "gh_2c73b2112a5c",
+              "Title": "Grammar",
+              "Description": "Rules and structures governing correct language use.",
+              "group_code": "H9",
+              "Type": "Knowledge",
+              "Title_HU": "Nyelvtan",
+              "Description_HU": "A helyes nyelvhasználatot szabályozó szabályok és struktúrák."
+            },
+            {
+              "gh_code": "gh_ca720ac98fbf",
+              "Title": "Rhetoric",
+              "Description": "Principles of persuasive and effective verbal or written expression.",
+              "group_code": "H9",
+              "Type": "Knowledge",
+              "Title_HU": "Retorika",
+              "Description_HU": "A meggyőző és hatékony szóbeli vagy írásbeli kifejezés elvei."
+            },
+            {
+              "gh_code": "gh_53550b1eebba",
+              "Title": "Linguistic reasoning",
+              "Description": "Capacity to work with language-based patterns and relationships.",
+              "group_code": "H9",
+              "Type": "Ability",
+              "Title_HU": "Nyelvi érvelés",
+              "Description_HU": "Képesség nyelvi alapú minták és kapcsolatok kezelésére."
+            },
+            {
+              "gh_code": "gh_40b48755ac42",
+              "Title": "Reading comprehension",
+              "Description": "Capacity to understand and interpret written materials.",
+              "group_code": "H9",
+              "Type": "Ability",
+              "Title_HU": "Olvasási szövegértés",
+              "Description_HU": "Képesség írott anyagok megértésére és értelmezésére."
+            },
+            {
+              "gh_code": "gh_1cd2be029f4b",
+              "Title": "Translation aptitude",
+              "Description": "Capacity to acquire and perform translation and interpretation effectively.",
+              "group_code": "H9",
+              "Type": "Ability",
+              "Title_HU": "Fordítási alkalmasság",
+              "Description_HU": "A fordítás és tolmácsolás hatékony elsajátításának és végrehajtásának képessége."
+            },
+            {
+              "gh_code": "gh_f395e806ee6a",
+              "Title": "Writing comprehension",
+              "Description": "Capacity to understand and interpret written text accurately.",
+              "group_code": "H9",
+              "Type": "Ability",
+              "Title_HU": "Írásbeli szövegértés",
+              "Description_HU": "A képesség, hogy pontosan megértsük és értelmezzük az írott szöveget."
+            }
+          ],
+          "Title_HU": "Nyelvi és kommunikációs kompetenciák"
+        }
+      ],
+      "Title_HU": "Kognitív kompetenciák"
+    },
+    {
+      "gh_code": "gh_21f496c3e793",
+      "Title": "Technical competencies",
+      "Type": "competency_category",
+      "children": [
+        {
+          "gh_code": "gh_d55915ab98e7",
+          "Title": "Data, AI & Digital intelligence",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_a7ea59a5b175",
+              "Title": "Workflow design",
+              "Description": "Designing structured work processes for efficiency.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Folyamattervezés",
+              "Description_HU": "A hatékony munkavégzést támogató folyamatok megtervezése."
+            },
+            {
+              "gh_code": "gh_fdbe51b8296a",
+              "Title": "Workflow monitoring",
+              "Description": "Tracking process performance to ensure consistency.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Folyamatmonitorozás",
+              "Description_HU": "A folyamatok működésének nyomon követése az egyenletesség biztosítása érdekében."
+            },
+            {
+              "gh_code": "gh_f42783faf70a",
+              "Title": "Basic numeracy",
+              "Description": "Understanding and using basic mathematical concepts.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Alapvető számolási készség",
+              "Description_HU": "Az alapvető matematikai fogalmak megértése és alkalmazása."
+            },
+            {
+              "gh_code": "gh_10155717727d",
+              "Title": "Data literacy",
+              "Description": "Understanding, interpreting and using data effectively.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Adatértési készség",
+              "Description_HU": "Adatok értelmezése és felhasználása a döntéshozatal támogatására."
+            },
+            {
+              "gh_code": "gh_48b3bf515fa0",
+              "Title": "Information literacy",
+              "Description": "Finding, evaluating and using information appropriately.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Információs műveltség",
+              "Description_HU": "Információk felkutatása, értékelése és megfelelő felhasználása."
+            },
+            {
+              "gh_code": "gh_a5c2db641975",
+              "Title": "Logical reasoning",
+              "Description": "Drawing conclusions from facts and logical relations.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Logikus gondolkodás",
+              "Description_HU": "Következtetések levonása tényekből és logikai összefüggésekből."
+            },
+            {
+              "gh_code": "gh_64c54cb5f508",
+              "Title": "Data visualization",
+              "Description": "Designing charts and visuals that represent data effectively.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Adatvizualizáció",
+              "Description_HU": "Grafikonok és vizuális elemek tervezése, amelyek hatékonyan ábrázolják az adatokat."
+            },
+            {
+              "gh_code": "gh_9e7423706bc8",
+              "Title": "Data-driven decision-making",
+              "Description": "Using data evidence systematically to guide decisions.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Adatalapú döntéshozatal",
+              "Description_HU": "Az adatok szisztematikus felhasználása a döntések irányítására."
+            },
+            {
+              "gh_code": "gh_19a2f0624d93",
+              "Title": "Database navigation",
+              "Description": "Finding and working with data within database tools or interfaces.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Adatbázis navigáció",
+              "Description_HU": "Adatok keresése és kezelése adatbázis eszközökben vagy felületeken."
+            },
+            {
+              "gh_code": "gh_bb24348e0b20",
+              "Title": "Presentation software use",
+              "Description": "Operating tools like PowerPoint or similar applications.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Prezentációs szoftver használata",
+              "Description_HU": "Eszközök, mint például a PowerPoint vagy hasonló alkalmazások kezelése."
+            },
+            {
+              "gh_code": "gh_ccfa5e3aa9bb",
+              "Title": "Spreadsheet skills",
+              "Description": "Using spreadsheet tools to manage and analyse data.",
+              "group_code": "H2",
+              "Type": "Skill",
+              "Title_HU": "Táblázatkezelő készségek",
+              "Description_HU": "Táblázatkezelő eszközök használata adatok kezelésére és elemzésére."
+            },
+            {
+              "gh_code": "gh_0d3b31835177",
+              "Title": "Trend analysis",
+              "Description": "Identifying and interpreting patterns over time.",
+              "group_code": "H2",
+              "Type": "Knowledge",
+              "Title_HU": "Trendanalízis",
+              "Description_HU": "A hosszabb távú mintázatok azonosítása és értelmezése."
+            },
+            {
+              "gh_code": "gh_83b0c23fad81",
+              "Title": "Troubleshooting (advanced)",
+              "Description": "Diagnosing complex failures with advanced techniques.",
+              "group_code": "H2",
+              "Type": "Knowledge",
+              "Title_HU": "Haladó hibaelhárítás",
+              "Description_HU": "Összetett hibák diagnosztizálása és célzott elhárítása."
+            },
+            {
+              "gh_code": "gh_d2b72d720041",
+              "Title": "Workflow mapping",
+              "Description": "Visualizing steps in a process to identify improvements.",
+              "group_code": "H2",
+              "Type": "Knowledge",
+              "Title_HU": "Folyamattérképezés",
+              "Description_HU": "A folyamatlépések vizuális feltérképezése a fejlesztési lehetőségek azonosításához."
+            },
+            {
+              "gh_code": "gh_2468530bf3fb",
+              "Title": "Databases",
+              "Description": "Concepts of how data is structured, stored and managed in databases.",
+              "group_code": "H2",
+              "Type": "Knowledge",
+              "Title_HU": "Adatbázisok",
+              "Description_HU": "Az adatok struktúrájának, tárolásának és kezelésének fogalmai adatbázisokban."
+            },
+            {
+              "gh_code": "gh_aaece7318705",
+              "Title": "Machine learning fundamentals",
+              "Description": "Key concepts and methods used in machine learning.",
+              "group_code": "H2",
+              "Type": "Knowledge",
+              "Title_HU": "Gépi tanulás alapfogalmai",
+              "Description_HU": "A gépi tanulásban használt kulcsfogalmak és módszerek."
+            },
+            {
+              "gh_code": "gh_8313a64266d0",
+              "Title": "Systems evaluation",
+              "Description": "Assessing systems or processes to determine effectiveness.",
+              "group_code": "H2",
+              "Type": "Ability",
+              "Title_HU": "Rendszerértékelés",
+              "Description_HU": "Rendszerek és folyamatok hatékonyságának értékelése."
+            },
+            {
+              "gh_code": "gh_6be4988a7a52",
+              "Title": "Digital literacy",
+              "Description": "Using digital tools safely and effectively.",
+              "group_code": "H2",
+              "Type": "Ability",
+              "Title_HU": "Digitális írástudás",
+              "Description_HU": "A digitális eszközök biztonságos és hatékony használata."
+            },
+            {
+              "gh_code": "gh_11408884fc0d",
+              "Title": "Digital fluency",
+              "Description": "Overall capacity to navigate and integrate digital tools into work.",
+              "group_code": "H2",
+              "Type": "Ability",
+              "Title_HU": "Digitális jártasság",
+              "Description_HU": "Az általános képesség, hogy eligazodjunk és integráljuk a digitális eszközöket a munkába."
+            },
+            {
+              "gh_code": "gh_834838733776",
+              "Title": "Statistical reasoning",
+              "Description": "Capacity to interpret and reason about statistical information.",
+              "group_code": "H2",
+              "Type": "Ability",
+              "Title_HU": "Statisztikai érvelés",
+              "Description_HU": "A statisztikai információk értelmezésének és megértésének képessége."
+            },
+            {
+              "gh_code": "gh_10b967b9f626",
+              "Title": "Technological literacy",
+              "Description": "General capacity to understand and adapt to new technologies.",
+              "group_code": "H2",
+              "Type": "Ability",
+              "Title_HU": "Technológiai műveltség",
+              "Description_HU": "Az új technológiák megértésének és alkalmazkodásának általános képessége."
+            },
+            {
+              "gh_code": "gh_274fa3daa214",
+              "Title": "Understanding digital systems",
+              "Description": "Capacity to grasp how digital components and services work together.",
+              "group_code": "H2",
+              "Type": "Ability",
+              "Title_HU": "Digitális rendszerek megértése",
+              "Description_HU": "A képesség, hogy megértsük, hogyan működnek együtt a digitális komponensek és szolgáltatások."
+            }
+          ],
+          "Title_HU": "Adat, MI és digitális intelligencia"
+        },
+        {
+          "gh_code": "gh_bf3c6cc3c626",
+          "Title": "Programming & IT engineering",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_d29615c1cc01",
+              "Title": "Code debugging",
+              "Description": "Identifying and resolving errors in software code.",
+              "group_code": "H3",
+              "Type": "Skill",
+              "Title_HU": "Kód hibakeresés",
+              "Description_HU": "Hibák azonosítása és megoldása a szoftverkódban."
+            },
+            {
+              "gh_code": "gh_4bce765df0bf",
+              "Title": "Coding practice",
+              "Description": "Applying programming skills regularly to build and improve software solutions.",
+              "group_code": "H3",
+              "Type": "Skill",
+              "Title_HU": "Kódolási gyakorlat",
+              "Description_HU": "Programozási készségek rendszeres alkalmazása szoftvermegoldások építésére és fejlesztésére."
+            },
+            {
+              "gh_code": "gh_3229fd559685",
+              "Title": "IT troubleshooting",
+              "Description": "Diagnosing and resolving technical IT issues.",
+              "group_code": "H3",
+              "Type": "Skill",
+              "Title_HU": "IT hibaelhárítás",
+              "Description_HU": "Technikai IT problémák diagnosztizálása és megoldása."
+            },
+            {
+              "gh_code": "gh_7855274d802d",
+              "Title": "Logical architecture design",
+              "Description": "Structuring system components and their relationships at a conceptual level.",
+              "group_code": "H3",
+              "Type": "Skill",
+              "Title_HU": "Logikai architektúra tervezés",
+              "Description_HU": "Rendszerkomponensek és kapcsolataik strukturálása koncepcionális szinten."
+            },
+            {
+              "gh_code": "gh_93ee6fb8dcdd",
+              "Title": "Version control",
+              "Description": "Using systems like Git to manage code and configuration changes.",
+              "group_code": "H3",
+              "Type": "Skill",
+              "Title_HU": "Verziókezelés",
+              "Description_HU": "Rendszerek, mint például a Git használata a kód és konfigurációs változások kezelésére."
+            },
+            {
+              "gh_code": "gh_266105b8202e",
+              "Title": "Containerization basics",
+              "Description": "Core concepts of container technologies and their use in deployment.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "Konténerizáció alapjai",
+              "Description_HU": "Konténer technológiák alapfogalmai és használatuk a telepítésben."
+            },
+            {
+              "gh_code": "gh_1c00052793f8",
+              "Title": "IT engineering principles",
+              "Description": "Core concepts guiding design and construction of IT systems.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "IT mérnöki elvek",
+              "Description_HU": "Alapfogalmak, amelyek az IT rendszerek tervezését és építését irányítják."
+            },
+            {
+              "gh_code": "gh_84db407cbdd5",
+              "Title": "IT infrastructure understanding",
+              "Description": "Knowledge of networks, servers and components underpinning IT environments.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "IT infrastruktúra megértése",
+              "Description_HU": "Hálózatok, szerverek és az IT környezeteket alátámasztó komponensek ismerete."
+            },
+            {
+              "gh_code": "gh_b008fc0db379",
+              "Title": "Network fundamentals",
+              "Description": "Basic principles of computer networking and protocols.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "Hálózati alapok",
+              "Description_HU": "Számítógépes hálózatok és protokollok alapelvei."
+            },
+            {
+              "gh_code": "gh_0f2cb8e14e4e",
+              "Title": "Operating systems literacy",
+              "Description": "Understanding of OS concepts and basic administration.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "Operációs rendszerek ismerete",
+              "Description_HU": "OS fogalmak és alapvető adminisztráció megértése."
+            },
+            {
+              "gh_code": "gh_ab4279d64cf0",
+              "Title": "Programming fundamentals",
+              "Description": "Basic concepts and constructs used in programming.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "Programozási alapok",
+              "Description_HU": "Programozásban használt alapfogalmak és szerkezetek."
+            },
+            {
+              "gh_code": "gh_f38f6d4d570f",
+              "Title": "Programming languages",
+              "Description": "Knowledge of specific coding languages and their syntax.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "Programozási nyelvek",
+              "Description_HU": "Konkrét kódolási nyelvek és szintaxisuk ismerete."
+            },
+            {
+              "gh_code": "gh_fcdbad5a88bb",
+              "Title": "Software development basics",
+              "Description": "Core concepts of the software development lifecycle.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "Szoftverfejlesztés alapjai",
+              "Description_HU": "A szoftverfejlesztési életciklus alapfogalmai."
+            },
+            {
+              "gh_code": "gh_5cbdc8bb653e",
+              "Title": "Systems administration basics",
+              "Description": "Core tasks and concepts in managing servers and systems.",
+              "group_code": "H3",
+              "Type": "Knowledge",
+              "Title_HU": "Rendszergazdai alapok",
+              "Description_HU": "Szerverek és rendszerek kezelésének alapvető feladatai és fogalmai."
+            },
+            {
+              "gh_code": "gh_47cecd78c026",
+              "Title": "Algorithmic thinking",
+              "Description": "Capacity to structure problems and solutions into stepwise logical procedures.",
+              "group_code": "H3",
+              "Type": "Ability",
+              "Title_HU": "Algoritmikus gondolkodás",
+              "Description_HU": "Képesség a problémák és megoldások lépésről lépésre történő logikai eljárásokba való strukturálására."
+            },
+            {
+              "gh_code": "gh_75acdfed5413",
+              "Title": "API literacy",
+              "Description": "Basic capacity to understand and work with application programming interfaces.",
+              "group_code": "H3",
+              "Type": "Ability",
+              "Title_HU": "API ismeretek",
+              "Description_HU": "Alapvető képesség az alkalmazásprogramozási interfészek megértésére és használatára."
+            },
+            {
+              "gh_code": "gh_321d57b636f0",
+              "Title": "DevOps literacy",
+              "Description": "General capacity to understand DevOps principles and toolchains.",
+              "group_code": "H3",
+              "Type": "Ability",
+              "Title_HU": "DevOps ismeretek",
+              "Description_HU": "Általános képesség a DevOps elvek és eszközláncok megértésére."
+            }
+          ],
+          "Title_HU": "Programozás és IT mérnöki munka"
+        },
+        {
+          "gh_code": "gh_f27294a67694",
+          "Title": "Cybersecurity & Digital risk competencies",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_5fb2e0bd13da",
+              "Title": "Cyber hygiene",
+              "Description": "Applying basic practices that keep systems and data secure in everyday use.",
+              "group_code": "H4",
+              "Type": "Skill",
+              "Title_HU": "Kiberhigiénia",
+              "Description_HU": "Alapvető gyakorlatok alkalmazása, amelyek a rendszereket és adatokat biztonságban tartják a mindennapi használat során."
+            },
+            {
+              "gh_code": "gh_4c702dd0c9c7",
+              "Title": "Security risk analysis",
+              "Description": "Assessing threats, vulnerabilities and impacts in security contexts.",
+              "group_code": "H4",
+              "Type": "Skill",
+              "Title_HU": "Biztonsági kockázatelemzés",
+              "Description_HU": "Fenyegetések, sebezhetőségek és hatások értékelése biztonsági kontextusban."
+            },
+            {
+              "gh_code": "gh_29e7eb9cc9f9",
+              "Title": "Access control & encryption",
+              "Description": "Concepts and methods for controlling access and protecting data via encryption.",
+              "group_code": "H4",
+              "Type": "Knowledge",
+              "Title_HU": "Hozzáférés-vezérlés és titkosítás",
+              "Description_HU": "Hozzáférés-vezérlés és adatok védelmének fogalmai és módszerei titkosítással."
+            },
+            {
+              "gh_code": "gh_342d7f0d24be",
+              "Title": "Cloud security",
+              "Description": "Principles and controls for securing cloud-based environments.",
+              "group_code": "H4",
+              "Type": "Knowledge",
+              "Title_HU": "Felhőbiztonság",
+              "Description_HU": "Felhőalapú környezetek biztonságának elvei és ellenőrzései."
+            },
+            {
+              "gh_code": "gh_4c8c5905acf9",
+              "Title": "Cybersecurity frameworks",
+              "Description": "Reference models and standards for managing digital security.",
+              "group_code": "H4",
+              "Type": "Knowledge",
+              "Title_HU": "Kiberbiztonsági keretrendszerek",
+              "Description_HU": "Referenciamodellek és szabványok a digitális biztonság kezelésére."
+            },
+            {
+              "gh_code": "gh_8fd37c927d89",
+              "Title": "Encryption basics",
+              "Description": "Fundamentals of how encryption works and when to apply it.",
+              "group_code": "H4",
+              "Type": "Knowledge",
+              "Title_HU": "Titkosítás alapjai",
+              "Description_HU": "A titkosítás működésének alapjai és alkalmazásának időpontjai."
+            },
+            {
+              "gh_code": "gh_96f7108d47c0",
+              "Title": "Identity & access management",
+              "Description": "Concepts and processes for managing user identities and access rights.",
+              "group_code": "H4",
+              "Type": "Knowledge",
+              "Title_HU": "Identitás- és hozzáférés-kezelés",
+              "Description_HU": "Felhasználói identitások és hozzáférési jogok kezelésének fogalmai és folyamatai."
+            },
+            {
+              "gh_code": "gh_2110238bfb59",
+              "Title": "Network security basics",
+              "Description": "Core concepts of protecting networks from threats.",
+              "group_code": "H4",
+              "Type": "Knowledge",
+              "Title_HU": "Hálózatbiztonság alapjai",
+              "Description_HU": "A hálózatok fenyegetésektől való védelmének alapvető fogalmai."
+            },
+            {
+              "gh_code": "gh_056fd156a7c8",
+              "Title": "Security incident awareness",
+              "Description": "Understanding Types and signs of security incidents.",
+              "group_code": "H4",
+              "Type": "Knowledge",
+              "Title_HU": "Biztonsági incidensek tudatossága",
+              "Description_HU": "A biztonsági incidensek típusainak és jeleinek megértése."
+            },
+            {
+              "gh_code": "gh_434289634c7d",
+              "Title": "Threat detection",
+              "Description": "Capacity to recognize indicators of potential security threats.",
+              "group_code": "H4",
+              "Type": "Ability",
+              "Title_HU": "Fenyegetés észlelése",
+              "Description_HU": "A potenciális biztonsági fenyegetések jeleinek felismerési képessége."
+            }
+          ],
+          "Title_HU": "Kiberbiztonság és digitális kockázati kompetenciák"
+        },
+        {
+          "gh_code": "gh_2ccd9b0762e8",
+          "Title": "Engineering, Technical & Scientific competencies",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_1f2e558d02ee",
+              "Title": "Measurement & calibration",
+              "Description": "Using instruments to measure and adjust to required standards.",
+              "group_code": "H5",
+              "Type": "Skill",
+              "Title_HU": "Mérés és kalibrálás",
+              "Description_HU": "Műszerek használata a mérésekhez és a szükséges szabványokhoz való igazításhoz."
+            },
+            {
+              "gh_code": "gh_1082be206cc4",
+              "Title": "Scientific method application",
+              "Description": "Applying structured experimental approaches to answer questions.",
+              "group_code": "H5",
+              "Type": "Skill",
+              "Title_HU": "Tudományos módszer alkalmazása",
+              "Description_HU": "Strukturált kísérleti megközelítések alkalmazása kérdések megválaszolására."
+            },
+            {
+              "gh_code": "gh_5d32eb2dde47",
+              "Title": "Technical drawing / CAD",
+              "Description": "Creating precise technical representations using drawing or CAD tools.",
+              "group_code": "H5",
+              "Type": "Skill",
+              "Title_HU": "Műszaki rajz / CAD",
+              "Description_HU": "Pontos műszaki ábrázolások készítése rajz- vagy CAD-eszközök használatával."
+            },
+            {
+              "gh_code": "gh_f683a1172fc3",
+              "Title": "Technical prototyping",
+              "Description": "Building early versions of products or components to test ideas.",
+              "group_code": "H5",
+              "Type": "Skill",
+              "Title_HU": "Műszaki prototípus készítés",
+              "Description_HU": "Termékek vagy alkatrészek korai verzióinak építése ötletek tesztelésére."
+            },
+            {
+              "gh_code": "gh_9ac34f7bfa2e",
+              "Title": "Chemistry fundamentals",
+              "Description": "Basic principles and concepts of chemistry.",
+              "group_code": "H5",
+              "Type": "Knowledge",
+              "Title_HU": "Kémia alapjai",
+              "Description_HU": "A kémia alapelvei és fogalmai."
+            },
+            {
+              "gh_code": "gh_b0821d59cec9",
+              "Title": "Electrical systems basics",
+              "Description": "Foundational concepts of electrical circuits and systems.",
+              "group_code": "H5",
+              "Type": "Knowledge",
+              "Title_HU": "Elektromos rendszerek alapjai",
+              "Description_HU": "Az elektromos áramkörök és rendszerek alapvető fogalmai."
+            },
+            {
+              "gh_code": "gh_9703d09e04d7",
+              "Title": "Engineering principles",
+              "Description": "General laws and concepts underpinning engineering disciplines.",
+              "group_code": "H5",
+              "Type": "Knowledge",
+              "Title_HU": "Mérnöki elvek",
+              "Description_HU": "A mérnöki tudományágakat megalapozó általános törvények és fogalmak."
+            },
+            {
+              "gh_code": "gh_4c4b48185942",
+              "Title": "Materials science basics",
+              "Description": "Foundational understanding of material properties and behaviours.",
+              "group_code": "H5",
+              "Type": "Knowledge",
+              "Title_HU": "Anyagtudomány alapjai",
+              "Description_HU": "Az anyagok tulajdonságainak és viselkedésének alapvető megértése."
+            },
+            {
+              "gh_code": "gh_50d55e4e5c55",
+              "Title": "Mechanical systems basics",
+              "Description": "Core concepts of mechanical components and systems.",
+              "group_code": "H5",
+              "Type": "Knowledge",
+              "Title_HU": "Mechanikai rendszerek alapjai",
+              "Description_HU": "A mechanikai alkatrészek és rendszerek alapvető fogalmai."
+            },
+            {
+              "gh_code": "gh_c086f5014c49",
+              "Title": "Physics fundamentals",
+              "Description": "Basic principles governing physical phenomena.",
+              "group_code": "H5",
+              "Type": "Knowledge",
+              "Title_HU": "Fizika alapjai",
+              "Description_HU": "A fizikai jelenségeket irányító alapelvek."
+            },
+            {
+              "gh_code": "gh_11d6405801ee",
+              "Title": "Robotics literacy",
+              "Description": "Foundational understanding of robotic systems and their applications.",
+              "group_code": "H5",
+              "Type": "Knowledge",
+              "Title_HU": "Robotika ismeretek",
+              "Description_HU": "A robotrendszerek és alkalmazásaik alapvető megértése."
+            },
+            {
+              "gh_code": "gh_2730dc21b1ad",
+              "Title": "Scientific methodology",
+              "Description": "Concepts and principles underlying scientific investigation.",
+              "group_code": "H5",
+              "Type": "Knowledge",
+              "Title_HU": "Tudományos módszertan",
+              "Description_HU": "A tudományos vizsgálat alapjául szolgáló fogalmak és elvek."
+            },
+            {
+              "gh_code": "gh_997d14b3c056",
+              "Title": "Mechanical understanding",
+              "Description": "Capacity to grasp mechanical relationships and behaviours.",
+              "group_code": "H5",
+              "Type": "Ability",
+              "Title_HU": "Mechanikai megértés",
+              "Description_HU": "A mechanikai kapcsolatok és viselkedések megértésének képessége."
+            },
+            {
+              "gh_code": "gh_2269c0ee09ee",
+              "Title": "Spatial reasoning",
+              "Description": "Capacity to imagine and manipulate objects in space.",
+              "group_code": "H5",
+              "Type": "Ability",
+              "Title_HU": "Térbeli gondolkodás",
+              "Description_HU": "Képesség tárgyak elképzelésére és manipulálására a térben."
+            }
+          ],
+          "Title_HU": "Mérnöki, műszaki és tudományos kompetenciák"
+        },
+        {
+          "gh_code": "gh_68dbf19d804c",
+          "Title": "Business, Finance & Operations",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_4e158be0b6f6",
+              "Title": "Budgeting",
+              "Description": "Planning and controlling financial resources through budgets.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Költségvetés készítés",
+              "Description_HU": "Pénzügyi források tervezése és ellenőrzése költségvetéseken keresztül."
+            },
+            {
+              "gh_code": "gh_b63cef7350b7",
+              "Title": "Business analytics",
+              "Description": "Using data and analysis to inform business decisions and performance.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Üzleti elemzés",
+              "Description_HU": "Adatok és elemzések felhasználása üzleti döntések és teljesítmény javítására."
+            },
+            {
+              "gh_code": "gh_1be12166bc22",
+              "Title": "Cost estimation",
+              "Description": "Estimating resources, time and money required for activities or projects.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Költségbecslés",
+              "Description_HU": "Erőforrások, idő és pénz becslése tevékenységekhez vagy projektekhez."
+            },
+            {
+              "gh_code": "gh_896a075a9c51",
+              "Title": "CRM system use",
+              "Description": "Operating customer relationship management software in daily work.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "CRM rendszer használata",
+              "Description_HU": "Ügyfélkapcsolat-kezelő szoftver működtetése a napi munkában."
+            },
+            {
+              "gh_code": "gh_e77d426db91d",
+              "Title": "Operations management",
+              "Description": "Planning and overseeing processes, resources and workflows.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Műveletek menedzsmentje",
+              "Description_HU": "Folyamatok, erőforrások és munkafolyamatok tervezése és felügyelete."
+            },
+            {
+              "gh_code": "gh_6b9142f647f4",
+              "Title": "Process optimization",
+              "Description": "Improving processes to increase efficiency and reduce waste.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Folyamatoptimalizálás",
+              "Description_HU": "Folyamatok javítása a hatékonyság növelése és a pazarlás csökkentése érdekében."
+            },
+            {
+              "gh_code": "gh_9bd43154460d",
+              "Title": "Procurement skills",
+              "Description": "Sourcing, evaluating and acquiring goods or services.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Beszerzési készségek",
+              "Description_HU": "Áruk vagy szolgáltatások beszerzése, értékelése és megszerzése."
+            },
+            {
+              "gh_code": "gh_8603c132890c",
+              "Title": "Project management",
+              "Description": "Planning, executing and closing projects within constraints.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Projektmenedzsment",
+              "Description_HU": "Projektek tervezése, végrehajtása és lezárása korlátok között."
+            },
+            {
+              "gh_code": "gh_72686628d302",
+              "Title": "Quality control",
+              "Description": "Monitoring outputs to detect and correct quality deviations.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Minőségellenőrzés",
+              "Description_HU": "Kimenetek figyelése a minőségi eltérések észlelésére és javítására."
+            },
+            {
+              "gh_code": "gh_7293db5800ed",
+              "Title": "Reporting",
+              "Description": "Compiling and communicating information in structured report formats.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Jelentéskészítés",
+              "Description_HU": "Információk összeállítása és közlése strukturált jelentésformátumokban."
+            },
+            {
+              "gh_code": "gh_d48ea138c69a",
+              "Title": "Risk management",
+              "Description": "Identifying, assessing and responding to risks in activities or projects.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Kockázatkezelés",
+              "Description_HU": "Kockázatok azonosítása, értékelése és kezelése tevékenységekben vagy projektekben."
+            },
+            {
+              "gh_code": "gh_d36835912b45",
+              "Title": "Task coordination",
+              "Description": "Organizing and sequencing tasks among people and resources.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Feladatkoordináció",
+              "Description_HU": "Feladatok szervezése és sorrendbe állítása emberek és erőforrások között."
+            },
+            {
+              "gh_code": "gh_0e44cf0740c7",
+              "Title": "Vendor management",
+              "Description": "Managing relationships and agreements with external suppliers.",
+              "group_code": "H6",
+              "Type": "Skill",
+              "Title_HU": "Beszállítói menedzsment",
+              "Description_HU": "Kapcsolatok és megállapodások kezelése külső beszállítókkal."
+            },
+            {
+              "gh_code": "gh_a755a0a77df5",
+              "Title": "Business models",
+              "Description": "Conceptual understanding of how organizations create and capture value.",
+              "group_code": "H6",
+              "Type": "Knowledge",
+              "Title_HU": "Üzleti modellek",
+              "Description_HU": "Koncepcionális megértés arról, hogyan hoznak létre és rögzítenek értéket a szervezetek."
+            },
+            {
+              "gh_code": "gh_48a35b894b2d",
+              "Title": "Finance",
+              "Description": "Principles of financial systems, instruments and decision-making.",
+              "group_code": "H6",
+              "Type": "Knowledge",
+              "Title_HU": "Pénzügy",
+              "Description_HU": "Pénzügyi rendszerek, eszközök és döntéshozatal alapelvei."
+            },
+            {
+              "gh_code": "gh_bd9b8abb6594",
+              "Title": "Lean / Six Sigma basics",
+              "Description": "Foundational concepts of process improvement methodologies.",
+              "group_code": "H6",
+              "Type": "Knowledge",
+              "Title_HU": "Lean / Six Sigma alapok",
+              "Description_HU": "Folyamatfejlesztési módszertanok alapvető fogalmai."
+            },
+            {
+              "gh_code": "gh_8ead142d10e3",
+              "Title": "Operational processes",
+              "Description": "Knowledge of how routine business operations are structured and executed.",
+              "group_code": "H6",
+              "Type": "Knowledge",
+              "Title_HU": "Működési folyamatok",
+              "Description_HU": "Ismeretek arról, hogyan vannak strukturálva és végrehajtva a rutinszerű üzleti műveletek."
+            },
+            {
+              "gh_code": "gh_1e0f7c4ec7bb",
+              "Title": "Supply chain basics",
+              "Description": "Fundamental concepts of sourcing, production and distribution flows.",
+              "group_code": "H6",
+              "Type": "Knowledge",
+              "Title_HU": "Ellátási lánc alapok",
+              "Description_HU": "Beszerzési, termelési és elosztási folyamatok alapvető fogalmai."
+            },
+            {
+              "gh_code": "gh_e30f3ef5c242",
+              "Title": "Business literacy",
+              "Description": "General capacity to understand business concepts, structures and language.",
+              "group_code": "H6",
+              "Type": "Ability",
+              "Title_HU": "Üzleti műveltség",
+              "Description_HU": "Általános képesség az üzleti fogalmak, struktúrák és nyelv megértésére."
+            },
+            {
+              "gh_code": "gh_17df3c58bb51",
+              "Title": "Financial literacy",
+              "Description": "Capacity to understand and manage financial information and decisions.",
+              "group_code": "H6",
+              "Type": "Ability",
+              "Title_HU": "Pénzügyi műveltség",
+              "Description_HU": "Képesség a pénzügyi információk és döntések megértésére és kezelésére."
+            }
+          ],
+          "Title_HU": "Üzlet, pénzügy és műveletek"
+        },
+        {
+          "gh_code": "gh_ba0e6e9cee4d",
+          "Title": "Marketing, Media & Sales Analytics competencies",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_e02c04338d8b",
+              "Title": "Branding",
+              "Description": "Creating and managing brand identity and positioning activities.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Márkaépítés",
+              "Description_HU": "Márkaidentitás és pozicionálási tevékenységek létrehozása és kezelése."
+            },
+            {
+              "gh_code": "gh_69c706a35c5d",
+              "Title": "Consumer insight generation",
+              "Description": "Deriving meaningful conclusions about consumer behaviour from data and research.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Fogyasztói betekintés generálása",
+              "Description_HU": "Jelentős következtetések levonása a fogyasztói viselkedésről adatok és kutatások alapján."
+            },
+            {
+              "gh_code": "gh_0b66c14849ac",
+              "Title": "Content creation",
+              "Description": "Producing written, visual or multimedia content for communication or marketing.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Tartalomkészítés",
+              "Description_HU": "Írott, vizuális vagy multimédiás tartalom előállítása kommunikáció vagy marketing céljából."
+            },
+            {
+              "gh_code": "gh_63a283553aa1",
+              "Title": "Digital advertising",
+              "Description": "Using digital channels and tools to plan and run advertising campaigns.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Digitális hirdetés",
+              "Description_HU": "Digitális csatornák és eszközök használata hirdetési kampányok tervezésére és lebonyolítására."
+            },
+            {
+              "gh_code": "gh_31933d0ff718",
+              "Title": "Digital marketing",
+              "Description": "Applying online channels to promote products, services or brands.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Digitális marketing",
+              "Description_HU": "Online csatornák alkalmazása termékek, szolgáltatások vagy márkák népszerűsítésére."
+            },
+            {
+              "gh_code": "gh_ecd74f232b36",
+              "Title": "Lead generation",
+              "Description": "Identifying and attracting potential customers or prospects.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Érdeklődő generálás",
+              "Description_HU": "Potenciális ügyfelek vagy érdeklődők azonosítása és vonzása."
+            },
+            {
+              "gh_code": "gh_2980d6ee2269",
+              "Title": "Market analysis",
+              "Description": "Evaluating markets, competitors and customer segments.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Piacelemzés",
+              "Description_HU": "Piacok, versenytársak és ügyfélszegmensek értékelése."
+            },
+            {
+              "gh_code": "gh_724be98589e4",
+              "Title": "Sales planning",
+              "Description": "Designing strategies and activities to achieve sales targets.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Értékesítési tervezés",
+              "Description_HU": "Stratégiák és tevékenységek tervezése az értékesítési célok elérésére."
+            },
+            {
+              "gh_code": "gh_5f9d4eee786e",
+              "Title": "Social media analytics",
+              "Description": "Using tools and data to analyse social media performance and behaviour.",
+              "group_code": "H7",
+              "Type": "Skill",
+              "Title_HU": "Közösségi média analitika",
+              "Description_HU": "Eszközök és adatok használata a közösségi média teljesítményének és viselkedésének elemzésére."
+            },
+            {
+              "gh_code": "gh_3fa8393493cf",
+              "Title": "Ad campaign basics",
+              "Description": "Foundational concepts of planning and running marketing advertising campaigns.",
+              "group_code": "H7",
+              "Type": "Knowledge",
+              "Title_HU": "Hirdetési kampány alapjai",
+              "Description_HU": "A marketing hirdetési kampányok tervezésének és lebonyolításának alapfogalmai."
+            },
+            {
+              "gh_code": "gh_341f224c7c14",
+              "Title": "Customer insights",
+              "Description": "Understanding of customer needs, behaviours and preferences.",
+              "group_code": "H7",
+              "Type": "Knowledge",
+              "Title_HU": "Ügyfél betekintések",
+              "Description_HU": "Az ügyféligények, viselkedések és preferenciák megértése."
+            },
+            {
+              "gh_code": "gh_09f239f714f0",
+              "Title": "Marketing fundamentals",
+              "Description": "Basic principles of marketing strategy and tactics.",
+              "group_code": "H7",
+              "Type": "Knowledge",
+              "Title_HU": "Marketing alapok",
+              "Description_HU": "A marketing stratégia és taktikák alapelvei."
+            },
+            {
+              "gh_code": "gh_a9aa21b78d35",
+              "Title": "Marketing strategy",
+              "Description": "Concepts for positioning, targeting and planning marketing activities.",
+              "group_code": "H7",
+              "Type": "Knowledge",
+              "Title_HU": "Marketing stratégia",
+              "Description_HU": "Pozicionálási, célzási és marketing tevékenységek tervezési fogalmai."
+            },
+            {
+              "gh_code": "gh_2c5206c08823",
+              "Title": "Sales pipelines",
+              "Description": "Concepts and stages of managing leads through to sales.",
+              "group_code": "H7",
+              "Type": "Knowledge",
+              "Title_HU": "Értékesítési csatornák",
+              "Description_HU": "Az érdeklődők kezelése az értékesítésig tartó szakaszok és fogalmak."
+            },
+            {
+              "gh_code": "gh_dee06e2bd276",
+              "Title": "SEO / SEM basics",
+              "Description": "Fundamentals of optimizing content and ads for search engines.",
+              "group_code": "H7",
+              "Type": "Knowledge",
+              "Title_HU": "SEO / SEM alapok",
+              "Description_HU": "A tartalom és hirdetések keresőmotorokra való optimalizálásának alapjai."
+            }
+          ],
+          "Title_HU": "Marketing, Média és Értékesítési Analitika kompetenciák"
+        },
+        {
+          "gh_code": "gh_93defacbd3bc",
+          "Title": "Administrative, Legal & Compliance competencies",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_cef5cd3150c3",
+              "Title": "Document management",
+              "Description": "Organizing, storing and controlling access to documents.",
+              "group_code": "H8",
+              "Type": "Skill",
+              "Title_HU": "Dokumentumkezelés",
+              "Description_HU": "Dokumentumok szervezése, tárolása és hozzáférésének ellenőrzése."
+            },
+            {
+              "gh_code": "gh_c08aff3ca294",
+              "Title": "Quality documentation",
+              "Description": "Producing and maintaining records required for quality systems.",
+              "group_code": "H8",
+              "Type": "Skill",
+              "Title_HU": "Minőségi dokumentáció",
+              "Description_HU": "A minőségi rendszerekhez szükséges feljegyzések készítése és karbantartása."
+            },
+            {
+              "gh_code": "gh_df99ddb58ce5",
+              "Title": "Contract literacy",
+              "Description": "Understanding contracts, key clauses and their implications.",
+              "group_code": "H8",
+              "Type": "Knowledge",
+              "Title_HU": "Szerződésismeret",
+              "Description_HU": "Szerződések, kulcsfontosságú záradékok és azok következményeinek megértése."
+            },
+            {
+              "gh_code": "gh_4461f1f1feb3",
+              "Title": "Data protection & GDPR",
+              "Description": "Legal and procedural rules for protecting personal data and privacy.",
+              "group_code": "H8",
+              "Type": "Knowledge",
+              "Title_HU": "Adatvédelem és GDPR",
+              "Description_HU": "Személyes adatok és magánélet védelmére vonatkozó jogi és eljárási szabályok."
+            },
+            {
+              "gh_code": "gh_0c0ac639b6d1",
+              "Title": "Ethics & compliance knowledge",
+              "Description": "Understanding rules and norms governing lawful and ethical conduct.",
+              "group_code": "H8",
+              "Type": "Knowledge",
+              "Title_HU": "Etikai és megfelelőségi ismeretek",
+              "Description_HU": "A törvényes és etikus magatartást szabályozó normák és szabályok megértése."
+            },
+            {
+              "gh_code": "gh_729484614f81",
+              "Title": "Legal basics",
+              "Description": "Foundational understanding of legal systems and key concepts.",
+              "group_code": "H8",
+              "Type": "Knowledge",
+              "Title_HU": "Jogi alapok",
+              "Description_HU": "A jogrendszerek és kulcsfogalmak alapvető megértése."
+            },
+            {
+              "gh_code": "gh_fbd3db722087",
+              "Title": "Legal compliance basics",
+              "Description": "Core rules and expectations for complying with laws and regulations.",
+              "group_code": "H8",
+              "Type": "Knowledge",
+              "Title_HU": "Jogi megfelelőség alapjai",
+              "Description_HU": "A törvényeknek és szabályozásoknak való megfelelés alapvető szabályai és elvárásai."
+            },
+            {
+              "gh_code": "gh_8b8782798b2b",
+              "Title": "Policy frameworks",
+              "Description": "Structured sets of policies guiding organizational conduct.",
+              "group_code": "H8",
+              "Type": "Knowledge",
+              "Title_HU": "Politikai keretrendszerek",
+              "Description_HU": "A szervezeti magatartást irányító strukturált politikai készletek."
+            },
+            {
+              "gh_code": "gh_c5ef932cbfc2",
+              "Title": "Regulatory understanding",
+              "Description": "Knowledge of regulations relevant to a role or sector.",
+              "group_code": "H8",
+              "Type": "Knowledge",
+              "Title_HU": "Szabályozási ismeretek",
+              "Description_HU": "A szerepkörhöz vagy szektorhoz kapcsolódó szabályozások ismerete."
+            },
+            {
+              "gh_code": "gh_4e030ac328b0",
+              "Title": "Audit literacy",
+              "Description": "Capacity to understand audit processes, findings and documentation.",
+              "group_code": "H8",
+              "Type": "Ability",
+              "Title_HU": "Audit ismeretek",
+              "Description_HU": "Az audit folyamatok, megállapítások és dokumentáció megértésének képessége."
+            },
+            {
+              "gh_code": "gh_d0b9414d5f9f",
+              "Title": "Documentation accuracy",
+              "Description": "Capacity to maintain error-free and precise records.",
+              "group_code": "H8",
+              "Type": "Ability",
+              "Title_HU": "Dokumentáció pontossága",
+              "Description_HU": "Hibamentes és pontos feljegyzések karbantartásának képessége."
+            },
+            {
+              "gh_code": "gh_33ec48cb929e",
+              "Title": "Process coordination",
+              "Description": "Capacity to organize and align processes and activities across parties.",
+              "group_code": "H8",
+              "Type": "Ability",
+              "Title_HU": "Folyamatkoordináció",
+              "Description_HU": "A folyamatok és tevékenységek szervezésének és összehangolásának képessége a felek között."
+            }
+          ],
+          "Title_HU": "Adminisztratív, Jogi és Megfelelőségi kompetenciák"
+        },
+        {
+          "gh_code": "gh_6d04187a5f6b",
+          "Title": "Manual, Physical & Sensory competencies",
+          "Type": "competency_group",
+          "children": [
+            {
+              "gh_code": "gh_47bf8df4b3a0",
+              "Title": "Troubleshooting",
+              "Description": "Diagnosing causes of failures and implementing corrective actions.",
+              "group_code": "H10",
+              "Type": "Skill",
+              "Title_HU": "Hibaelhárítás",
+              "Description_HU": "Hibák okainak feltárása és a megfelelő javító lépések végrehajtása."
+            },
+            {
+              "gh_code": "gh_2051ac684f25",
+              "Title": "Workflow optimization",
+              "Description": "Improving processes and workflows to maximize efficiency.",
+              "group_code": "H10",
+              "Type": "Skill",
+              "Title_HU": "Folyamatoptimalizálás",
+              "Description_HU": "A munkafolyamatok hatékonyságát növelő fejlesztések tervezése és végrehajtása."
+            },
+            {
+              "gh_code": "gh_c152ef3f4c6a",
+              "Title": "Data interpretation",
+              "Description": "Making sense of data patterns and deriving meaningful insights.",
+              "group_code": "H10",
+              "Type": "Skill",
+              "Title_HU": "Adatértelmezés",
+              "Description_HU": "Adatok mintázatainak értelmezése és releváns következtetések levonása."
+            },
+            {
+              "gh_code": "gh_90b95aa8b078",
+              "Title": "Idea evaluation",
+              "Description": "Assessing the feasibility and value of ideas or concepts.",
+              "group_code": "H10",
+              "Type": "Skill",
+              "Title_HU": "Ötletértékelés",
+              "Description_HU": "Ötletek és koncepciók megvalósíthatóságának és értékének értékelése."
+            },
+            {
+              "gh_code": "gh_28ea7d9c54db",
+              "Title": "Problem diagnosis",
+              "Description": "Identifying the nature and sources of problems.",
+              "group_code": "H10",
+              "Type": "Skill",
+              "Title_HU": "Problémadiagnosztika",
+              "Description_HU": "A problémák jellegének és kiváltó okainak feltárása."
+            },
+            {
+              "gh_code": "gh_b7159fa3a902",
+              "Title": "Problem solving",
+              "Description": "Developing and implementing effective solutions.",
+              "group_code": "H10",
+              "Type": "Skill",
+              "Title_HU": "Problémamegoldás",
+              "Description_HU": "Hatékony megoldások kidolgozása és végrehajtása."
+            },
+            {
+              "gh_code": "gh_70bae3778802",
+              "Title": "Attention to detail",
+              "Description": "Noticing inconsistencies, errors or small but important details.",
+              "group_code": "H10",
+              "Type": "Knowledge",
+              "Title_HU": "Részletekre való odafigyelés",
+              "Description_HU": "A pontatlanságok, hibák és lényeges részletek tudatos észlelése."
+            },
+            {
+              "gh_code": "gh_f8ec3dfdd7a5",
+              "Title": "Information structuring",
+              "Description": "Organizing information in a coherent, accessible structure.",
+              "group_code": "H10",
+              "Type": "Knowledge",
+              "Title_HU": "Információstrukturálás",
+              "Description_HU": "Információk logikus, áttekinthető és könnyen feldolgozható rendszerezése."
+            },
+            {
+              "gh_code": "gh_90c7939c39c3",
+              "Title": "Solution design",
+              "Description": "Designing approaches that effectively address problems or needs.",
+              "group_code": "H10",
+              "Type": "Knowledge",
+              "Title_HU": "Megoldástervezés",
+              "Description_HU": "Problémák vagy igények megoldására szolgáló hatékony megközelítések kialakítása."
+            },
+            {
+              "gh_code": "gh_3e839281f6e4",
+              "Title": "Systems analysis",
+              "Description": "Examining how system components work together to achieve outcomes.",
+              "group_code": "H10",
+              "Type": "Ability",
+              "Title_HU": "Rendszerelemzés",
+              "Description_HU": "A rendszer elemeinek kölcsönhatásait vizsgáló elemzés, a működés és eredmények megértése céljából."
+            },
+            {
+              "gh_code": "gh_904c9f84cd67",
+              "Title": "Analytical thinking",
+              "Description": "Breaking down complex problems into smaller, manageable components.",
+              "group_code": "H10",
+              "Type": "Ability",
+              "Title_HU": "Analitikus gondolkodás",
+              "Description_HU": "Összetett problémák részeire bontása és azok módszeres elemzése."
+            },
+            {
+              "gh_code": "gh_d066a4b6c64c",
+              "Title": "Creativity",
+              "Description": "Generating new, useful ideas or approaches.",
+              "group_code": "H10",
+              "Type": "Ability",
+              "Title_HU": "Kreativitás",
+              "Description_HU": "Új és hasznos ötletek, megoldások létrehozása."
+            },
+            {
+              "gh_code": "gh_1e724e2c8dd6",
+              "Title": "Critical reasoning",
+              "Description": "Evaluating arguments logically to form sound judgments.",
+              "group_code": "H10",
+              "Type": "Ability",
+              "Title_HU": "Kritikus érvelés",
+              "Description_HU": "Érvek logikus elemzése a megalapozott következtetések érdekében."
+            },
+            {
+              "gh_code": "gh_247adc4c02da",
+              "Title": "Judgment",
+              "Description": "Making balanced decisions based on evidence and context.",
+              "group_code": "H10",
+              "Type": "Ability",
+              "Title_HU": "Döntési ítélőképesség",
+              "Description_HU": "Kiegyensúlyozott, bizonyítékokon alapuló döntések meghozatala."
+            }
+          ],
+          "Title_HU": "Kézi, fizikai és érzékszervi kompetenciák"
+        }
+      ],
+      "Title_HU": "Technikai kompetenciák"
+    }
+  ],
+  "Title_HU": "GapHopper Kompetencia Hierarchia (Elmélet v2)"
+}

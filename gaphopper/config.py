@@ -90,19 +90,48 @@ def vocab() -> dict:
         return yaml.safe_load(fh)
 
 
+# A KÉSZ-ség típusa és a promptban használt betűje (TUD-ás, KÉSZ-ség, KÉP-esség, hozzáÁLLás).
+KESZ_TIPUS = {"TUDAS": "T", "KESZSEG": "K", "KEPESSEG": "P", "HOZZAALLAS": "A"}
+_REGI_TIPUS = {"K": "TUDAS", "S": "KESZSEG", "A": "KEPESSEG", "B": "HOZZAALLAS"}
+
+
+@lru_cache(maxsize=1)
+def kesz_hierarchia() -> dict:
+    """A KÉSZ-ség-törzs teljes állománya: kategoriak, csoportok, items (nyers yaml)."""
+    if not KESZ_PATH.exists():
+        return {"kategoriak": [], "csoportok": [], "items": []}
+    with open(KESZ_PATH, encoding="utf-8") as fh:
+        d = yaml.safe_load(fh) or {}
+    return {"version": d.get("version", ""), "kategoriak": d.get("kategoriak") or [],
+            "csoportok": d.get("csoportok") or [], "items": d.get("items") or []}
+
+
 @lru_cache(maxsize=1)
 def kesz_torzs() -> dict[str, dict]:
-    """A KÉSZ-ség-törzs: gh_c_<n> -> {id, label_hu, label_en, group, type} (en/hu rövid kulcsként is)."""
-    if not KESZ_PATH.exists():
-        return {}
-    with open(KESZ_PATH, encoding="utf-8") as fh:
-        items = (yaml.safe_load(fh) or {}).get("items", [])
+    """A KÉSZ-ség-törzs: gh_c_<n> -> {id, label_hu, label_en, csoport, tipus, betu, ...} (en/hu rövid kulcsként is)."""
     out = {}
-    for x in items:
+    for x in kesz_hierarchia()["items"]:
         en = x.get("label_en") or x.get("en") or ""
         hu = x.get("label_hu") or x.get("hu") or en
-        out[x["id"]] = x | {"label_en": en, "label_hu": hu, "en": en, "hu": hu}
+        csoport = x.get("csoport") or x.get("group") or ""
+        tipus = x.get("tipus") or _REGI_TIPUS.get(x.get("type", ""), "KESZSEG")
+        out[x["id"]] = x | {"label_en": en, "label_hu": hu, "en": en, "hu": hu, "csoport": csoport,
+                            "tipus": tipus, "betu": KESZ_TIPUS[tipus]}
     return out
+
+
+@lru_cache(maxsize=1)
+def kesz_block() -> str:
+    """A P1 törzsblokkja csoportonként: "# H1 Kognitív és elemző kompetenciák", alatta "sorszám|név|típusbetű"."""
+    torzs = kesz_torzs()
+    out = []
+    for c in kesz_hierarchia()["csoportok"]:
+        rows = [f"{k[5:]}|{x['label_hu']}|{x['betu']}" for k, x in torzs.items() if x["csoport"] == c["kod"]]
+        if rows:
+            out += [f"# {c['kod']} {c['label_hu']}"] + rows
+    known = {c["kod"] for c in kesz_hierarchia()["csoportok"]}
+    rest = [f"{k[5:]}|{x['label_hu']}|{x['betu']}" for k, x in torzs.items() if x["csoport"] not in known]
+    return "\n".join(out + (["# egyéb"] + rest if rest else []))
 
 
 def prompt(name: str) -> str:
@@ -117,8 +146,8 @@ def prompt_version() -> str:
         h.update(p.read_bytes())
     h.update(VOCAB_PATH.read_bytes())
     if KESZ_PATH.exists():
-        # csak a promptba kerülő rész (id, angol név, csoport, típus): a magyar név a gráfé és a felületé
-        h.update("|".join(f"{k}:{x['label_hu']}:{x['group']}{x['type']}" for k, x in kesz_torzs().items()).encode())
+        # csak a promptba kerülő rész (id, magyar név, csoport, típus): a leírás és az alias nem
+        h.update("|".join(f"{k}:{x['label_hu']}:{x['csoport']}{x['betu']}" for k, x in kesz_torzs().items()).encode())
     return f"{vocab().get('version', 'v')}-{h.hexdigest()[:8]}"
 
 

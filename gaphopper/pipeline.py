@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 
 from . import rules
-from .config import ROOT, Settings, StepModel, kesz_torzs, prompt, prompt_version, render, settings, vocab
+from .config import ROOT, Settings, StepModel, kesz_block, kesz_torzs, prompt, prompt_version, render, settings, vocab
 from .embed import get_embedder
 from .llm import CACHE_SPLIT, LLMError, ManualStep, call_json, get_llm
 from .merge import Resolver
@@ -60,11 +60,11 @@ class Context:
 
     def p1_system(self) -> str:
         """P0 + KÉSZ-ség-törzs (statikus, gyorsítótárazott) | TESZ-törzs (futásonként)."""
-        kesz = "\n".join(f"{k[5:]}|{x['label_hu']}|{x['group']}{x['type']}" for k, x in kesz_torzs().items())
+        kesz = kesz_block()
         torzs = self.tesz_torzs()
         mags = "\n".join(f"{c}|{r['label_hu']}|{r['tesz_type']}" for c, r in torzs.items()) or "(még üres)"
-        return (self.system + "\n\nKÉSZ-SÉG-TÖRZS (a kesz_ids-be a sorszám kerül; sorszám|név|csoport+típus, "
-                "K = tudás, S = készség, A = képesség):\n" + kesz + CACHE_SPLIT
+        return (self.system + "\n\nKÉSZ-SÉG-TÖRZS (a kesz_ids-be a sorszám kerül; csoportfejléc, alatta "
+                "sorszám|név|típus; T = TUDás, K = KÉSZség, P = KÉPesség, A = hozzáÁLLás):\n" + kesz + CACHE_SPLIT
                 + "TESZ-TÖRZS (a nivalo_ref-be a kód kerül; kód|címke|TESZ-típus):\n" + mags)
 
     def resolve_mag_refs(self, data):
