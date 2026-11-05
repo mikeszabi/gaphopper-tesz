@@ -31,6 +31,8 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
       Törzsszintű legyen:
       általános, szakterület-semleges, 1-4 szavas név; nem eszköz, termék, szoftver, szabvány vagy
       munkakör neve (az TUD-ás vagy SZER-ELEM), nem szintváltozat (alap/haladó), nem törzselem szinonimája.
+      Az általános érzékszervi vagy testi képesség (pl. ízlelés, szaglás, színlátás) törzsszintű; a neve az
+      érzékre utaljon, ne a szakmára.
       Alak: {"label_hu","label_en","csoport":"<a törzs csoportkódja>","irany":["<KÖZ-eg-fejléc>"]}.
    Összevonás (G4): azonos típus, azonos ERED-mény-fajta és 2/3 KÉSZ-ség-átfedés esetén egy TESZ-nivaló
    (pl. szakdolgozat- és TDK-témavezetés; ipari és kutatási partnerkapcsolat).

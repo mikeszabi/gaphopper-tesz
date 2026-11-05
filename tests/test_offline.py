@@ -1421,7 +1421,7 @@ def test_kesz_bovit_partial_cover_is_uj(tmp_path, monkeypatch):
 
     _tmp_torzs(tmp_path, monkeypatch)
     try:
-        assert "ízérzékelés" in prompt("p8_kesz_bovit")             # érzékszervi képesség törzsszintű (2026-11-05)
+        assert "Ízérzékelés" in prompt("p8_kesz_bovit")             # érzékszervi képesség törzsszintű (2026-11-05)
         assert config.kesz_torzs()["gh_c_293"]["csoport"] == "H10" and "hu:Ízlés" in config.kesz_torzs()["gh_c_293"]["aliases"]
         assert "csak teljes jelentésfedésnél" in prompt("p8_kesz_bovit") and "Ha kétséges, ALIAS" not in prompt("p8_kesz_bovit")
         assert "kesz_hiany" in prompt("p1_felbontas").split("KIMENET")[1]      # példa a kimeneti mintában ...
@@ -1460,5 +1460,32 @@ def test_kesz_bovit_queue_from_dryrun_no_graph(tmp_path, monkeypatch):
                       llm_override={"P3": FakeLLM(lambda a, b: ans)})
         out = run_kesz_bovit(ctx, rows, apply=False, queue=True)     # ctx.graph None: nem is írhat
         assert len(out["uj"]) == 1 and [r["kind"] for r in ctx.store.queue()] == ["kesz_review"]
+    finally:
+        config.kesz_cache_clear()
+
+
+def test_kesz_bovit_sensory_is_uj(tmp_path, monkeypatch):
+    """Séf + pék, 2026-11-05 (felhasználói döntés): az "Ízlésérzék" érzékszervi képesség -> UJ (H10, KOZ_FIZIKAI),
+    nem ELVET; a név az érzékre utal, nem a szakmára."""
+    from gaphopper import config
+    from gaphopper.kesz import run_kesz_bovit
+    from gaphopper.pipeline import Context
+
+    _tmp_torzs(tmp_path, monkeypatch)
+    try:
+        p8 = prompt("p8_kesz_bovit")
+        assert "hallási megkülönböztetés" in p8 and "nem \"Konyhai" in p8 and "csak az, ami nem egy konkrét érzékre" in p8
+        assert "érzékszervi vagy testi képesség" in prompt("p1_felbontas")
+        rows = [{"id": "gh_kh_iz", "label_hu": "Ízlésérzék", "label_en": "Sense of taste", "csoport": "H10",
+                 "irany": ["KOZ_FIZIKAI"], "nivalok": ["Étel elkészítése"], "munkakorok": ["onet:35-1011.00",
+                                                                                         "onet:51-3011.00"]}]
+        ans = json.dumps({"csoportok": [{"ids": ["gh_kh_iz"], "dontes": "UJ", "label_hu": "Ízérzékelés",
+                                         "label_en": "Taste perception", "csoport": "H10", "irany": ["KOZ_FIZIKAI"]}]})
+        ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False,
+                      llm_override={"P3": FakeLLM(lambda a, b: ans)})
+        out = run_kesz_bovit(ctx, rows, apply=False, queue=True)
+        assert not out["elvet"] and [(u["label_hu"], u["csoport"], u["irany"]) for u in out["uj"]] == \
+            [("Ízérzékelés", "H10", ["KOZ_FIZIKAI"])]
+        assert [r["kind"] for r in ctx.store.queue()] == ["kesz_review"]
     finally:
         config.kesz_cache_clear()
