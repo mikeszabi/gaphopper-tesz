@@ -1682,3 +1682,6 @@ def test_ui_task_refuses_python_without_provider_packages(tmp_path, monkeypatch)
     assert not list(tmp_path.iterdir())
     monkeypatch.setattr(importlib.util, "find_spec", lambda m, *a: object())
     assert tasks.env_problem() == ""
+    # az openai-kompatibilis szolgáltató (pl. E0) nem igényli az openai csomagot (2026-11-05)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda m, *a: None if m == "openai" else object())
+    assert tasks.env_problem() == "" and "openai" not in tasks._PROVIDER_PKG.values()

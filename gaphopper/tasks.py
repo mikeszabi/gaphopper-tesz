@@ -17,7 +17,8 @@ from .config import ROOT
 
 TASK_DIR = ROOT / "runs" / "ui_tasks"
 _procs: dict[str, subprocess.Popen] = {}
-_PROVIDER_PKG = {"anthropic": "anthropic", "gemini": "google.genai", "openai": "openai"}
+# szolgáltató -> szükséges Python-csomag; az openai-kompatibilis és a local szolgáltató saját HTTP-klienssel megy
+_PROVIDER_PKG = {"anthropic": "anthropic", "gemini": "google.genai"}
 
 
 def missing_packages() -> list[str]:
