@@ -55,6 +55,22 @@ def _job_words(*texts: str) -> list[str]:
     return sorted(set(out))
 
 
+def stems(text: str, n: int = 5) -> set[str]:
+    """Szótövek durván: a legalább 4 betűs szavak első n betűje (magyar ragozás és összetétel ellen)."""
+    return {w[:n] for w in re.findall(r"\w+", (text or "").lower()) if len(w) >= 4 and w not in _STOP}
+
+
+def stem_overlap(a: str, b: str) -> bool:
+    """Van-e közös szótő, vagy az egyik szó a másik elején (összetétel: programkód ~ program)."""
+    wa = [w for w in re.findall(r"\w+", (a or "").lower()) if len(w) >= 3 and w not in _STOP]
+    wb = [w for w in re.findall(r"\w+", (b or "").lower()) if len(w) >= 3 and w not in _STOP]
+    return any(x[:5] == y[:5] or x.startswith(y[:6]) or y.startswith(x[:6]) for x in wa for y in wb)
+
+
+def szer_in_label(m: TeszNivalo) -> bool:
+    return stem_overlap(m.primary_szer.label_hu, m.label_hu)
+
+
 def g4_pairs(magok: list[TeszNivalo], overlap: float) -> list[tuple[str, str]]:
     """G4: azonos TESZ-típus és legalább `overlap` arányú KÉSZ-ség-átfedés (a kisebbik halmazhoz mérve)."""
     out = []
@@ -186,20 +202,23 @@ def check(tesz: list[TeszSzin], kor_ids: list[str] | None = None, job_field: str
         flags.append(Flag("R16", "Csak KÖZ-egben tér el az ALAP-SZÍN-től, a kísérő SZER-ELEM-ek azonosak: "
                                  "valószínű kísérő KÖZ-eg (FOLD).", kis))
 
-    # R17 – munkakör- vagy szakszó a TESZ-nivaló-címkében (G1: a specifikum a kontextus_hu-ba; az általános célcsoport
-    # – hallgatók, betegek – maradhat)
-    # (a szakterület angol mezőszavai túl általánosak – "health" –, ezért csak a munkakör címe számít)
-    # A munkakörcím szavai csak a magyar címkén számítanak: az angol O*NET-címek szavai gyakori igék és
-    # főnevek ("developer" ~ "develop", "registered" ~ "register"), ezért az angol címkén téves találatot adnak.
-    szak = [w.lower() for w in r.get("szak_szavak", [])]
-    cim = _job_words(job_title)
-    spec = [m.nivalo_id for m in magok if not m.nivalo_ref and (
-        _jelzo(f"{m.label_hu} {m.label_en} {m.primary_szer.label_hu} {m.primary_szer.label_en}", szak)
-        or _jelzo(f"{m.label_hu} {m.primary_szer.label_hu}", cim))]
+    # R17 – a munkakör SAJÁT címének vagy szakterületének szava a TESZ-nivaló magyar címkéjében vagy meghatározó
+    # SZER-ELEM-ében (G1). Rögzített szólista nincs (felhasználói döntés, 2026-11-05): a túl szűk nevet a
+    # munkakörök közti bizonyíték alapján a `generalize` törzskarbantartó javítja. Az angol címkét nem nézi: az
+    # O*NET-címek szavai gyakori igék és főnevek ("developer" ~ "develop").
+    cim = _job_words(job_title, job_field)
+    spec = [m.nivalo_id for m in magok if not m.nivalo_ref
+            and _jelzo(f"{m.label_hu} {m.primary_szer.label_hu}", cim)]
     if spec:
-        flags.append(Flag("R17", "Munkakör- vagy szakszó (gépész, villamos ...) a TESZ-nivaló címkéjében vagy meghatározó "
-                                 "SZER-ELEM-ében: általánosíts (gépész hallgatók -> hallgatók), a szak a "
-                                 "kontextus_hu-ba kerül (G1).", spec))
+        flags.append(Flag("R17", "A munkakör saját címének vagy szakterületének szava a TESZ-nivaló nevében vagy "
+                                 "meghatározó SZER-ELEM-ében: a specifikum a kontextus_hu-ba és a kísérő SZER-ELEM-be "
+                                 "kerül (G1).", spec))
+
+    # R21 – a név tartalmazza a meghatározó SZER-ELEM nevét vagy tövét (G5: felismerhetőség)
+    nofit = [m.nivalo_id for m in magok if not m.nivalo_ref and not szer_in_label(m)]
+    if nofit:
+        flags.append(Flag("R21", "A TESZ-nivaló neve nem tartalmazza a meghatározó SZER-ELEM nevét vagy tövét: túl "
+                                 "elvont vagy más dologról szól (G5).", nofit))
 
     # R18 – G4-összevonási jelölt: azonos típus és nagy KÉSZ-ség-átfedés
     pairs = g4_pairs(magok, float(r.get("g4_kesz_overlap", 0.66)))

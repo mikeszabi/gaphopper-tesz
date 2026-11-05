@@ -984,7 +984,8 @@ def test_rules_v2_generality():
         d2 = p1_fixture()
         d2["nivalok"][3]["label_hu"] = label
         p2 = P1Output.model_validate(d2)
-        r17 = [x for x in rules.check(p2.szinek, None, "", magok=p2.nivalok, job_title="Egyetemi oktató")
+        # R17 csak a saját munkakör címét és szakterületét nézi (2026-11-05): itt a szakterület "Gépészet"
+        r17 = [x for x in rules.check(p2.szinek, None, "Gépészet", magok=p2.nivalok, job_title="Egyetemi oktató")
                if x.rule == "R17"]
         assert ("M04" in (r17[0].cand_ids if r17 else [])) is flagged, label
     assert set(f["R18"].cand_ids) == {"M05", "M06"} and "M07" not in f["R18"].cand_ids
@@ -1008,9 +1009,21 @@ def test_r17_no_false_positives_from_english_titles():
     p1 = P1Output.model_validate(d)
     for title in ("Registered nurse", "Software developer", "Electrical engineer"):
         assert "R17" not in {x.rule for x in rules.check(p1.szinek, None, "", magok=p1.nivalok, job_title=title)}
-    d["nivalok"][10]["label_en"] = "Direct nursing staff work"     # szakszó az angol címkén: jelez
+    d["nivalok"][10]["label_en"] = "Direct nursing staff work"     # rögzített szólista nincs: nem jelez
     p1 = P1Output.model_validate(d)
-    assert [x.cand_ids for x in rules.check(p1.szinek, None, "", magok=p1.nivalok) if x.rule == "R17"] == [["M11"]]
+    assert [x.cand_ids for x in rules.check(p1.szinek, None, "", magok=p1.nivalok) if x.rule == "R17"] == []
+
+
+def test_r21_szer_in_label():
+    """R21 (G5): a TESZ-nivaló neve tartalmazza a meghatározó SZER-ELEM nevét vagy tövét."""
+    d = p1_fixture()
+    d["nivalok"][4]["label_hu"] = "Működés ellenőrzése előírt kritérium szerint"   # SZER: Gyógyszerelési rendelés
+    d["nivalok"][1]["label_hu"] = "Életjel mérése"                                  # SZER: Életjel-mérő eszköz
+    p1 = P1Output.model_validate(d)
+    f = [x for x in rules.check(p1.szinek, None, "", magok=p1.nivalok) if x.rule == "R21"]
+    assert f and f[0].cand_ids == ["M05"]
+    assert rules.stem_overlap("Programkód", "Program írása és módosítása")
+    assert not rules.stem_overlap("Teszteset", "Működés ellenőrzése előírt kritérium szerint")
 
 
 def test_p2_fix_melyites_as_text_is_dropped():
@@ -1063,3 +1076,73 @@ def test_p5_splits_on_max_tokens(tmp_path):
     ctx.graph = graph
     st = run_p5(ctx, log=lambda *a: None)
     assert st["kesz_mag"] == 4 and st["kesz_valtozat"] == 4 and st["hiba"] == 0 and len(written) == 4
+
+
+def test_generalize_renames_and_splits(tmp_path, monkeypatch):
+    """P6: ATNEVEZ -> új név, a régi alias (azonosító marad); szűk SZER-ELEM -> általános fajta; BONT -> szakértőhöz."""
+    from gaphopper import pipeline
+    from gaphopper.pipeline import Context, run_generalize
+
+    monkeypatch.setattr(pipeline, "ROOT", tmp_path)
+    cands = [{"id": "g1", "label_hu": "Higiéniai előírás betartása", "label_en": "Comply with hygiene rules",
+              "tesz_type": "COMPLY", "szer_id": "s1", "primary_szer": "Higiéniai előírás", "munkakor_db": 3,
+              "munkakorok": [{"munkakor": "Ápoló", "kontextus": "kézhigiéné"},
+                             {"munkakor": "Villanyszerelő", "kontextus": "villamos biztonság"}], "kesz": []},
+             {"id": "g2", "label_hu": "Működés ellenőrzése kritérium szerint", "label_en": "", "tesz_type": "VERIFY",
+              "szer_id": "s2", "primary_szer": "Teszteset", "munkakor_db": 7,
+              "munkakorok": [{"munkakor": "Szoftverfejlesztő", "kontextus": "szoftvertesztelés"},
+                             {"munkakor": "Villanyszerelő", "kontextus": "szigetelésmérés"}], "kesz": []},
+             {"id": "g3", "label_hu": "Nyilvántartás vezetése", "label_en": "", "tesz_type": "DOCUMENT",
+              "szer_id": "s3", "primary_szer": "Nyilvántartás", "munkakor_db": 6,
+              "munkakorok": [{"munkakor": "Ápoló", "kontextus": "a"}, {"munkakor": "Adattudós", "kontextus": "b"}],
+              "kesz": []}]
+    calls = {"ren": [], "szer": []}
+    graph = SimpleNamespace(generalize_candidates=lambda mj: cands,
+                            rename_nivalo=lambda rows: calls["ren"].extend(rows),
+                            generalize_szer=lambda rows: calls["szer"].extend(rows))
+    answer = {"nivalok": [
+        {"id": "g1", "dontes": "ATNEVEZ", "label_hu": "Előírás betartása és igazolása",
+         "label_en": "Comply with regulations", "szer_hu": "Előírás", "indok_hu": "Nem csak higiéniai."},
+        {"id": "g2", "dontes": "BONT", "indok_hu": "Két külön tevékenység.",
+         "bontas": [{"label_hu": "Szoftver tesztelése", "munkakorok": ["Szoftverfejlesztő"]},
+                    {"label_hu": "Villamos jellemzők mérése", "munkakorok": ["Villanyszerelő"]}]},
+        {"id": "g3", "dontes": "MARAD"}]}
+    prompts = []
+    ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False,
+                  llm_override={"P3": FakeLLM(lambda s, u: prompts.append(u) or json.dumps(answer, ensure_ascii=False))})
+    ctx.graph = graph
+    out = run_generalize(ctx, log=lambda *a: None)
+    assert out["marad"] == 1 and len(out["valtozasok"]) == 1 and len(out["bontas"]) == 1
+    assert calls["ren"][0]["label_hu"] == "Előírás betartása és igazolása"
+    assert "higiéniai előírás betartása" in calls["ren"][0]["old_keys"]           # a régi név alias marad
+    assert calls["szer"][0]["szer_hu"] == "Előírás"
+    assert [r["kind"] for r in ctx.store.queue()] == ["split_review"]
+    assert "Villanyszerelő: villamos biztonság" in prompts[0]
+    assert json.loads(Path(out["fajl"]).read_text(encoding="utf-8"))["valtozasok"][0]["regi"] == "Higiéniai előírás betartása"
+    # próbafutás: semmi nem íródik
+    calls["ren"].clear()
+    run_generalize(ctx, apply=False, log=lambda *a: None)
+    assert calls["ren"] == []
+
+
+def test_fajtaja_edge_and_torzs_guard(tmp_path):
+    """A meghatározó SZER-ELEM szűkebb fajtája a TESZ-SZÍN kísérő SZER-ELEM-e, FAJTAJA éllel; törzs-választásnál
+    eltérő SZER-ELEM-fajta esetén nincs automatikus SAME (átnézés)."""
+    from gaphopper.pipeline import Context, merge_plan
+
+    s = Settings(state_db=tmp_path / "s.sqlite")
+    s.embed_model = ""
+    d = p1_fixture()
+    d["szinek"][0]["secondary_szer"] = [{"label_hu": "Ápolási felmérőlap", "kind": "METHOD", "role": "USES",
+                                         "fajtaja": True}]
+    d["nivalok"][8] = {"nivalo_id": "M09", "nivalo_ref": "T01", "szer": "Mérőműszer", "kor_id": "K5",
+                       "relevance": "SUPPORTING"}
+    ctx = Context(s, with_graph=False, llm_override={"P3": FakeLLM(_p3_same_first([]))})
+    ctx.extra_torzs = [_torzs_rec()]
+    ctx.graph = FakeGraph()
+    p1 = P1Output.model_validate(ctx.resolve_mag_refs(d))
+    assert p1.nivalok[8].ref_szer == "Mérőműszer"
+    plan, summary, _ = merge_plan(ctx, {"job_id": "x", "title": "Ápoló"}, p1.model_dump(), p1.nivalok, p1.szinek)
+    m9 = next(m for m in summary["nivalok"] if m["nivalo_id"] == "M09")
+    assert m9["via"] == "torzs-ellenorzendo" and any(r["kind"] == "mag" for r in summary["review"])
+    assert plan.szer_broader and all(b["a"] != b["b"] for b in plan.szer_broader)

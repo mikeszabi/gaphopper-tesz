@@ -100,7 +100,7 @@
    "outcome_hu": "Állapotromlás felismerése és jelzése: ellenőrizhető, előírásszerű eredmény.",
    "tesz_type": "DECIDE",
    "primary_szer": {
-    "label_hu": "Korai figyelmeztető pontrendszer",
+    "label_hu": "Állapotromlás-jelző pontrendszer",
     "label_en": "Early warning score",
     "kind": "MODEL",
     "role": "GUIDED_BY",

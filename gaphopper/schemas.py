@@ -59,6 +59,8 @@ class SzerElem(_Base):
     definition_hu: str = ""
     kozeg: Optional[str] = None
     helyzet: Optional[str] = None
+    # kísérő SZER-ELEM-nél: a TESZ-nivaló meghatározó SZER-ELEM-ének szűkebb fajtája (FAJTAJA él)
+    fajtaja: bool = False
 
     @field_validator("kind")
     @classmethod
@@ -116,6 +118,8 @@ class TeszNivalo(_Base):
     nivalo_ref: Optional[str] = None
     # munkakör-függő szakmai kontextus (szakterület, célcsoport, tantárgy): a MunkaKor–TESZ élre kerül
     kontextus_hu: Optional[str] = None
+    # törzs-választásnál a P1 saját meghatározó SZER-ELEM-fajtája (a P3-őr veti össze a törzselemével)
+    ref_szer: Optional[str] = None
 
     @model_validator(mode="before")
     @classmethod
@@ -124,6 +128,8 @@ class TeszNivalo(_Base):
             data = dict(data)
             if "kesz" in data and "kesz_ids" not in data:
                 data["kesz_ids"] = data.pop("kesz")
+            if "szer" in data and "ref_szer" not in data and isinstance(data["szer"], str):
+                data["ref_szer"] = data.pop("szer")
             for old, new in (("mag_id", "nivalo_id"), ("mag_ref", "nivalo_ref")):
                 if old in data and new not in data:
                     data[new] = data.pop(old)
@@ -448,6 +454,33 @@ class P3Decision(_Base):
 class P3Output(_Base):
     """Egy munkakör összes kétes egyesítési esete egy hívásban."""
     decisions: list[P3Decision] = Field(default_factory=list)
+
+
+class P6Bontas(_Base):
+    label_hu: str
+    munkakorok: list[str] = Field(default_factory=list)
+
+
+class P6Item(_Base):
+    id: str
+    dontes: Literal["MARAD", "ATNEVEZ", "BONT"]
+    label_hu: str = ""
+    label_en: str = ""
+    szer_hu: str = ""
+    indok_hu: str = ""
+    bontas: list[P6Bontas] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _teljes(self):
+        if self.dontes == "ATNEVEZ" and not self.label_hu:
+            raise ValueError(f"{self.id}: ATNEVEZ-hez label_hu kell.")
+        if self.dontes == "BONT" and len(self.bontas) < 2:
+            raise ValueError(f"{self.id}: BONT-hoz legalább 2 javasolt név kell.")
+        return self
+
+
+class P6Output(_Base):
+    nivalok: list[P6Item] = Field(default_factory=list)
 
 
 class P5Item(_Base):

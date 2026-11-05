@@ -217,6 +217,12 @@ class Resolver:
 
         A TESZ-törzsből választott TESZ-nivaló (nivalo_ref) hívás nélkül feloldódik."""
         if m.nivalo_ref:
+            # P3-őr: ha a P1 saját meghatározó SZER-ELEM-fajtája más, mint a törzselemé, nincs automatikus SAME:
+            # a hivatkozás megmarad, de átnézésre kerül (pl. Teszteset ↔ Mérőműszer).
+            from .rules import stem_overlap
+
+            if m.ref_szer and not stem_overlap(m.ref_szer, m.primary_szer.label_hu):
+                return Resolution(m.nivalo_ref, "SAME", m.nivalo_ref, "torzs-ellenorzendo", needs_review=True)
             return Resolution(m.nivalo_ref, "SAME", m.nivalo_ref, "torzs")
         labels = [(m.label_hu, "hu"), (m.label_en, "en")]
         hit = self._alias_hit("TESZ_NIVALO", labels)

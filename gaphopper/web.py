@@ -47,6 +47,7 @@ PROMPT_STEP = {  # a felület ebben a sorrendben mutatja
     "p3_egyesites": ("P3", "a kétes TESZ-nivaló- és SZER-ELEM-egyesítések, egy hívásban"),
     "p4a_keszseg": ("P4", "KÉSZ-ség-horgonyzás"),
     "p4b_eqf": ("P4", "EQF-szintleírók"),
+    "p6_altalanositas": ("P6", "törzskarbantartás: túl szűk TESZ-nivaló-nevek általánosítása (generalize)"),
     "p5_tanusitas": ("P5", "TESZ-nivaló-rubrika és változatonként igazolás + SZÍN-rubrika"),
     "vocab": ("mind", "zárt szótárak és szabálykuszöbök (config/vocab.yaml)"),
 }

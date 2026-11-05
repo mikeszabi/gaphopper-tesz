@@ -8,8 +8,10 @@ FOGALMAK
   HELY-zet-semleges, a címkéje legfeljebb 6 szó, SZÍN-jelző (online, személyes, sürgős, labor ...)
   és szakmai specifikum (szakterület, szak, tantárgy) nélkül. Általános célcsoport maradhat
   ("hallgatóknak", "betegnek"), szak szerinti nem ("gépész hallgatóknak" -> "hallgatóknak"). A specifikum a TESZ-nivaló
-  kontextus_hu mezőjébe és a kísérő SZER-ELEM-be kerül. A meghatározó SZER-ELEM is fajta szintű
-  ("Nyilvántartás", nem "Betegdokumentáció"; "Előírás", nem "Higiénés előírás"). Egy TESZ-nivalóhoz 2-5 KÉSZ-ség-törzselem illik
+  kontextus_hu mezőjébe és a kísérő SZER-ELEM-be kerül. A meghatározó SZER-ELEM mindig fajta szintű
+  ("Nyilvántartás", nem "Betegdokumentáció"; "Előírás", nem "Higiéniai előírás"); a szűkebb fajta a
+  TESZ-SZÍN kísérő SZER-ELEM-e lesz "fajtaja": true jelöléssel (pl. "Higiéniai előírás" az "Előírás"
+  fajtája). Egy TESZ-nivalóhoz 2-5 KÉSZ-ség-törzselem illik
   (kesz_ids); a TESZ-nivaló nem specifikusabb, mint az illeszkedő KÉSZ-ségek.
 - SZÍN = ⟨KÖZ-EG, HELY-ZET⟩ pár. TESZ-SZÍN = TESZ-nivaló × SZÍN: a mikrotanúsítvány egysége, EGY
   értékelhető ERED-ménnyel, egy ember önállóan elvégezheti. Minden TESZ-nivalónak pontosan egy
@@ -60,14 +62,18 @@ M2 Rubrika-különbség: egy SZÍN akkor külön TESZ-SZÍN, ha legalább egy ú
 értékelési kritériumot hoz (időkorlát, hibatűrés, más címzett); ha nem, csak kísérő SZÍN
 (kozeg_secondary / helyzet_secondary).
 M3 Előfordulás: változat csak akkor, ha a munkakörben rendszeresen előfordul.
-G1 Munkakör-csere: ugyanez a TESZ-nivaló-címke legalább 3 munkakörben, lehetőleg 2 szakterületen is
-előfordulhatna. Ha nem, általánosíts a SZER-ELEM fajtájára ("laboratóriumi gyakorlat gépész
+G1 Munkakör-csere: ugyanez a TESZ-nivaló-címke legalább 3 munkakörben előfordulhatna (egy
+szakterületen belül is elég). Ha nem, általánosíts a SZER-ELEM fajtájára ("laboratóriumi gyakorlat gépész
 hallgatóknak" -> "Tanóra vagy foglalkozás megtartása", kontextus: labor, gépész hallgatók).
 G2 KÉSZ-ség-illeszthetőség: 2-5 törzselem közvetlenül illik a TESZ-nivalóhoz (csak a legjellemzőbbek).
 G3 SZÍN-semlegesség: a változat címkéje azonos a TESZ-nivalóéval; a SZÍN csak ⟨KÖZ-eg, HELY-zet⟩-ben és a
 szin_kulonbseg_hu-ban jelenik meg.
 G4 Összevonás: azonos TESZ-típus és ERED-mény-fajta, legalább 2/3 KÉSZ-ség-átfedés -> egy TESZ-nivaló. A
 célcsoport szakterületi szűkítése kontextus, nem új TESZ-nivaló, kivéve ha az ERED-mény is más.
+G5 Felismerhetőség (a G1 ellensúlya): a CORE TESZ-nivaló neve a szakma alapigéjét és a
+meghatározó SZER-ELEM fajtáját tartalmazza ("Programkód írása és módosítása", "Szoftver
+tesztelése", "Gyógyszer beadása"); a munkakör szakembere a névből ráismer a fő tevékenységére. A
+túl elvont név ("Rendszer vagy megoldás működtetése", "Működés ellenőrzése kritérium szerint") hiba.
 Igazolási mondat-próba (fejben): "A személy önállóan [ige] [mit] [milyen körülmények között],
 [milyen eredménnyel]."
 

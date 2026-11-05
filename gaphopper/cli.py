@@ -17,6 +17,7 @@
   anchors [--min-tesz 5 --min-jobs 3]
   p4a --type HELYZET --value HELY_RUTIN [--runs 3]
   show --job ID             egy munkakör köztes eredményei
+  generalize [--min-jobs 2] [--dry-run]   P6: túl szűk TESZ-nivaló-nevek általánosítása bizonyíték alapján
   certify [--limit N] [--chunk 10]   P5: igazolási mondat és rubrika a rubrika nélküli TESZ-ekhez
   report [--job ID..] [--by prompt_version,step]   tokenek, idő és költség a futásnaplóból
   models [--check-local]    a lépésenként érvényes modellbeállítás (és a helyi szerver próbája)
@@ -372,6 +373,26 @@ def cmd_certify(a):
     ctx.close()
 
 
+def cmd_generalize(a):
+    from .pipeline import run_generalize
+
+    ctx = _ctx()
+    try:
+        out = run_generalize(ctx, min_jobs=a.min_jobs, chunk=a.chunk, apply=not a.dry_run)
+    finally:
+        ctx.close()
+    print(f"{out['jeloltek']} jelölt; átnevezve: {len(out['valtozasok'])}, marad: {out['marad']}, "
+          f"bontási javaslat: {len(out['bontas'])}, hiba: {out['hiba']} ({out['ido_mp']} mp)"
+          + ("  [PRÓBA: semmi nem íródott]" if a.dry_run else ""))
+    for c in out["valtozasok"]:
+        print(f"  ÁTNEVEZ ({c['munkakor_db']} mk): {c['regi']}  ->  {c['uj']}"
+              + (f"   [SZER-ELEM: {c['szer_regi']} -> {c['szer_uj']}]" if c.get("szer_uj") else "")
+              + (f"   – {c['indok']}" if c.get("indok") else ""))
+    for b in out["bontas"]:
+        print(f"  BONTÁS (szakértőhöz): {b['nev']} -> " + " | ".join(x["label_hu"] for x in b["javaslat"]))
+    print("Lista:", out["fajl"])
+
+
 def cmd_report(a):
     from .report import summary
     from .store import Store
@@ -472,6 +493,10 @@ def main(argv=None):
     s.add_argument("--max-chars", type=int, default=20000); s.set_defaults(fn=cmd_show)
     s = sub.add_parser("certify"); s.add_argument("--limit", type=int, default=1000)
     s.add_argument("--chunk", type=int, default=6, help="TESZ-nivalók hívásonként"); s.set_defaults(fn=cmd_certify)
+    s = sub.add_parser("generalize", help="P6 törzskarbantartás: túl szűk TESZ-nivaló-nevek általánosítása")
+    s.add_argument("--min-jobs", type=int, default=2); s.add_argument("--chunk", type=int, default=20)
+    s.add_argument("--dry-run", action="store_true", help="csak a javaslatok listája, a gráf nem változik")
+    s.set_defaults(fn=cmd_generalize)
     s = sub.add_parser("report"); s.add_argument("--job", action="append")
     s.add_argument("--by", default="prompt_version,step"); s.set_defaults(fn=cmd_report)
     s = sub.add_parser("models"); s.add_argument("--check-local", action="store_true"); s.set_defaults(fn=cmd_models)

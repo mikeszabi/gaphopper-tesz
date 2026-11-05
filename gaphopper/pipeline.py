@@ -215,7 +215,7 @@ def p2_view(p1: P1Output) -> dict:
             if t.helyzet_secondary:
                 x["helyzet_secondary"] = t.helyzet_secondary
             if t.secondary_szer:
-                x["secondary_szer"] = [s.label_hu for s in t.secondary_szer]
+                x["secondary_szer"] = [s.label_hu + (" (fajta)" if s.fajtaja else "") for s in t.secondary_szer]
             x |= {"frequency": t.frequency, "expected_eqf": t.expected_eqf, "confidence": t.confidence}
             if t.open_question:
                 x["open_question"] = t.open_question
@@ -531,6 +531,11 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo], 
             rs = res.szer(s)
             secondary.append({"id": rs.entity_id, "role": s.role,
                               "kozeg": s.kozeg or t.kozeg, "helyzet": s.helyzet or t.helyzet})
+            # a meghatározó SZER-ELEM szűkebb fajtája: FAJTAJA él az általánoshoz (pl. Higiéniai előírás -> Előírás)
+            prim = res.szer(t.primary_szer).entity_id if t.primary_szer else None
+            if s.fajtaja and prim and prim != rs.entity_id and \
+                    {"a": rs.entity_id, "b": prim} not in plan.szer_broader:
+                plan.szer_broader.append({"a": rs.entity_id, "b": prim})
             if rs.needs_review:
                 summary["review"].append({"kind": "szer", "label": s.label_hu, "id": rs.entity_id})
         decision = "SAME" if tid in existing or tid in plan.szinek else "NEW"
@@ -647,6 +652,86 @@ def run_p5(ctx: Context, limit: int = 1000, chunk: int = 6, log=print, max_valto
     for part in parts:
         send(part)
     return stat
+
+
+# ------------------------------------------------------------------ P6: törzskarbantartás (generalize)
+def run_generalize(ctx: Context, min_jobs: int = 2, chunk: int = 20, apply: bool = True, log=print) -> dict:
+    """Bizonyíték alapú általánosítás: a legalább `min_jobs` munkakörben, eltérő kontextussal használt
+    TESZ-nivalókra a P3-modell (Haiku) eldönti, igaz-e a név mindegyikre. ATNEVEZ: új név, a régi alias (az
+    azonosító és a kapcsolatok maradnak); szűk meghatározó SZER-ELEM-nél általános fajta FAJTAJA éllel. BONT
+    (gyűjtő-TESZ-nivaló): szakértői sorba kerül. Eredmény: runs/generalize-<idő>.json."""
+    import time
+    from datetime import datetime
+
+    from .schemas import P6Output
+
+    rows = ctx.graph.generalize_candidates(min_jobs)
+    out = {"jeloltek": len(rows), "valtozasok": [], "bontas": [], "marad": 0, "hiba": 0}
+    started = time.monotonic()
+    for i in range(0, len(rows), chunk):
+        part = rows[i:i + chunk]
+        items = [{"id": r["id"], "nev": r["label_hu"], "tipus": r["tesz_type"], "szer": r["primary_szer"],
+                  "munkakorok": [f"{x['munkakor']}: {x['kontextus'] or '-'}" for x in r["munkakorok"]],
+                  "kesz": r["kesz"]} for r in part]
+        ids = {r["id"] for r in part}
+        user = render(prompt("p6_altalanositas"), nivalok_json=_json(items))
+
+        def check(o):
+            missing = ids - {x.id for x in o.nivalok}
+            if missing:
+                raise ValueError(f"Hiányzó id-k: {sorted(missing)}")
+
+        try:
+            obj, _ = call_json(ctx.llm("P3"), ctx.system, user, P6Output,
+                               log=ctx.logger(None, "P6", ctx.settings.p3), check=check)
+        except LLMError as exc:
+            out["hiba"] += len(part)
+            log(f"P6 hiba ({len(part)} TESZ-nivaló): {exc}")
+            continue
+        by = {r["id"]: r for r in part}
+        ren, szer, alias_rows = [], [], []
+        for it in obj.nivalok:
+            r = by.get(it.id)
+            if r is None:
+                continue
+            if it.dontes == "MARAD":
+                out["marad"] += 1
+            elif it.dontes == "ATNEVEZ" and norm_key(it.label_hu, "hu") != norm_key(r["label_hu"], "hu"):
+                keys = [norm_key(x, l) for x, l in ((r["label_hu"], "hu"), (r["label_en"] or "", "en"),
+                                                    (it.label_hu, "hu"), (it.label_en, "en")) if x]
+                ren.append({"id": it.id, "label_hu": it.label_hu, "label_en": it.label_en, "old_keys": keys,
+                            "indok": it.indok_hu})
+                alias_rows += [(norm_key(x, l), l, x, "TESZ_NIVALO", it.id, "generalize")
+                               for x, l in ((it.label_hu, "hu"), (it.label_en, "en")) if x]
+                ch = {"id": it.id, "regi": r["label_hu"], "uj": it.label_hu, "munkakor_db": r["munkakor_db"],
+                      "indok": it.indok_hu}
+                if it.szer_hu and norm_key(it.szer_hu, "hu") != norm_key(r["primary_szer"] or "", "hu"):
+                    sid = stable_id("gh_szer", it.szer_hu, "fajta")
+                    szer.append({"id": it.id, "szer_id": sid, "szer_hu": it.szer_hu})
+                    ch |= {"szer_regi": r["primary_szer"], "szer_uj": it.szer_hu}
+                out["valtozasok"].append(ch)
+            elif it.dontes == "BONT":
+                b = {"id": it.id, "nev": r["label_hu"], "indok": it.indok_hu,
+                     "javaslat": [x.model_dump() for x in it.bontas]}
+                out["bontas"].append(b)
+                if apply:
+                    ctx.store.enqueue(None, "split_review", b)
+            else:
+                out["marad"] += 1
+        if apply:
+            if ren:
+                ctx.graph.rename_nivalo(ren)
+                ctx.store.alias_add_many(alias_rows)
+            if szer:
+                ctx.graph.generalize_szer(szer)
+        log(f"P6: {min(i + chunk, len(rows))}/{len(rows)} TESZ-nivaló")
+    out["ido_mp"] = round(time.monotonic() - started, 1)
+    d = ROOT / "runs"
+    d.mkdir(exist_ok=True)
+    f = d / f"generalize-{datetime.now().strftime('%Y%m%d-%H%M%S')}.json"
+    f.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+    out["fajl"] = str(f)
+    return out
 
 
 # ------------------------------------------------------------------ vezérlés

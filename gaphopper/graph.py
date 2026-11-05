@@ -322,6 +322,40 @@ class Graph:
             "sz.label_hu AS primary_szer, g.rubric_alap_hu AS rubric_alap_hu, ktx AS kontextusok, v AS szinek "
             "ORDER BY g.id LIMIT $limit", limit=limit)
 
+    def generalize_candidates(self, min_jobs: int = 2, limit: int = 1000) -> list[dict]:
+        """A törzskarbantartás jelöltjei: legalább min_jobs munkakör, legalább 2 eltérő kontextus."""
+        return self.run(
+            "MATCH (g:TeszNivalo)<-[:SZINEZI]-(:TeszSzin)<-[r:TARTALMAZ_TESZT]-(m:MunkaKor) "
+            "WITH g, collect(DISTINCT {munkakor: m.label_hu, kontextus: r.kontextus_hu}) AS mk, "
+            "count(DISTINCT m) AS n, [x IN collect(DISTINCT r.kontextus_hu) WHERE x IS NOT NULL AND x <> ''] AS ktx "
+            "WHERE n >= $mj AND size(ktx) >= 2 "
+            "OPTIONAL MATCH (g)-[:TIPUSA]->(ty) OPTIONAL MATCH (g)-[:IRANYUL]->(s:SzerElem) "
+            "OPTIONAL MATCH (g)-[e:IGENYEL]->(k:Keszseg) "
+            "WITH g, mk, n, ty, s, k, e ORDER BY coalesce(e.suly, 0) DESC "
+            "WITH g, mk, n, ty, s, [x IN collect(k.label_en) WHERE x IS NOT NULL][..5] AS kesz "
+            "RETURN g.id AS id, g.label_hu AS label_hu, g.label_en AS label_en, ty.id AS tesz_type, "
+            "s.id AS szer_id, s.label_hu AS primary_szer, n AS munkakor_db, mk AS munkakorok, kesz "
+            "ORDER BY n DESC LIMIT $limit", mj=min_jobs, limit=limit)
+
+    def rename_nivalo(self, rows: list[dict]) -> None:
+        """TESZ-nivaló átnevezése: a régi név alias lesz, az azonosító és a kapcsolatok maradnak."""
+        self.run("UNWIND $rows AS r MATCH (g:TeszNivalo {id: r.id}) "
+                 "WITH g, r, [x IN ['hu:' + g.label_hu, 'en:' + coalesce(g.label_en, '')] "
+                 "  WHERE size(x) > 3 AND NOT x IN coalesce(g.aliases, [])] AS old "
+                 "SET g.aliases = coalesce(g.aliases, []) + old, g.alias_keys = coalesce(g.alias_keys, []) + "
+                 "  [k IN r.old_keys WHERE NOT k IN coalesce(g.alias_keys, [])], "
+                 "g.label_hu = r.label_hu, g.label_en = CASE WHEN r.label_en = '' THEN g.label_en ELSE r.label_en END, "
+                 "g.renamed_at = datetime(), g.rename_reason = r.indok "
+                 "SET g.alias_text = reduce(s = '', x IN g.aliases | s + ' ' + substring(x, 3))", rows=rows)
+
+    def generalize_szer(self, rows: list[dict]) -> None:
+        """A meghatározó SZER-ELEM általánosítása: új, fajta szintű SZER-ELEM; a régi FAJTAJA éllel alá kerül,
+        az IRANYUL él az újra mutat (a szerep megmarad)."""
+        self.run("UNWIND $rows AS r MATCH (g:TeszNivalo {id: r.id})-[i:IRANYUL]->(old:SzerElem) "
+                 "MERGE (new:SzerElem {id: r.szer_id}) ON CREATE SET new.label_hu = r.szer_hu, new.kind = old.kind, "
+                 "  new.status = 'JAVASOLT', new.created_at = datetime() "
+                 "MERGE (old)-[:FAJTAJA]->(new) MERGE (g)-[i2:IRANYUL]->(new) SET i2.role = i.role DELETE i", rows=rows)
+
     def set_certificates(self, magok: list[dict], valtozatok: list[dict], prompt_version: str) -> None:
         self.run("UNWIND $rows AS r MATCH (g:TeszNivalo {id: r.id}) SET g.rubric_alap_hu = r.rubric_alap_hu, "
                  "g.cert_prompt_version = $pv", rows=magok, pv=prompt_version)
