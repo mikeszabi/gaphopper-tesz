@@ -10,6 +10,15 @@ kontextussal. Mindegyikre döntsd el, hogy a NÉV minden kontextusra igaz-e.
   pl. "Működés ellenőrzése kritérium szerint" szoftvertesztelésre és villamos mérésre). Adj 2-3
   felismerhető nevet, és mindegyikhez a munkakörök listáját. Ezt szakértő hagyja jóvá.
 A TESZ-típust és az ERED-mény fajtáját ne változtasd. A régi gyökű magyar szót válaszd.
+KORLÁTOK (a túláltalánosítás ellen):
+- Csak szakterületi, szak- vagy közegszűkítést vegyél ki. Az általános célcsoport ("beteg", "hallgató",
+  "ügyfél") maradhat a névben.
+- Az új név is felismerhető legyen (G5): a szakma alapigéje + a SZER-ELEM fajtája, 2-6 szó. Csupasz,
+  elvont név ("Terv készítése", "Címzett tájékoztatása", "Eredmény értékelése", "Fizikai segítség
+  nyújtása") nem jó: ilyenkor inkább MARAD.
+- Ha egy munkakör kontextusa valójában más tevékenységet takar (pl. "jogosultságok kezelése" a
+  villanyszerelőnél hatósági engedélyt jelent, nem hozzáférési jogot), az BONT, nem ATNEVEZ.
+- Kétség esetén MARAD.
 
 TESZ-NIVALÓK (név, típus, meghatározó SZER-ELEM, munkakörök és kontextusaik, KÉSZ-ségek):
 {{nivalok_json}}
