@@ -1023,6 +1023,7 @@ def test_r21_szer_in_label():
     f = [x for x in rules.check(p1.szinek, None, "", magok=p1.nivalok) if x.rule == "R21"]
     assert f and f[0].cand_ids == ["M05"]
     assert rules.stem_overlap("Programkód", "Program írása és módosítása")
+    assert rules.stem_overlap("Ábra", "Ábrák készítése adatokból")          # magánhangzó-nyúlás
     assert not rules.stem_overlap("Teszteset", "Működés ellenőrzése előírt kritérium szerint")
 
 
