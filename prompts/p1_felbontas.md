@@ -26,8 +26,9 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
       elöl; ne sorold fel az összes kapcsolódót.
    c) kontextus_hu: a munkakör-specifikus tartalom röviden (szakterület, szak, tantárgy,
       helyszín), legfeljebb 8 szó – ide kerül minden, ami a TESZ-nivaló-címkéből kimaradt.
-   d) kesz_hiany (ritkán, TESZ-nivalónként legfeljebb 2): csak ha a TESZ-nivalóhoz lényeges KÉSZ-ség
-      egyik törzselemmel sem fedhető (szinonimával vagy tágabb elemmel sem). Törzsszintű legyen:
+   d) kesz_hiany (TESZ-nivalónként legfeljebb 2): ha a TESZ-nivalóhoz lényeges KÉSZ-séget egy törzselem
+      csak részben fedi, vagy a legjobb illesztés is távoli (a kesz_ids-be ilyenkor is a legjobb kerül).
+      Törzsszintű legyen:
       általános, szakterület-semleges, 1-4 szavas név; nem eszköz, termék, szoftver, szabvány vagy
       munkakör neve (az TUD-ás vagy SZER-ELEM), nem szintváltozat (alap/haladó), nem törzselem szinonimája.
       Alak: {"label_hu","label_en","csoport":"<a törzs csoportkódja>","irany":["<KÖZ-eg-fejléc>"]}.

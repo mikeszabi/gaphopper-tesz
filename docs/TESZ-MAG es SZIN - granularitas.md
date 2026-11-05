@@ -504,3 +504,7 @@ mintát adtak. Próbafutásban, üres törzzsel ugyanez a munkakör jó neveket 
 6. **Próba (dry run, 9 munkakör: ápoló, szoftverfejlesztő, villanyszerelő + 6 további)**: egyik sem adott
    hiányjelöltet; a 291 elemű törzs ezeket lefedi. A P1 törzsblokkja 5115 → 5172 token (16 új elem, a típusbetűk
    nélkül), a P1 felhasználói sablonja +282 token (a `kesz_hiany`-szabály).
+7. **Enyhített `kesz_hiany`-szabály (2026-11-05, felhasználói döntés)**: „ha egy törzselem csak részben fedi, vagy a
+   legjobb illesztés is távoli”; a törzsszintű korlátok maradnak. Próba (séf, állatorvos-asszisztens,
+   gyógypedagógus): 1 hiányjelölt („Egyéni differenciálás”, gyógypedagógus), a `kesz-bovit` ALIAS-nak ítélte
+   (161 „Fejlődést segítő támogatás”). A P1 a hiány jelzésére a szabály enyhítése után is ritkán vállalkozik.
