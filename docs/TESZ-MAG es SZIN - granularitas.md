@@ -484,3 +484,23 @@ mintát adtak. Próbafutásban, üres törzzsel ugyanez a munkakör jó neveket 
    címét és szakterületét nézi.
 5. **`generalize` (P6)**: bizonyíték alapú törzskarbantartás a futások után (MARAD / ATNEVEZ / BONT). Az ATNEVEZ
    azonnal érvényes: a régi név alias, az azonosító marad. A BONT szakértői sorba kerül.
+
+## 12. KÉSZ-ség-törzs: hierarchia, irányultság és bővítés (2026-11-05)
+
+1. **Kiegészítés a v3 gyűjteményből** (`data/competency/GH_competency_hierarchy_v3.json`): 16 új elem
+   (gh_c_276–291), 8 v3-tétel meglévő elem aliasa, 266 elem leírása (`leiras_hu/en`, a promptba nem kerül).
+   A v3-ból hiányzó 25 régi elem marad. Összesen 291 elem.
+2. **Nincs típus.** A TUD-ás, KÉP-esség és HOZZÁ-állás egy TESZ-reKÉSZ-ség állapotai, nem diszjunkt fajták
+   (felhasználói döntés). A hierarchia: 5 kategória → 19 csoport → elem.
+3. **1. tengely, irányultság**: amerre a KÉSZ-ség irányul, KÖZ-eg-kóddal (1–2), a KÉSZ-ség és a TESZ-SZÍN így
+   ugyanazon a gyökön kapcsolódik. Új érték: `KOZ_EGYEN` (egy-ÉN), csak KÉSZ-ségnél. Csoport-alapérték, elemenként
+   Haiku-felülvizsgálat (`kesz-irany`): 2026-11-05-én 45 elem iránya módosult, 33 bizonytalan a szakértői sorban.
+4. **2. tengely, TESZ-típus-család és hordozhatóság**: számolt, nem kézi (IGENYEL-súlyok, munkakörök fő
+   szakterületei), minden gráfírás után. TOP10-en: 24 általános, 27 átvihető, 67 szakmai a használt 118 elemből.
+5. **Törzsbővítés bizonyíték alapján**: P1 `kesz_hiany` (legfeljebb 2, törzsszintű név) → R23-őr → `KeszHiany` /
+   `HIANYZIK` (munkakörönként) → `kesz-bovit` (ALIAS / UJ / ELVET; UJ csak legalább 2 munkakörnél) → szakértői
+   jóváhagyás → gh_c_292-től. A granularitás a törzsé marad: általános, szakterület-semleges, 1–4 szavas név, nem
+   eszköz, termék, szabvány, munkakör vagy szintváltozat.
+6. **Próba (dry run, 9 munkakör: ápoló, szoftverfejlesztő, villanyszerelő + 6 további)**: egyik sem adott
+   hiányjelöltet; a 291 elemű törzs ezeket lefedi. A P1 törzsblokkja 5115 → 5172 token (16 új elem, a típusbetűk
+   nélkül), a P1 felhasználói sablonja +282 token (a `kesz_hiany`-szabály).

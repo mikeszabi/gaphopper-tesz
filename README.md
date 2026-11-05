@@ -10,7 +10,8 @@ Ez a teljes beállítási referencia. A [futtatási segédlet](docs/Gaphopper%20
 ```
 gaphopper-tesz/
 ├─ config/vocab.yaml       zárt szótárak (TESZ-típus, KÖZ-eg, HELY-zet, SZER-ELEM) + szabálykuszöbök
-├─ config/kesz_torzs.yaml  KÉSZ-ség-törzs: 275 elem (gh_c_<n>, GH_competency_list), Keszseg-csomópontként
+├─ config/kesz_torzs.yaml  KÉSZ-ség-törzs: 291 elem (gh_c_<n>; GH_competency_list + v3), kategória → csoport → elem,
+│                          irányultság (KÖZ-eg); Keszseg-csomópontként. A program is írja (kesz-irany, kesz-bovit)
 ├─ prompts/                E0 kinyerés, P0 rendszerprompt, P1 felbontás, P2 bírálat, P3 egyesítés, P4a/P4b
 ├─ gaphopper/              Python-csomag (CLI: python -m gaphopper)
 │   ├─ schemas.py          a promptkimenetek pydantic-sémái
@@ -176,7 +177,27 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
    TESZ-nivaló a javasolt névvel, a felsorolt munkakörök TESZ-SZÍN-jei és KÉSZ-ség-súlyai átkerülnek, a régi név és
    aliasai a régin maradnak, az új meghatározó SZER-ELEM a munkakör saját P1-es SZER-ELEM-fajtája). `--dry-run`: csak a lista. A változások listája:
    `runs/generalize-<idő>.json`. Kb. 0,01 USD 50 TESZ-nivalónként.
-6. **P5 (`certify`)** – halmozható tanúsítvány: TESZ-nivalónként 3–6 alapkritérium (`rubric_alap_hu`), változatonként
+6. **KÉSZ-ség-törzs: hierarchia, irány, bővítés.** A TUD-ás, KÉP-esség és HOZZÁ-állás nem a KÉSZ-ségek fajtái,
+   hanem egy TESZ-reKÉSZ-ség állapotai, ezért nincs típusmező. Két tengely van:
+   - **irányultság** (1. tengely): amerre a KÉSZ-ség irányul, KÖZ-eg-kóddal (`Keszseg -[:IRANYUL {primary}]-> Kozeg`,
+     1–2 elemenként; a `KOZ_EGYEN` = egy-ÉN csak itt érvényes, a TESZ-SZÍN-ben nem). Alapértéke a csoporté
+     (`csoportok[].irany`), elemenként a `kesz-irany` (Haiku) vizsgálja; a bizonytalan a szakértői sorba
+     (`kesz_irany_review`) kerül. A P1 törzsblokkja irány szerinti fejlécek alatt áll (`sorszám|név|csoport`).
+   - **TESZ-típus-család és hordozhatóság** (2. tengely): számolt, nem kézi. A `vocab.yaml` `tesz_csalad` része
+     8 családba sorolja a TESZ-típusokat; a KÉSZ-ség `csalad` / `csalad_arany` / `fo_csalad` tulajdonsága az IGENYEL
+     élek súlyozott megoszlása, a `hordozhatosag` (szakmai / átvihető / általános) az igénylő munkakörök fő
+     szakterületeinek száma szerint (küszöb: `rules.hordozhatosag_*`). Minden gráfírás után frissül.
+   - A hierarchia: `Keszseg -[:CSOPORTJA]-> KeszsegCsoport {kod} -[:KATEGORIAJA]-> KeszsegKategoria {kod}` (19 csoport,
+     5 kategória, a v3 gyűjtemény szerint).
+   - **Törzsbővítés bizonyíték alapján**: a P1 TESZ-nivalónként legfeljebb 2 `kesz_hiany`-t írhat, ha egyik törzselem
+     sem illik (név, csoport, irány). A törzsben már meglévő név (alias is) egyszerű IGENYEL lesz. Az R23-őr a nem
+     törzsszintű nevet (túl hosszú, szám, nagybetűs termék/rövidítés, munkakörszó, szintszó) `TUD_SZER` állapotú
+     jelöltként naplózza. A gráfban `(TeszNivalo)-[:HIANYZIK {munkakorok, suly}]->(KeszHiany {status})`.
+     A `kesz-bovit` (Haiku, a törzs a gyorsítótárazott rendszerpromptban) csoportosít és dönt: ALIAS (azonnal a
+     törzselem aliasa a yaml-ban és a gráfban, a TESZ-nivalók IGENYEL élt kapnak), UJ (szakértői sor `kesz_review`,
+     csak ha legalább `rules.kesz_bovit_min_munkakor` munkakör igényli, különben vár), ELVET. A `review --approve`
+     után az UJ a következő gh_c számot kapja (292-től), és bekerül a yaml-ba és a gráfba.
+7. **P5 (`certify`)** – halmozható tanúsítvány: TESZ-nivalónként 3–6 alapkritérium (`rubric_alap_hu`), változatonként
    igazolási mondat és 1–3 kiegészítő SZÍN-kritérium (`rubric_szin_hu`, az ALAP-SZÍN-nél üres). Egyszer készül,
    a gráfba írás után, hívásonként 6 TESZ-nivaló a változataival.
 6. **Napló** – minden LLM-hívás nyers válasza, modellje, promptverziója, tokenje és ideje a `runs/state.sqlite`-ban. Összesítés: `python -m gaphopper report` (promptverziónként, így a régi és az új futás összevethető).
@@ -262,6 +283,9 @@ python -m gaphopper run --dry-run --job <id>   # kalibráció
 python -m gaphopper run --workers 4
 python -m gaphopper generalize       # P6 törzskarbantartás: túl szűk nevek általánosítása, gyűjtő-nevek bontási javaslata
 python -m gaphopper split            # a jóváhagyott bontási javaslatok végrehajtása (új TESZ-nivaló, munkakörök átkötése)
+python -m gaphopper kesz-irany       # KÉSZ-ségek irányultsága elemenként (a csoport-alapértékből; --all: mind)
+python -m gaphopper kesz-bovit       # KÉSZ-ség-törzs bővítése a hiányjelöltekből; --from-dryrun runs/dryrun/*.json: próba
+python -m gaphopper review --approve <qid>   # kesz_review / kesz_irany_review / split_review / munkakör
 python -m gaphopper certify
 ```
 

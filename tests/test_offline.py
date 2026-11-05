@@ -1382,3 +1382,27 @@ def test_kesz_irany_review(tmp_path, monkeypatch):
         assert config.kesz_torzs()["gh_c_102"]["irany"] == ["KOZ_TARSAS", "KOZ_SZERVEZETI"]
     finally:
         config.kesz_cache_clear()
+
+
+def test_dry_run_kesz_hiany_to_bovit(tmp_path):
+    """P1 kesz_hiany -> próbafutás-kimenet (R23-szűrővel) -> kesz-bovit jelöltlista."""
+    from gaphopper.kesz import candidates_from_dryrun
+    from gaphopper.pipeline import dry_run
+
+    s = Settings()
+    s.state_db = tmp_path / "state.sqlite"
+    s.embed_model = ""
+    s.p2_mode = "never"
+    p1 = json.loads((FIX / "p1_nurse.json").read_text(encoding="utf-8"))
+    p1["nivalok"][0]["kesz_hiany"] = [{"label_hu": "Kockázatérzékelés", "label_en": "Risk awareness",
+                                       "csoport": "P2", "irany": ["KOZ_EGYEN"]},
+                                      {"label_hu": "SAP kezelése", "label_en": "SAP handling"}]
+    p1["nivalok"][1]["kesz_hiany"] = [{"label_hu": "Hibaelhárítás", "label_en": "Troubleshooting"}]
+    rec = json.loads((Path(__file__).parents[1] / "data" / "sample_jobs.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    out = dry_run(rec, s, None, llm_override={"P1": FakeLLM(lambda sy, u: json.dumps(p1))}, out_dir=tmp_path / "dry")
+    assert out["ok"], out.get("error")
+    st = {h["label_hu"]: h["status"] for h in out["kesz_hiany"]}
+    assert st == {"Kockázatérzékelés": "JELOLT", "SAP kezelése": "TUD_SZER", "Hibaelhárítás": "TORZSBEN"}
+    assert out["szamok"]["kesz_hiany"] == 3 and out["szamok"]["kesz_hiany_jelolt"] == 1
+    c = candidates_from_dryrun(list((tmp_path / "dry").glob("*.json")))
+    assert [x["label_hu"] for x in c] == ["Kockázatérzékelés"] and c[0]["munkakorok"] == [rec["job_id"]]

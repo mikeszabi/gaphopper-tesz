@@ -230,6 +230,8 @@ python -m gaphopper import data/job_100.jsonl
 python -m gaphopper run --dry-run --job <3 referencia-munkakör>   # kalibráció
 python -m gaphopper run --workers 8
 python -m gaphopper generalize       # P6: túl szűk TESZ-nivaló-nevek általánosítása (előtte: --dry-run)
+python -m gaphopper kesz-bovit       # KÉSZ-ség-törzs bővítése: ALIAS azonnal, UJ a szakértői sorba (előtte: --dry-run)
+python -m gaphopper review           # a sor: kesz_review (új KÉSZ-ség), kesz_irany_review (irány), split_review
 python -m gaphopper certify          # P5: TESZ-nivaló-rubrika + változatonként igazolás és SZÍN-rubrika
 ```
 

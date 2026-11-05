@@ -39,6 +39,9 @@ a Futás oldal naplózott tokeneket és becsült API-költséget mutat. Kulcsér
 - `python -m gaphopper generalize [--dry-run]` – P6 törzskarbantartás: a több munkakörben, eltérő kontextussal
   használt TESZ-nivalók túl szűk nevének általánosítása (a régi név alias), gyűjtő-nevek bontási javaslata (szakértőhöz)
 - `python -m gaphopper split [--review QID]` – jóváhagyott bontási javaslat végrehajtása (szakértői sor: split_review)
+- `python -m gaphopper kesz-irany [--dry-run]` – KÉSZ-ségek irányultsága (KÖZ-eg, KOZ_EGYEN = egy-ÉN) elemenként, Haiku
+- `python -m gaphopper kesz-bovit [--dry-run | --from-dryrun f.json ...]` – KÉSZ-ség-törzs bővítése a P1 `kesz_hiany`
+  jelöltjeiből (ALIAS azonnal; UJ szakértői sorba, legalább 2 munkakörnél; jóváhagyás: gh_c_292-től yaml + gráf)
 - `python -m gaphopper certify` – P5: TESZ-nivaló-rubrika (`rubric_alap_hu`), változatonként igazolás + SZÍN-rubrika (`rubric_szin_hu`)
 - `python -m gaphopper report` – tokenek, idő, költség promptverziónként; `models` – érvényes modellbeállítás
 - `python -m gaphopper ui` – webes felület (http://localhost:8765; `gaphopper/web.py` + `web/`)
@@ -68,7 +71,10 @@ Kézi módban az `extract` a `runs/manual/extract/<fájlnév>/` mappába írja a
   szótárverzióval (`TeszNivalo.gen`) készült TESZ-nivalókból áll.
 - A meghatározó SZER-ELEM fajta szintű; a szűkebb fajta a TESZ-SZÍN kísérő SZER-ELEM-e (`fajtaja: true` -> `FAJTAJA` él).
   Törzs-választásnál a P1 megadja a saját SZER-ELEM-fajtáját (`szer`); ha eltér a törzselemétől, átnézésre kerül.
-- Szabályok: R1–R21 (`rules.py`; G1–G5: R4, R17, R18, R20, R21; törzshasználat: R19; R17-hez nincs szólista), küszöbök a `vocab.yaml` `rules` részében; a zárt listák egyértelmű
+- A KÉSZ-ség-törzsnek nincs típusmezője (TUD/KÉP/HOZZÁ-állás állapot, nem fajta); a hierarchia kategória → csoport →
+  elem, az 1. tengely az irány (`irany`), a 2. (TESZ-típus-család, hordozhatóság) a gráfból számolt (`update_kesz_profil`).
+  A `kesz_torzs.yaml`-t a `config.save_kesz_torzs` írja (soronként egy elem); kézi szerkesztésnél ezt az alakot tartsd.
+- Szabályok: R1–R21 és R23 (`rules.py`; R23 = `kesz_hiany_guard`; G1–G5: R4, R17, R18, R20, R21; törzshasználat: R19; R17-hez nincs szólista), küszöbök a `vocab.yaml` `rules` részében; a zárt listák egyértelmű
   eltérései az `alias_ertek` táblában (új tételt csak egyértelmű megfeleltetésnél vegyél fel).
 - Ne hozz létre külön csomópontot szinonimáknak: a nevek az elem `aliases` tulajdonságába kerülnek.
 - A magyar név az elsődleges, az angol a megfeleltetés; régi gyökű magyar szót válassz az idegen helyett.
