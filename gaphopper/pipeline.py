@@ -15,6 +15,7 @@ from . import rules
 from .config import ROOT, Settings, StepModel, kesz_block, kesz_torzs, prompt, prompt_version, render, settings, vocab
 from .embed import get_embedder
 from .llm import CACHE_SPLIT, LLMError, ManualStep, call_json, get_llm
+from .kesz import hiany_rows, torzs_keys
 from .merge import Resolver
 from .normalize import norm_key, stable_id
 from .schemas import (NIVALO_FIELDS, NIVALO_IDENTITY, P1Output, P2Change, P2Output, P4aOutput, P5NivaloOutput, TeszSzin, TeszNivalo,
@@ -63,8 +64,8 @@ class Context:
         kesz = kesz_block()
         torzs = self.tesz_torzs()
         mags = "\n".join(f"{c}|{r['label_hu']}|{r['tesz_type']}" for c, r in torzs.items()) or "(még üres)"
-        return (self.system + "\n\nKÉSZ-SÉG-TÖRZS (a kesz_ids-be a sorszám kerül; csoportfejléc, alatta "
-                "sorszám|név|típus; T = TUDás, K = KÉSZség, P = KÉPesség, A = hozzáÁLLás):\n" + kesz + CACHE_SPLIT
+        return (self.system + "\n\nKÉSZ-SÉG-TÖRZS (a kesz_ids-be a sorszám kerül; fejléc: a KÖZ-eg, amerre a KÉSZ-ség "
+                "irányul, KOZ_EGYEN = egy-ÉN; alatta sorszám|név|csoport):\n" + kesz + CACHE_SPLIT
                 + "TESZ-TÖRZS (a nivalo_ref-be a kód kerül; kód|címke|TESZ-típus):\n" + mags)
 
     def resolve_mag_refs(self, data):
@@ -501,6 +502,7 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo], 
     refs = [rm.entity_id for _, rm in resolved.values() if rm.decision in ("ALIAS", "SAME")]
     missing = set(refs) - (ctx.graph.existing_ids("TESZ_NIVALO", refs) if refs and hasattr(ctx.graph, "existing_ids")
                            else set(refs))
+    hkeys = torzs_keys() if any(m.kesz_hiany for m in magok) else {}
     for m in magok:
         p, rm = resolved[m.nivalo_id]
         mag_ids[m.nivalo_id] = rm.entity_id
@@ -509,6 +511,11 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo], 
             "props": {}, "emb": None, "new": False, "tesz_type": m.tesz_type, "primary": p.entity_id,
             "role": m.primary_szer.role, "melyites": [], "kesz_ids": []})
         entry["kesz_ids"] = list(dict.fromkeys(entry["kesz_ids"] + m.kesz_ids))
+        if m.kesz_hiany:
+            # törzsbővítési bizonyíték; a törzsben már meglévő név (szinonima, alias) egyszerű IGENYEL lesz
+            hrows, had = hiany_rows(job, rm.entity_id, m.kesz_hiany, hkeys)
+            entry["kesz_ids"] = list(dict.fromkeys(entry["kesz_ids"] + had))
+            plan.hianyok += [h for h in hrows if (h["id"], h["mag"]) not in {(x["id"], x["mag"]) for x in plan.hianyok}]
         if new and not entry["new"]:
             entry["new"] = True
             entry["props"] = {"label_hu": m.label_hu, "label_en": m.label_en, "outcome_hu": m.outcome_hu,
@@ -522,6 +529,8 @@ def merge_plan(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo], 
                                  "kesz_ids": m.kesz_ids})
         if rm.needs_review or p.needs_review:
             summary["review"].append({"kind": "mag", "label": m.label_hu, "id": rm.entity_id})
+    summary["kesz_hiany"] = [{"id": h["id"], "status": h["status"], "label_hu": h["props"]["label_hu"],
+                              "ok": h["props"]["ok"], "mag": h["mag"]} for h in plan.hianyok]
     existing = set()
     tids = [res.tesz_id(mag_ids[t.nivalo_id], t) for t in final]
     if hasattr(ctx.graph, "existing_ids"):
@@ -575,6 +584,8 @@ def write_graph(ctx: Context, job: dict, p1_meta: dict, magok: list[TeszNivalo],
     plan, summary, res = merge_plan(ctx, job, p1_meta, magok, final)
     t0 = time.monotonic()
     counts = ctx.graph.write_plan(plan)
+    if hasattr(ctx.graph, "update_kesz_profil"):
+        ctx.graph.update_kesz_profil()  # 2. tengely: családarányok és hordozhatóság az új súlyokkal
     ctx.store.alias_add_many(plan.alias_index)
     ctx._torzs = None  # a következő munkakör P1-e már az új TESZ-nivalókat is látja a törzsben
     summary["timings"]["writing_seconds"] = round(time.monotonic() - t0, 3)
@@ -794,6 +805,7 @@ def run_split(ctx: Context, queue_id: int, log=print) -> list[dict]:
                      "munkakorok": [m["job"] for m in part["moves"]]})
         log(f"Bontás: {cx['g']['label_hu']} -> + {part['new']['label_hu']} ‹{part['new']['szer_hu']}› "
             f"({', '.join(m['job'] for m in part['moves'])})")
+    ctx.graph.update_kesz_profil()
     ctx.store.decide(queue_id, "JOVAHAGYVA", {"bontas": done})
     return done
 
@@ -845,6 +857,13 @@ def approve_job(ctx: Context, queue_id: int, final_override: dict | None = None)
 
     final_override: {"final_nivalok": [...], "final_szinek": [...]} (régi alak: csak a változatlista)."""
     row = next(r for r in ctx.store.queue() if r["id"] == queue_id)
+    if row["kind"] in ("kesz_review", "kesz_irany_review", "split_review"):
+        from .kesz import approve_kesz, approve_kesz_irany
+
+        payload = json.loads(row["payload_json"])
+        if row["kind"] == "split_review":
+            return {"bontas": run_split(ctx, queue_id)}
+        return (approve_kesz if row["kind"] == "kesz_review" else approve_kesz_irany)(ctx, row, payload)
     job = ctx.store.job(row["job_id"])
     p1 = ctx.store.artifact(row["job_id"], "P1") or {}
     p2 = ctx.store.artifact(row["job_id"], "P2") or {}
@@ -900,17 +919,28 @@ def dry_run(job: dict, s: Settings | None = None, graph=None, llm_override: dict
                 "primary_szer": m.primary_szer.label_hu, "relevance": m.relevance,
                 "melyites_jeloltek": [x.model_dump() for x in m.melyites_jeloltek],
                 "nivalo_ref": m.nivalo_ref, "kesz_ids": m.kesz_ids, "kontextus_hu": m.kontextus_hu,
+                "kesz_hiany": [h.model_dump() for h in m.kesz_hiany],
                 "egyesites": (merge or {}).get(m.nivalo_id, {}).get("decision"),
                 "szinek": [{"cand_id": t.cand_id, "alap_szin": t.alap_szin, "label_hu": t.label_hu,
                                 "kozeg": t.kozeg, "helyzet": t.helyzet, "szin_kulonbseg_hu": t.szin_kulonbseg_hu,
                                 "frequency": t.frequency, "expected_eqf": t.expected_eqf,
                                 "egyesites": (tmerge or {}).get(t.cand_id, {}).get("decision") if merge else None}
                                for t in vs]})
+        hk = torzs_keys()
+        out["kesz_hiany"] = []
+        for m in magok:
+            hrows, had = hiany_rows(job, m.nivalo_id, m.kesz_hiany, hk)
+            out["kesz_hiany"] += [{"id": h["id"], "status": h["status"], "nivalo": m.label_hu, **h["props"]}
+                                  for h in hrows]
+            out["kesz_hiany"] += [{"id": k, "status": "TORZSBEN", "nivalo": m.label_hu,
+                                   "label_hu": kesz_torzs()[k]["label_hu"]} for k in had]
         out["szamok"] = {"nivalo": len(magok), "szin": len(final),
                          "core_nivalo": sum(m.relevance == "CORE" for m in magok),
                          "nem_alap": sum(not t.alap_szin for t in final),
                          "melyitesi_jelolt": sum(len(m.melyites_jeloltek) for m in magok),
                          "torzsbol": sum(bool(m.nivalo_ref) for m in magok),
+                         "kesz_hiany": len(out["kesz_hiany"]),
+                         "kesz_hiany_jelolt": sum(h["status"] == "JELOLT" for h in out["kesz_hiany"]),
                          "torzs_meret": len(ctx.tesz_torzs())}
         # próbafutás-lánchoz: ennek a munkakörnek az új TESZ-SZÍN-jei a következő törzsébe kerülhetnek
         out["new_torzs"] = [{"id": f"dry:{jid}:{m.nivalo_id}", "label_hu": m.label_hu, "label_en": m.label_en,

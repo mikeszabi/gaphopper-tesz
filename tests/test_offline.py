@@ -24,7 +24,9 @@ def test_vocab_codes_in_p0():
     p0 = prompt("p0_system")
     v = vocab()
     for group in ("tesz_tipus", "kozeg", "helyzet", "szer_elem_fajta"):
-        for code in v[group]:
+        for code, x in v[group].items():
+            if isinstance(x, dict) and x.get("csak_kesz"):
+                continue  # KOZ_EGYEN: csak KÉSZ-ség-irány (a P1 törzsblokkjának fejlécében), TESZ-SZÍN-ben nem
             assert code in p0, f"{code} hiányzik a P0-ból"
     for role in v["szer_elem_szerep"]:
         assert role in p0
@@ -699,7 +701,7 @@ def test_dry_run_writes_nothing(tmp_path):
     assert out["ok"], out.get("error")
     assert not s.state_db.exists() and graph.plans == [] and len(calls) == 1
     assert out["szamok"] == {"nivalo": 11, "szin": 14, "core_nivalo": 8, "nem_alap": 3, "melyitesi_jelolt": 1,
-                             "torzsbol": 0, "torzs_meret": 0}
+                             "torzsbol": 0, "torzs_meret": 0, "kesz_hiany": 0, "kesz_hiany_jelolt": 0}
     assert len(out["new_torzs"]) == 11 and out["new_torzs"][0]["kesz_ids"] == ["gh_c_3", "gh_c_270", "gh_c_42"]
     assert out["nivalok"][0]["egyesites"] == "NEW" and out["p3_cases"] >= 11
     assert [u["step"] for u in out["usage"]] == ["P1", "P3"]
@@ -918,20 +920,81 @@ def test_kesz_ids_normalized_and_checked():
 
 
 def test_kesz_hierarchy_v3():
-    from gaphopper.config import KESZ_TIPUS, kesz_hierarchia, kesz_torzs
+    from gaphopper.config import kesz_hierarchia, kesz_torzs
+    from gaphopper.schemas import KESZ_IRANY, KOZEG
 
     h, t = kesz_hierarchia(), kesz_torzs()
     kat = {k["kod"] for k in h["kategoriak"]}
     cs = {c["kod"]: c["kategoria"] for c in h["csoportok"]}
     assert kat == {"SZEM", "TARS", "VEZ", "KOG", "TECH"} and len(cs) == 19 and set(cs.values()) <= kat
-    assert all(x["csoport"] in cs and x["tipus"] in KESZ_TIPUS for x in t.values())
-    att = {k for k, x in t.items() if x["tipus"] == "HOZZAALLAS"}
-    assert len(att) == 26 and "gh_c_181" in att and t["gh_c_181"]["betu"] == "A"
+    assert all(x["csoport"] in cs and 1 <= len(x["irany"]) <= 2 and set(x["irany"]) <= KESZ_IRANY for x in t.values())
+    assert not any("tipus" in x or "type" in x for x in h["items"])      # a TUD/KÉP/HOZZÁ nem fajta (2026-11-05)
+    assert "KOZ_EGYEN" in KESZ_IRANY and "KOZ_EGYEN" not in KOZEG       # egy-ÉN csak KÉSZ-ség-irány
+    assert t["gh_c_181"]["irany"] == ["KOZ_EGYEN"] and t["gh_c_246"]["irany"] == ["KOZ_TARSAS"]
     assert t["gh_c_286"]["label_hu"] == "Hibaelhárítás" and t["gh_c_286"]["csoport"] == "H10"
     assert "en:Troubleshooting (advanced)" in t["gh_c_286"]["aliases"] and "en:Problem solving" in t["gh_c_5"]["aliases"]
-    assert t["gh_c_290"]["tipus"] == "KEPESSEG" and t["gh_c_290"]["csoport"] == "P2"
+    assert t["gh_c_290"]["csoport"] == "P2"
     assert all(f"gh_c_{n}" in t for n in [*range(21, 42), 44, 45, 51, 55])   # a v3-ból hiányzók maradnak
-    assert t["gh_c_1"]["tipus"] == "TUDAS" and t["gh_c_1"]["leiras_hu"]
+    assert t["gh_c_1"]["leiras_hu"]
+
+
+def test_kesz_yaml_roundtrip(tmp_path):
+    import yaml
+
+    from gaphopper.config import kesz_hierarchia, save_kesz_torzs
+
+    h = kesz_hierarchia()
+    save_kesz_torzs(h, tmp_path / "k.yaml")
+    d = yaml.safe_load((tmp_path / "k.yaml").read_text(encoding="utf-8"))
+    assert d["items"] == h["items"] and d["csoportok"] == h["csoportok"] and d["version"] == h["version"]
+
+
+def test_kesz_profil_axis2():
+    from gaphopper.kesz import profil
+
+    edges = [{"k": "gh_c_1", "tesz_type": "ASSESS_ANALYSE", "munkakorok": ["a", "b"]},
+             {"k": "gh_c_1", "tesz_type": "PROBLEM_SOLVE", "munkakorok": ["c"]},
+             {"k": "gh_c_2", "tesz_type": "DOCUMENT", "munkakorok": ["a"]},
+             {"k": "gh_c_3", "tesz_type": "EXECUTE", "munkakorok": ["a", "b"]}]
+    fields = {"a": "Health and care / Health", "b": "Digital and data / Computing", "c": "Engineering / Science"}
+    p = {r["id"]: r for r in profil(edges, fields)}
+    assert p["gh_c_1"]["csalad"] == ["megismero", "javito"] and p["gh_c_1"]["csalad_arany"] == [0.67, 0.33]
+    assert p["gh_c_1"]["hordozhatosag"] == "altalanos" and p["gh_c_1"]["munkakor_db"] == 3
+    assert p["gh_c_3"]["hordozhatosag"] == "atviheto" and p["gh_c_2"]["hordozhatosag"] == "szakmai"
+    assert p["gh_c_2"]["fo_csalad"] == "kozlo"
+
+
+def test_kesz_hiany_guard_r23():
+    from gaphopper.rules import kesz_hiany_guard as g
+
+    assert g("Hibaelhárítás", "Troubleshooting") == ""
+    assert g("Kockázatérzékelés", "Risk awareness") == ""
+    assert "termék" in g("SAP használata", "Using SAP")
+    assert "szám" in g("IEC 60364 ismerete", "")
+    assert "szint" in g("Haladó táblázatkezelés", "Advanced spreadsheets")
+    assert "hosszú" in g("Nagyon hosszú és összetett készség neve itt", "")
+    assert "munkakör" in g("Villanyszerelési rutin", "", "Villanyszerelő", "Built environment and trades")
+
+
+def test_kesz_hiany_schema_and_rows():
+    from gaphopper.kesz import hiany_rows
+    from gaphopper.schemas import TeszNivalo
+
+    d = p1_fixture()["nivalok"][0]
+    m = TeszNivalo.model_validate(d | {"kesz_hiany": [
+        {"label_hu": "Kockázatérzékelés", "label_en": "Risk awareness", "csoport": "P2", "irany": "KOZ_EGYEN"},
+        {"label_hu": "Hibaelhárítás", "label_en": "x"}]})
+    assert m.kesz_hiany[0].irany == ["KOZ_EGYEN"]
+    with pytest.raises(Exception):
+        TeszNivalo.model_validate(d | {"kesz_hiany": [{"label_hu": "a"}] * 3})        # legfeljebb 2
+    with pytest.raises(Exception, match="csoport"):
+        TeszNivalo.model_validate(d | {"kesz_hiany": [{"label_hu": "a", "csoport": "X9"}]})
+    rows, had = hiany_rows({"title": "Ápoló", "field": "Health"}, "gh_niv_x", m.kesz_hiany)
+    assert had == ["gh_c_286"]                                 # a törzsben meglévő név IGENYEL lesz, nem jelölt
+    assert [r["status"] for r in rows] == ["JELOLT"] and rows[0]["id"].startswith("gh_kh_")
+    rows2, _ = hiany_rows({}, "gh_niv_x", TeszNivalo.model_validate(
+        d | {"kesz_hiany": [{"label_hu": "SAP kezelése"}]}).kesz_hiany)
+    assert rows2[0]["status"] == "TUD_SZER" and rows2[0]["props"]["ok"]
 
 
 def test_p1_system_has_torzs_and_two_cache_blocks(tmp_path):
@@ -942,9 +1005,9 @@ def test_p1_system_has_torzs_and_two_cache_blocks(tmp_path):
     ctx.extra_torzs = [_torzs_rec()]
     sys_ = ctx.p1_system()
     static, dynamic = sys_.split(CACHE_SPLIT)
-    assert "246|Szakmai nyilvános beszéd|K" in static     # a P1 a magyar nevet látja, csoportfejléc alatt
-    s1 = static.index("# S1 Kommunikációs készségek")
-    assert s1 < static.index("246|Szakmai") and "leiras" not in static and "Technikák és megközelítések" not in static
+    assert "246|Szakmai nyilvános beszéd|S1" in static     # a P1 a magyar nevet látja, irány szerinti fejléc alatt
+    assert static.index("# KOZ_TARSAS") < static.index("246|Szakmai") and "Technikák és megközelítések" not in static
+    assert "hozzáÁLL" not in static and "KOZ_EGYEN = egy-ÉN" in static
     assert dynamic.endswith("T01|Tanóra vagy foglalkozás megtartása|SUPPORT_SERVE")
     blocks = system_blocks(sys_)
     assert len(blocks) == 2 and all(b["cache_control"] == {"type": "ephemeral"} for b in blocks)
@@ -1191,3 +1254,131 @@ def test_split_plan_moves_listed_jobs():
     assert p["new"]["label_hu"] == "Villamos áramkör vizsgálata" and p["new"]["szer_hu"] == "Mérőműszer"
     assert [m["job"] for m in p["moves"]] == ["j2"] and p["moves"][0]["old_szin"] == "s2"
     assert p["new"]["id"].startswith("gh_niv_") and p["moves"][0]["new_szin"].startswith("gh_szin_")
+
+
+class _KeszGraph:
+    def __init__(self, rows):
+        self.rows, self.calls = rows, []
+
+    def kesz_hiany_candidates(self):
+        return self.rows
+
+    def upsert_keszseg(self, ids):
+        self.calls.append(("upsert", ids))
+
+    def kesz_hiany_resolve(self, ids, k, st):
+        self.calls.append(("resolve", ids, k, st))
+        return len(ids)
+
+    def kesz_hiany_status(self, ids, st, ok=""):
+        self.calls.append(("status", ids, st))
+
+    def update_kesz_profil(self):
+        self.calls.append(("profil",))
+
+
+def _tmp_torzs(tmp_path, monkeypatch):
+    import shutil
+
+    from gaphopper import config
+
+    p = tmp_path / "kesz_torzs.yaml"
+    shutil.copy(config.KESZ_PATH, p)
+    monkeypatch.setattr(config, "KESZ_PATH", p)
+    config.kesz_cache_clear()
+    return p
+
+
+def test_kesz_bovit_alias_uj_elvet_and_approve(tmp_path, monkeypatch):
+    from gaphopper import config
+    from gaphopper.kesz import run_kesz_bovit
+    from gaphopper.pipeline import Context, approve_job
+
+    _tmp_torzs(tmp_path, monkeypatch)
+    try:
+        rows = [{"id": "gh_kh_a", "label_hu": "Hibakeresés", "label_en": "Fault finding", "csoport": "H10",
+                 "irany": ["KOZ_FIZIKAI"], "nivalok": ["Hiba elhárítása"], "munkakorok": ["j1"]},
+                {"id": "gh_kh_b", "label_hu": "Kockázatérzékelés", "label_en": "Risk awareness", "csoport": "P2",
+                 "irany": ["KOZ_EGYEN"], "nivalok": ["X"], "munkakorok": ["j1"]},
+                {"id": "gh_kh_c", "label_hu": "Kockázatészlelés", "label_en": "Risk perception", "csoport": "P2",
+                 "irany": [], "nivalok": ["Y"], "munkakorok": ["j2"]},
+                {"id": "gh_kh_d", "label_hu": "Ritka érzék", "label_en": "", "csoport": "", "irany": [],
+                 "nivalok": ["Z"], "munkakorok": ["j3"]},
+                {"id": "gh_kh_e", "label_hu": "Egyedi dolog", "label_en": "", "csoport": "", "irany": [],
+                 "nivalok": ["Z"], "munkakorok": ["j3"]}]
+        seen = {}
+
+        def p8(system, user):
+            seen["system"], seen["user"] = system, user
+            return json.dumps({"csoportok": [
+                {"ids": ["gh_kh_a"], "dontes": "ALIAS", "kesz": 286},
+                {"ids": ["gh_kh_b", "gh_kh_c"], "dontes": "UJ", "label_hu": "Kockázatérzékelés",
+                 "label_en": "Risk awareness", "csoport": "P2", "irany": ["KOZ_EGYEN"]},
+                {"ids": ["gh_kh_d"], "dontes": "UJ", "label_hu": "Ritka érzék", "label_en": "Rare sense",
+                 "csoport": "P2", "irany": ["KOZ_EGYEN"]},
+                {"ids": ["gh_kh_e"], "dontes": "ELVET", "indok_hu": "szűk"}]})
+
+        s = Settings(state_db=tmp_path / "s.sqlite")
+        ctx = Context(s, with_graph=False, llm_override={"P3": FakeLLM(p8)})
+        ctx.graph = _KeszGraph(rows)
+        out = run_kesz_bovit(ctx)
+        assert "286|Hibaelhárítás|H10" in seen["system"] and "gh_kh_a" in seen["user"]
+        assert [c["kesz"] for c in out["alias"]] == ["gh_c_286"]
+        assert len(out["uj"]) == 1 and out["uj"][0]["munkakorok"] == ["j1", "j2"]
+        assert [v["label_hu"] for v in out["var"]] == ["Ritka érzék"]        # 1 munkakör: vár, nem javaslat
+        assert ("resolve", ["gh_kh_a"], "gh_c_286", "ALIAS") in ctx.graph.calls
+        assert ("status", ["gh_kh_e"], "ELVETVE") in ctx.graph.calls
+        assert "hu:Hibakeresés" in config.kesz_torzs()["gh_c_286"]["aliases"]   # a yaml-ba is
+        q = [r for r in ctx.store.queue() if r["kind"] == "kesz_review"]
+        assert len(q) == 1
+        res = approve_job(ctx, q[0]["id"])
+        assert res["id"] == "gh_c_292" and config.kesz_torzs()["gh_c_292"]["irany"] == ["KOZ_EGYEN"]
+        assert config.kesz_torzs()["gh_c_292"]["forras"] == "kesz-bovit"
+        assert ("resolve", ["gh_kh_b", "gh_kh_c"], "gh_c_292", "BEEMELT") in ctx.graph.calls
+        assert not [r for r in ctx.store.queue() if r["kind"] == "kesz_review"]
+    finally:
+        config.kesz_cache_clear()
+
+
+def test_kesz_bovit_check_rejects_missing_ids(tmp_path, monkeypatch):
+    from gaphopper import config
+    from gaphopper.kesz import run_kesz_bovit
+    from gaphopper.pipeline import Context
+
+    _tmp_torzs(tmp_path, monkeypatch)
+    try:
+        rows = [{"id": "gh_kh_a", "label_hu": "A", "label_en": "", "csoport": "", "irany": [], "nivalok": [],
+                 "munkakorok": ["j1"]}, {"id": "gh_kh_b", "label_hu": "B", "label_en": "", "csoport": "",
+                                         "irany": [], "nivalok": [], "munkakorok": ["j1"]}]
+        ans = json.dumps({"csoportok": [{"ids": ["gh_kh_a"], "dontes": "ELVET"}]})
+        ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False,
+                      llm_override={"P3": FakeLLM(lambda a, b: ans)})
+        ctx.graph = _KeszGraph(rows)
+        out = run_kesz_bovit(ctx)
+        assert out["hiba"] == 2 and ctx.graph.calls == []
+    finally:
+        config.kesz_cache_clear()
+
+
+def test_kesz_irany_review(tmp_path, monkeypatch):
+    from gaphopper import config
+    from gaphopper.kesz import run_kesz_irany
+    from gaphopper.pipeline import Context, approve_job
+
+    _tmp_torzs(tmp_path, monkeypatch)
+    try:
+        ans = json.dumps({"elemek": [{"n": 101, "irany": ["KOZ_DIGITALIS"], "indok_hu": "adat"},
+                                     {"n": 102, "irany": ["KOZ_TARSAS", "KOZ_SZERVEZETI"], "biztos": False}]})
+        ctx = Context(Settings(state_db=tmp_path / "s.sqlite"), with_graph=False,
+                      llm_override={"P3": FakeLLM(lambda a, b: ans if "101|" in b else '{"elemek":[]}')})
+        ctx.graph = _KeszGraph([])
+        out = run_kesz_irany(ctx, chunk=400, only_default=False)
+        t = config.kesz_torzs()
+        assert out["vizsgalt"] == 291 and t["gh_c_101"]["irany"] == ["KOZ_DIGITALIS"]
+        assert t["gh_c_101"]["irany_forras"] == "llm" and t["gh_c_1"]["irany_forras"] == "llm"
+        assert t["gh_c_102"]["irany_forras"] == "ellenorzendo"
+        q = [r for r in ctx.store.queue() if r["kind"] == "kesz_irany_review"]
+        approve_job(ctx, q[0]["id"])
+        assert config.kesz_torzs()["gh_c_102"]["irany"] == ["KOZ_TARSAS", "KOZ_SZERVEZETI"]
+    finally:
+        config.kesz_cache_clear()

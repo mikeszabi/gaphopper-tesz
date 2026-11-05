@@ -9,7 +9,8 @@ from .config import vocab
 
 _V = vocab()
 TESZ_TIPUS = set(_V["tesz_tipus"])
-KOZEG = set(_V["kozeg"])
+KOZEG = {k for k, x in _V["kozeg"].items() if not x.get("csak_kesz")}  # a KOZ_EGYEN csak KÉSZ-ség-irány
+KESZ_IRANY = set(_V["kozeg"])
 HELYZET = set(_V["helyzet"])
 SZER_FAJTA = set(_V["szer_elem_fajta"])
 SZER_SZEREP = set(_V["szer_elem_szerep"])
@@ -100,6 +101,42 @@ class Melyites(_Base):
         return _check(v, HELYZET, "helyzet")
 
 
+def _irany(v):
+    lst = [v] if isinstance(v, str) else list(v or [])
+    if not 1 <= len(lst) <= 2:
+        raise ValueError("irany: 1-2 KÖZ-eg-kód.")
+    for x in lst:
+        _check(x, KESZ_IRANY, "irany")
+    return lst
+
+
+def _csoport(v):
+    from .config import kesz_hierarchia
+
+    cs = {c["kod"] for c in kesz_hierarchia()["csoportok"]}
+    if v and cs and v not in cs:
+        raise ValueError(f"csoport: '{v}' nincs a KÉSZ-ség-csoportok között ({', '.join(sorted(cs))}).")
+    return v
+
+
+class KeszHiany(_Base):
+    """Hiányjelölt: a TESZ-nivalóhoz lényeges KÉSZ-ség, amelyet egyik törzselem sem fed (törzsbővítési bizonyíték)."""
+    label_hu: str
+    label_en: str = ""
+    csoport: str = ""
+    irany: list[str] = Field(default_factory=list)
+
+    @field_validator("csoport")
+    @classmethod
+    def _cs(cls, v):
+        return _csoport(v)
+
+    @field_validator("irany", mode="before")
+    @classmethod
+    def _ir(cls, v):
+        return _irany(v) if v else []
+
+
 class TeszNivalo(_Base):
     """TESZ-nivaló: TESZ-típus + meghatározó SZER-ELEM + ERED-mény fajtája; KÖZ-eg- és HELY-zet-semleges."""
     nivalo_id: str
@@ -120,6 +157,8 @@ class TeszNivalo(_Base):
     kontextus_hu: Optional[str] = None
     # törzs-választásnál a P1 saját meghatározó SZER-ELEM-fajtája (a P3-őr veti össze a törzselemével)
     ref_szer: Optional[str] = None
+    # legfeljebb 2 hiányzó KÉSZ-ség (ha egyik törzselem sem illik): a kesz-bovit bizonyítéka
+    kesz_hiany: list[KeszHiany] = Field(default_factory=list, max_length=2)
 
     @model_validator(mode="before")
     @classmethod
@@ -481,6 +520,57 @@ class P6Item(_Base):
 
 class P6Output(_Base):
     nivalok: list[P6Item] = Field(default_factory=list)
+
+
+class P7Item(_Base):
+    """KÉSZ-ség irányultsága (kesz-irany): csak az eltérés vagy a bizonytalanság."""
+    n: int
+    irany: list[str]
+    biztos: bool = True
+    indok_hu: str = ""
+
+    @field_validator("irany", mode="before")
+    @classmethod
+    def _ir(cls, v):
+        return _irany(v)
+
+
+class P7Output(_Base):
+    elemek: list[P7Item] = Field(default_factory=list)
+
+
+class P8Item(_Base):
+    """Törzsbővítés (kesz-bovit): hiányjelöltek csoportja és döntés róla."""
+    ids: list[str] = Field(min_length=1)
+    dontes: Literal["ALIAS", "UJ", "ELVET"]
+    kesz: Optional[int] = None          # ALIAS: a meglévő törzselem sorszáma
+    label_hu: str = ""                  # UJ: javasolt név
+    label_en: str = ""
+    csoport: str = ""
+    irany: list[str] = Field(default_factory=list)
+    indok_hu: str = ""
+
+    @field_validator("csoport")
+    @classmethod
+    def _cs(cls, v):
+        return _csoport(v)
+
+    @field_validator("irany", mode="before")
+    @classmethod
+    def _ir(cls, v):
+        return _irany(v) if v else []
+
+    @model_validator(mode="after")
+    def _need(self):
+        if self.dontes == "ALIAS" and not self.kesz:
+            raise ValueError(f"{self.ids}: ALIAS-hoz a meglévő törzselem sorszáma (kesz) kell.")
+        if self.dontes == "UJ" and not (self.label_hu and self.label_en and self.csoport and self.irany):
+            raise ValueError(f"{self.ids}: UJ-hoz label_hu, label_en, csoport és irany kell.")
+        return self
+
+
+class P8Output(_Base):
+    csoportok: list[P8Item] = Field(default_factory=list)
 
 
 class P5Item(_Base):

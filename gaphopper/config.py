@@ -8,6 +8,7 @@ A lépésenkénti modellbeállítás forrása, erősorrendben:
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -90,47 +91,80 @@ def vocab() -> dict:
         return yaml.safe_load(fh)
 
 
-# A KÉSZ-ség típusa és a promptban használt betűje (TUD-ás, KÉSZ-ség, KÉP-esség, hozzáÁLLás).
-KESZ_TIPUS = {"TUDAS": "T", "KESZSEG": "K", "KEPESSEG": "P", "HOZZAALLAS": "A"}
-_REGI_TIPUS = {"K": "TUDAS", "S": "KESZSEG", "A": "KEPESSEG", "B": "HOZZAALLAS"}
+KESZ_HEADER = """# GapHopper KÉSZ-ség-törzs: kategória -> csoport -> KÉSZ-ség (elem), és az irányultság (KÖZ-eg).
+# Forrás: GH_competency_list (gh_c_1..275) és GH_competency_hierarchy_v3.json (data/competency/; 2026-11-05:
+# gh_c_276..291 új elem, 8 v3-tétel meglévő elem aliasa). A törzsbővítés (kesz-bovit) a következő számmal folytatja.
+# A TUD-ás, KÉP-esség és HOZZÁ-állás nem fajta: egy TESZ-reKÉSZ-ség állapotai, ezért nincs típusmező.
+# id: gh_c_<n> (nem változik); label_hu: a P1 és a felület neve; label_en: angol név (alias); csoport: a csoportok kódja;
+# irany: 1-2 KÖZ-eg-kód, amerre a KÉSZ-ség irányul (KOZ_EGYEN = egy-ÉN, csak itt); irany_forras: csoport | llm | szakerto;
+# leiras_hu/en: a v3 leírása (a promptba nem kerül); v3_code: a v3 gh_code; aliases: "hu:..." / "en:...";
+# forras: v3 | kesz-bovit. A fájlt a program is írja (kesz-irany, kesz-bovit jóváhagyás): soronként egy elem."""
+_KESZ_ORDER = ("id", "label_hu", "label_en", "csoport", "irany", "irany_forras", "leiras_hu", "leiras_en",
+               "v3_code", "forras", "aliases")
+# a KÖZ-eg-irányok sorrendje a P1 törzsblokkjában
+IRANY_SOR = ("KOZ_EGYEN", "KOZ_TARSAS", "KOZ_SZERVEZETI", "KOZ_DIGITALIS", "KOZ_FIZIKAI", "KOZ_TERMESZET")
 
 
 @lru_cache(maxsize=1)
 def kesz_hierarchia() -> dict:
-    """A KÉSZ-ség-törzs teljes állománya: kategoriak, csoportok, items (nyers yaml)."""
+    """A KÉSZ-ség-törzs teljes állománya: version, kategoriak, csoportok, items (nyers yaml)."""
     if not KESZ_PATH.exists():
-        return {"kategoriak": [], "csoportok": [], "items": []}
+        return {"version": "", "kategoriak": [], "csoportok": [], "items": []}
     with open(KESZ_PATH, encoding="utf-8") as fh:
         d = yaml.safe_load(fh) or {}
     return {"version": d.get("version", ""), "kategoriak": d.get("kategoriak") or [],
             "csoportok": d.get("csoportok") or [], "items": d.get("items") or []}
 
 
+def kesz_cache_clear() -> None:
+    for f in (kesz_hierarchia, kesz_torzs, kesz_block):
+        f.cache_clear()
+
+
+def _flow(d: dict, order=()) -> str:
+    keys = [k for k in order if k in d] + [k for k in d if k not in order]
+    return "{" + ", ".join(f"{k}: {json.dumps(d[k], ensure_ascii=False)}" for k in keys
+                           if d[k] not in (None, "", [])) + "}"
+
+
+def save_kesz_torzs(h: dict, path: Path | None = None) -> None:
+    """A törzs kiírása a kézzel is olvasható, soronként egy elemes alakban (az idézőjeles JSON-érték érvényes YAML)."""
+    lines = [KESZ_HEADER, f"version: {json.dumps(h.get('version', ''))}", "kategoriak:"]
+    lines += [f"  - {_flow(x, ('kod', 'label_hu', 'label_en'))}" for x in h["kategoriak"]]
+    lines.append("csoportok:")
+    lines += [f"  - {_flow(x, ('kod', 'label_hu', 'label_en', 'kategoria', 'irany'))}" for x in h["csoportok"]]
+    lines.append("items:")
+    lines += [f"  - {_flow({k: v for k, v in x.items() if k not in ('en', 'hu')}, _KESZ_ORDER)}" for x in h["items"]]
+    (path or KESZ_PATH).write_text("\n".join(lines) + "\n", encoding="utf-8")
+    kesz_cache_clear()
+
+
 @lru_cache(maxsize=1)
 def kesz_torzs() -> dict[str, dict]:
-    """A KÉSZ-ség-törzs: gh_c_<n> -> {id, label_hu, label_en, csoport, tipus, betu, ...} (en/hu rövid kulcsként is)."""
+    """A KÉSZ-ség-törzs: gh_c_<n> -> {id, label_hu, label_en, csoport, irany, ...} (en/hu rövid kulcsként is).
+    Az irány az elemé, ha megvan, különben a csoporté."""
+    csop = {c["kod"]: c for c in kesz_hierarchia()["csoportok"]}
     out = {}
     for x in kesz_hierarchia()["items"]:
         en = x.get("label_en") or x.get("en") or ""
         hu = x.get("label_hu") or x.get("hu") or en
         csoport = x.get("csoport") or x.get("group") or ""
-        tipus = x.get("tipus") or _REGI_TIPUS.get(x.get("type", ""), "KESZSEG")
-        out[x["id"]] = x | {"label_en": en, "label_hu": hu, "en": en, "hu": hu, "csoport": csoport,
-                            "tipus": tipus, "betu": KESZ_TIPUS[tipus]}
+        irany = list(x.get("irany") or (csop.get(csoport) or {}).get("irany") or [])
+        out[x["id"]] = x | {"label_en": en, "label_hu": hu, "en": en, "hu": hu, "csoport": csoport, "irany": irany}
     return out
 
 
 @lru_cache(maxsize=1)
 def kesz_block() -> str:
-    """A P1 törzsblokkja csoportonként: "# H1 Kognitív és elemző kompetenciák", alatta "sorszám|név|típusbetű"."""
+    """A P1 törzsblokkja irány szerint: "# KOZ_TARSAS", alatta "sorszám|név|csoport" (az első irány számít)."""
     torzs = kesz_torzs()
-    out = []
-    for c in kesz_hierarchia()["csoportok"]:
-        rows = [f"{k[5:]}|{x['label_hu']}|{x['betu']}" for k, x in torzs.items() if x["csoport"] == c["kod"]]
+    out, rest = [], []
+    for ir in IRANY_SOR:
+        rows = [f"{k[5:]}|{x['label_hu']}|{x['csoport']}" for k, x in torzs.items() if x["irany"][:1] == [ir]]
         if rows:
-            out += [f"# {c['kod']} {c['label_hu']}"] + rows
-    known = {c["kod"] for c in kesz_hierarchia()["csoportok"]}
-    rest = [f"{k[5:]}|{x['label_hu']}|{x['betu']}" for k, x in torzs.items() if x["csoport"] not in known]
+            out += [f"# {ir}"] + rows
+    rest = [f"{k[5:]}|{x['label_hu']}|{x['csoport']}" for k, x in torzs.items() if x["irany"][:1] not in
+            [[i] for i in IRANY_SOR]]
     return "\n".join(out + (["# egyéb"] + rest if rest else []))
 
 
@@ -146,8 +180,8 @@ def prompt_version() -> str:
         h.update(p.read_bytes())
     h.update(VOCAB_PATH.read_bytes())
     if KESZ_PATH.exists():
-        # csak a promptba kerülő rész (id, magyar név, csoport, típus): a leírás és az alias nem
-        h.update("|".join(f"{k}:{x['label_hu']}:{x['csoport']}{x['betu']}" for k, x in kesz_torzs().items()).encode())
+        # csak a promptba kerülő rész (a törzsblokk): a leírás és az alias nem
+        h.update(kesz_block().encode())
     return f"{vocab().get('version', 'v')}-{h.hexdigest()[:8]}"
 
 

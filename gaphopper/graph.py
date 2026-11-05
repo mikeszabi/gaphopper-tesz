@@ -24,7 +24,8 @@ LABELS = {"MUNKA_KOR": "MunkaKor", "TESZ_SZIN": "TeszSzin", "TESZ_NIVALO": "Tesz
 FULLTEXT = {"MunkaKor": "munkakor_text", "TeszSzin": "tesz_text", "TeszNivalo": "nivalo_text", "SzerElem": "szer_text",
             "Keszseg": "keszseg_text"}
 VECTOR = {"MunkaKor": "munkakor_vec", "TeszNivalo": "nivalo_vec", "SzerElem": "szer_vec", "Keszseg": "keszseg_vec"}
-NODE_LABELS = ["MunkaKor", "TeszNivalo", "TeszSzin", "SzerElem", "TeszTipus", "Kozeg", "Helyzet", "Keszseg"]
+NODE_LABELS = ["MunkaKor", "TeszNivalo", "TeszSzin", "SzerElem", "TeszTipus", "Kozeg", "Helyzet", "Keszseg",
+               "KeszHiany"]
 
 _LUCENE = re.compile(r'([+\-&|!(){}\[\]^"~*?:\\/])')
 
@@ -101,22 +102,72 @@ class Graph:
                  "n.label_en = r.label_en WITH n, r MATCH (k:KeszsegKategoria {kod: r.kategoria}) "
                  "OPTIONAL MATCH (n)-[old:KATEGORIAJA]->() DELETE old MERGE (n)-[:KATEGORIAJA]->(k)",
                  rows=[{k: x.get(k, "") for k in ("kod", "label_hu", "label_en", "kategoria")} for x in h["csoportok"]])
-        rows = [{"id": k, "en": x["label_en"], "hu": x["label_hu"], "csoport": x["csoport"], "tipus": x["tipus"],
+        self.upsert_keszseg(list(kesz_torzs()))
+        # A régi (v1) Szin-csomópontok eltávolítása: a SZÍN a KÖZ-eg és a HELY-zet kombinációja.
+        self.run("MATCH (s:Szin) DETACH DELETE s")
+
+    def upsert_keszseg(self, ids: list[str]) -> None:
+        """KÉSZ-ség-törzselemek írása a yaml szerint: címke, alias, leírás, csoport (CSOPORTJA) és irány (IRANYUL)."""
+        torzs = kesz_torzs()
+        rows = [{"id": k, "en": x["label_en"], "hu": x["label_hu"], "csoport": x["csoport"], "irany": x["irany"],
                  "leiras": x.get("leiras_hu", ""), "forras": x.get("forras", "GH_competency_list"),
                  "aliases": [f"hu:{x['label_hu']}", f"en:{x['label_en']}"] + list(x.get("aliases") or []),
                  "keys": [norm_key(x["label_hu"], "hu"), norm_key(x["label_en"], "en")]
                  + [norm_key(a[3:], a[:2]) for a in x.get("aliases") or []]}
-                for k, x in kesz_torzs().items()]
+                for k, x in ((k, torzs[k]) for k in ids if k in torzs)]
         self.run("UNWIND $rows AS r MERGE (k:Keszseg {id: r.id}) SET k.label_en = r.en, k.label_hu = r.hu, "
                  "k.aliases = [x IN coalesce(k.aliases, []) WHERE NOT x IN r.aliases] + r.aliases, "
                  "k.alias_keys = [x IN coalesce(k.alias_keys, []) WHERE NOT x IN r.keys] + r.keys, "
                  "k.alias_text = r.hu + ' ' + r.en, k.leiras_hu = r.leiras, "
-                 "k.csoport = r.csoport, k.tipus = r.tipus, k.forras = r.forras, k.status = 'TORZS' "
-                 "REMOVE k.fajta "
-                 "WITH k, r OPTIONAL MATCH (k)-[old:CSOPORTJA]->() DELETE old "
-                 "WITH k, r MATCH (c:KeszsegCsoport {kod: r.csoport}) MERGE (k)-[:CSOPORTJA]->(c)", rows=rows)
-        # A régi (v1) Szin-csomópontok eltávolítása: a SZÍN a KÖZ-eg és a HELY-zet kombinációja.
-        self.run("MATCH (s:Szin) DETACH DELETE s")
+                 "k.csoport = r.csoport, k.irany = r.irany, k.forras = r.forras, k.status = 'TORZS' "
+                 "REMOVE k.fajta, k.tipus "
+                 "WITH k, r OPTIONAL MATCH (k)-[old:CSOPORTJA|IRANYUL]->() DELETE old "
+                 "WITH k, r OPTIONAL MATCH (c:KeszsegCsoport {kod: r.csoport}) FOREACH (_ IN CASE WHEN c IS NULL "
+                 "THEN [] ELSE [1] END | MERGE (k)-[:CSOPORTJA]->(c)) "
+                 "WITH k, r UNWIND range(0, size(r.irany) - 1) AS i MATCH (z:Kozeg {id: r.irany[i]}) "
+                 "MERGE (k)-[e:IRANYUL]->(z) SET e.primary = (i = 0)", rows=rows)
+
+    def kesz_hiany_candidates(self, status: str = "JELOLT") -> list[dict]:
+        """A kesz-bovit bemenete: hiányjelöltek az igénylő munkakörökkel és TESZ-nivalókkal."""
+        rows = self.run("MATCH (g:TeszNivalo)-[e:HIANYZIK]->(h:KeszHiany {status: $st}) "
+                        "RETURN h.id AS id, h.label_hu AS label_hu, h.label_en AS label_en, h.csoport AS csoport, "
+                        "h.irany AS irany, collect(DISTINCT g.label_hu) AS nivalok, collect(e.munkakorok) AS mk",
+                        st=status)
+        for r in rows:
+            r["munkakorok"] = sorted({j for lst in r.pop("mk") for j in lst})
+        return [r for r in rows if r["munkakorok"]]
+
+    def kesz_hiany_status(self, ids: list[str], status: str, ok: str = "") -> None:
+        self.run("MATCH (h:KeszHiany) WHERE h.id IN $ids SET h.status = $st, h.dontes_hu = $ok",
+                 ids=ids, st=status, ok=ok)
+
+    def kesz_hiany_resolve(self, ids: list[str], kesz_id: str, status: str) -> int:
+        """ALIAS vagy BEEMELT: a hiányjelöltek a törzselembe olvadnak; az igénylő TESZ-nivalók IGENYEL élt kapnak
+        (munkakörönként súlyozva, a meglévő igénylésekkel összevonva)."""
+        res = self.run(
+            "MATCH (h:KeszHiany) WHERE h.id IN $ids MATCH (k:Keszseg {id: $k}) "
+            "SET h.status = $st, h.kesz_id = $k MERGE (h)-[:BEOLVADT]->(k) "
+            "WITH h, k MATCH (g:TeszNivalo)-[e:HIANYZIK]->(h) MERGE (g)-[i:IGENYEL]->(k) "
+            "WITH i, e, [x IN coalesce(i.munkakorok, []) WHERE NOT x IN e.munkakorok] + e.munkakorok AS mk "
+            "SET i.munkakorok = mk, i.suly = size(mk), i.rang = coalesce(i.rang, 6) RETURN count(i) AS n",
+            ids=ids, k=kesz_id, st=status)
+        return res[0]["n"] if res else 0
+
+    def update_kesz_profil(self) -> int:
+        """A KÉSZ-ségek 2. tengelye (TESZ-típus-család arányai, hordozhatóság) az IGENYEL élekből; minden írás után."""
+        from .kesz import profil
+
+        edges = self.run("MATCH (g:TeszNivalo)-[e:IGENYEL]->(k:Keszseg) OPTIONAL MATCH (g)-[:TIPUSA]->(t:TeszTipus) "
+                         "RETURN k.id AS k, t.id AS tesz_type, coalesce(e.munkakorok, []) AS munkakorok")
+        fields = {r["id"]: r["field"] for r in self.run("MATCH (m:MunkaKor) RETURN m.id AS id, m.field AS field")}
+        rows = profil(edges, fields)
+        self.run("MATCH (k:Keszseg) WHERE k.hordozhatosag IS NOT NULL AND NOT k.id IN $ids "
+                 "REMOVE k.csalad, k.csalad_arany, k.fo_csalad, k.munkakor_db, k.terulet_db, k.hordozhatosag",
+                 ids=[r["id"] for r in rows])
+        self.run("UNWIND $rows AS r MATCH (k:Keszseg {id: r.id}) SET k.csalad = r.csalad, k.csalad_arany = "
+                 "r.csalad_arany, k.fo_csalad = r.fo_csalad, k.munkakor_db = r.munkakor_db, k.terulet_db = "
+                 "r.terulet_db, k.hordozhatosag = r.hordozhatosag", rows=rows)
+        return len(rows)
 
     def reset(self) -> dict:
         """Teljes ürítés: minden csomópont, index és constraint törlődik (az init újraépíti)."""
@@ -264,6 +315,16 @@ class Graph:
             tx.run("UNWIND $rows AS r MATCH (g:TeszNivalo {id: r.mag}), (k:Keszseg {id: r.k}) MERGE (g)-[e:IGENYEL]->(k) "
                    "WITH e, r, [x IN coalesce(e.munkakorok, []) WHERE x <> $j] + [$j] AS mk "
                    "SET e.munkakorok = mk, e.suly = size(mk), e.rang = r.rang", rows=igenyel, j=plan.job["id"])
+            # KÉSZ-ség-hiányjelöltek (kesz-bovit bizonyítéka): az IGENYEL-hez hasonlóan munkakörönként számolva
+            tx.run("MATCH (:TeszNivalo)-[e:HIANYZIK]->(:KeszHiany) WHERE $j IN coalesce(e.munkakorok, []) "
+                   "WITH e, [x IN e.munkakorok WHERE x <> $j] AS rest "
+                   "SET e.munkakorok = rest, e.suly = size(rest) WITH e, rest WHERE size(rest) = 0 DELETE e",
+                   j=plan.job["id"])
+            tx.run("UNWIND $rows AS r MATCH (g:TeszNivalo {id: r.mag}) MERGE (h:KeszHiany {id: r.id}) "
+                   "ON CREATE SET h += r.props, h.status = r.status, h.created_at = datetime() "
+                   "SET h.last_seen = datetime() MERGE (g)-[e:HIANYZIK]->(h) "
+                   "WITH e, [x IN coalesce(e.munkakorok, []) WHERE x <> $j] + [$j] AS mk "
+                   "SET e.munkakorok = mk, e.suly = size(mk)", rows=plan.hianyok, j=plan.job["id"])
             tx.run("UNWIND $rows AS r MATCH (g:TeszNivalo {id: r.mag}) "
                    "MERGE (t:TeszSzin {id: r.id}) ON CREATE SET t += r.props, t.created_at = datetime() "
                    "SET t.last_seen = datetime() MERGE (t)-[:SZINEZI]->(g)", rows=tesz)

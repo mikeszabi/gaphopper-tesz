@@ -47,6 +47,7 @@ class WritePlan:
     nivalok: dict[str, dict] = field(default_factory=dict)   # TESZ-SZÍN: id -> {props, new, tesz_type, primary, melyites}
     szinek: dict[str, dict] = field(default_factory=dict)    # TESZ-SZÍN: id -> {...}
     links: list[dict] = field(default_factory=list)          # MunkaKor -> TeszSzin
+    hianyok: list[dict] = field(default_factory=list)        # KeszHiany-jelöltek: {id, mag, status, props}
     aliases: dict[tuple[str, str], list] = field(default_factory=dict)  # (típus, id) -> [(szöveg, nyelv)]
     alias_index: list[tuple] = field(default_factory=list)   # SQLite alias-index sorai
 

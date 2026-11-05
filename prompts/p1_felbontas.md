@@ -26,6 +26,11 @@ MUNKAMENET (fejben, ebben a sorrendben; csak a JSON-t írd ki):
       elöl; ne sorold fel az összes kapcsolódót.
    c) kontextus_hu: a munkakör-specifikus tartalom röviden (szakterület, szak, tantárgy,
       helyszín), legfeljebb 8 szó – ide kerül minden, ami a TESZ-nivaló-címkéből kimaradt.
+   d) kesz_hiany (ritkán, TESZ-nivalónként legfeljebb 2): csak ha a TESZ-nivalóhoz lényeges KÉSZ-ség
+      egyik törzselemmel sem fedhető (szinonimával vagy tágabb elemmel sem). Törzsszintű legyen:
+      általános, szakterület-semleges, 1-4 szavas név; nem eszköz, termék, szoftver, szabvány vagy
+      munkakör neve (az TUD-ás vagy SZER-ELEM), nem szintváltozat (alap/haladó), nem törzselem szinonimája.
+      Alak: {"label_hu","label_en","csoport":"<a törzs csoportkódja>","irany":["<KÖZ-eg-fejléc>"]}.
    Összevonás (G4): azonos típus, azonos ERED-mény-fajta és 2/3 KÉSZ-ség-átfedés esetén egy TESZ-nivaló
    (pl. szakdolgozat- és TDK-témavezetés; ipari és kutatási partnerkapcsolat).
 3. SZÍN-EZÉS: minden TESZ-nivalóhoz pontosan egy ALAP-SZÍN változat (alap_szin true): a munkakörben
@@ -55,7 +60,7 @@ TÖMÖRSÉG:
 - A változat NEM ismétli a TESZ-nivaló mezőit és a címkét. A nivalo_ref-es TESZ-nivaló csak a kódot és a munkaköri
   mezőket írja.
 - Üres listát, null értéket és alapértéket ne írj ki (title_aliases, skill_mentions,
-  secondary_szer, kozeg_secondary, helyzet_secondary, melyites_jeloltek, open_question).
+  secondary_szer, kozeg_secondary, helyzet_secondary, melyites_jeloltek, kesz_hiany, open_question).
 
 BEMENET:
 {{job_record_json}}

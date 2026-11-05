@@ -243,6 +243,29 @@ def check(tesz: list[TeszSzin], kor_ids: list[str] | None = None, job_field: str
     return flags
 
 
+def kesz_hiany_guard(label_hu: str, label_en: str, job_title: str = "", job_field: str = "") -> str:
+    """R23 – a hiányjelölt törzsszintű-e. Üres szöveg: törzsjelölt; különben az ok, amiért TUD-ás-/SZER-ELEM-jelölt.
+
+    Nem törzsszintű: túl hosszú név, szám, nagybetűs termék/rövidítés, a munkakör címéből vagy szakterületéből vett szó
+    (az R17 logikájával), szintszó (alap, haladó ...)."""
+    r = vocab()["rules"]
+    words = re.findall(r"\w+", label_hu or "")
+    if len(words) > int(r.get("kesz_hiany_szo_max", 4)):
+        return f"túl hosszú név ({len(words)} szó)"
+    if re.search(r"\d", f"{label_hu} {label_en}"):
+        return "számot tartalmaz (szabvány, verzió vagy termék)"
+    for w in re.findall(r"\w+", f"{label_hu} {label_en}"):
+        if len(w) >= 2 and (w.isupper() or re.search(r"[a-záéíóöőúüű][A-ZÁÉÍÓÖŐÚÜŰ]", w)):
+            return f"termék- vagy rövidítésnév: {w}"
+    spec = _jelzo(label_hu, _job_words(job_title, job_field))
+    if spec:
+        return f"a munkakör címének vagy szakterületének szava: {', '.join(spec)}"
+    szint = _jelzo(f"{label_hu} {label_en}", list(r.get("kesz_szintszavak") or []))
+    if szint:
+        return f"szintváltozat: {', '.join(szint)}"
+    return ""
+
+
 def needs_expert(flags: list[Flag]) -> bool:
     return any(f.severity == "expert" for f in flags)
 

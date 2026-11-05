@@ -26,6 +26,8 @@ kozeg:
   KOZ_DIGITALIS:  {hu: "Digitális",  gyok: "JEL-közeg",         en: "digital"}
   KOZ_SZERVEZETI: {hu: "Szervezeti", gyok: "SZER-vezeti közeg", en: "organisational"}
   KOZ_TERMESZET:  {hu: "Természet",  gyok: "TERM-észeti közeg", en: "natural"}
+  # csak a KÉSZ-ség irányultságában (Keszseg -[:IRANYUL]-> Kozeg); TESZ-SZÍN-ben nem érvényes
+  KOZ_EGYEN:      {hu: "egy-ÉN",     gyok: "egy-ÉN",            en: "self", csak_kesz: true}
 
 helyzet:
   # tengely: KISZ = kiszámíthatóság (sorrendes, fok 0..4: a MÉLY-ítés lánca), SZEREP = szerep (nem sorrendes, fok: null)
@@ -77,6 +79,18 @@ termeszetes_par:
   SUPPORT_SERVE: HELY_SZOLGALTATASI
   COMPLY: HELY_KRITIKUS
 
+# A KÉSZ-ség 2. tengelye: milyen tevékenységet szolgál. A TESZ-típusok családjai; a KÉSZ-ség családarányait a
+# gráf számolja az IGENYEL élekből (súly = igénylő munkakörök száma), minden gráfírás után.
+tesz_csalad:
+  megismero:     {hu: "megismerő",     tipusok: [OBSERVE_MEASURE, ASSESS_ANALYSE]}
+  alkoto:        {hu: "alkotó",        tipusok: [PLAN, CREATE_DESIGN]}
+  vegrehajto:    {hu: "végrehajtó",    tipusok: [PREPARE, EXECUTE, OPERATE_USE]}
+  kozlo:         {hu: "közlő",         tipusok: [DOCUMENT, COMMUNICATE]}
+  iranyito:      {hu: "irányító",      tipusok: [COORDINATE, DECIDE]}
+  szolgalo:      {hu: "szolgáló",      tipusok: [SUPPORT_SERVE]}
+  szabalykoveto: {hu: "szabálykövető", tipusok: [COMPLY, VERIFY]}
+  javito:        {hu: "javító",        tipusok: [PROBLEM_SOLVE, IMPROVE]}
+
 # Szabálykuszöbök (P2, determinisztikus). Kalibrálandók a referenciakészleten.
 rules:
   # v2 (2026-11-04): általánosított MAG = munkaminta × SZER-ELEM-fajta; kalibrálandók
@@ -93,6 +107,15 @@ rules:
   kesz_min: 2              # R20 / G2: MAG-onként legalább ennyi KÉSZ-ség-törzselem
   kesz_max: 5              # 2026-11-04: 4 -> 5 (felhasználói döntés); a gráfban súlyozva, nem vágva
   g4_kesz_overlap: 0.66    # R18 (≈ 2/3) / G4: azonos típus + legalább ekkora KÉSZ-ség-átfedés -> összevonási jelölt
+  # KÉSZ-ség hordozhatósága az igénylő munkakörök fő szakterületeiből (a MunkaKor.field első tagja):
+  # szakmai = 1 terület, átvihető = legalább ennyi, általános = legalább ennyi terület
+  hordozhatosag_atviheto_terulet: 2
+  hordozhatosag_altalanos_terulet: 3
+  # R23 / kesz-bovit: a KÉSZ-ség-hiányjelölt törzsszintje; UJ törzselem csak legalább ennyi munkakör igényével
+  kesz_hiany_szo_max: 4
+  kesz_szintszavak: ["alap", "haladó", "középhaladó", "kezdő", "emelt szint", "magas szint", "szakértői szint",
+                     "basic", "advanced", "intermediate", "beginner", "expert level"]
+  kesz_bovit_min_munkakor: 2
   mag_torzs_max: 80        # a P1 rendszerpromptjába kerülő MAG-törzs mérete
   r19_torzs_min: 50        # R19: ha a törzs legalább ekkora ...
   r19_new_share_max: 0.5   # ... és az új MAG-ok aránya efölött van

@@ -317,14 +317,23 @@ def cmd_manual_submit(a):
 def cmd_review(a):
     from .pipeline import approve_job
 
-    ctx = _ctx(with_graph=bool(a.approve))
+    ctx = _ctx(with_graph=bool(a.approve or a.reject))
     try:
         if a.approve:
             print(json.dumps(approve_job(ctx, a.approve), ensure_ascii=False, indent=1))
         elif a.reject:
             row = next(r for r in ctx.store.queue() if r["id"] == a.reject)
             ctx.store.decide(a.reject, "ELUTASITVA")
-            ctx.store.set_status(row["job_id"], "ELVETVE")
+            if row["kind"] == "kesz_review":
+                ctx.graph.kesz_hiany_status(json.loads(row["payload_json"])["ids"], "ELVETVE", "szakértő elutasította")
+            elif row["kind"] == "kesz_irany_review":
+                from .config import kesz_hierarchia, save_kesz_torzs
+
+                h = kesz_hierarchia()
+                next(x for x in h["items"] if x["id"] == json.loads(row["payload_json"])["id"])["irany_forras"] = "szakerto"
+                save_kesz_torzs(h)
+            elif row["job_id"]:
+                ctx.store.set_status(row["job_id"], "ELVETVE")
             print("Elutasítva.")
         else:
             for r in ctx.store.queue():
@@ -384,6 +393,41 @@ def cmd_split(a):
             run_split(ctx, q)
     finally:
         ctx.close()
+
+
+def cmd_kesz_irany(a):
+    from .kesz import run_kesz_irany
+
+    ctx = _ctx()
+    try:
+        out = run_kesz_irany(ctx, chunk=a.chunk, apply=not a.dry_run, only_default=not a.all)
+    finally:
+        ctx.close()
+    print(f"{out['vizsgalt']} elem vizsgálva; irány módosítva: {len(out['valtozott'])}, szakértőhöz: "
+          f"{len(out['szakertohoz'])}, hiba: {out['hiba']}" + ("  [PRÓBA: semmi nem íródott]" if a.dry_run else ""))
+    for r in out["valtozott"] + out["szakertohoz"]:
+        print(f"  {r['id']} {r['label_hu']}: {','.join(r['jelenlegi'])} -> {','.join(r['javaslat'])}  ({r['indok']})")
+
+
+def cmd_kesz_bovit(a):
+    from .kesz import candidates_from_dryrun, run_kesz_bovit
+
+    ctx = _ctx(with_graph=not a.from_dryrun)
+    try:
+        rows = candidates_from_dryrun(a.from_dryrun) if a.from_dryrun else None
+        out = run_kesz_bovit(ctx, rows, chunk=a.chunk, apply=not (a.dry_run or a.from_dryrun))
+    finally:
+        ctx.close()
+    print(f"{out['jeloltek']} hiányjelölt; ALIAS: {len(out['alias'])}, UJ (szakértőhöz): {len(out['uj'])}, "
+          f"vár (kevés munkakör): {len(out['var'])}, ELVET: {len(out['elvet'])}, hiba: {out['hiba']}"
+          + ("  [PRÓBA: semmi nem íródott]" if a.dry_run or a.from_dryrun else ""))
+    for c in out["alias"]:
+        print(f"  ALIAS {', '.join(c['nevek'])} -> {c['kesz'][5:]} {c['kesz_nev']}")
+    for c in out["uj"] + out["var"]:
+        print(f"  UJ {c['label_hu']} / {c['label_en']} ({c['csoport']}, {','.join(c['irany'])}; "
+              f"{len(c['munkakorok'])} munkakör) <- {', '.join(c['nevek'])}")
+    for c in out["elvet"]:
+        print(f"  ELVET {', '.join(c['nevek'])}: {c['indok']}")
 
 
 def cmd_generalize(a):
@@ -510,6 +554,14 @@ def main(argv=None):
     s.add_argument("--min-jobs", type=int, default=2); s.add_argument("--chunk", type=int, default=20)
     s.add_argument("--dry-run", action="store_true", help="csak a javaslatok listája, a gráf nem változik")
     s.set_defaults(fn=cmd_generalize)
+    s = sub.add_parser("kesz-irany", help="a KÉSZ-ségek irányultsága elemenként (csoport-alapértékből, P3-modell)")
+    s.add_argument("--chunk", type=int, default=60); s.add_argument("--all", action="store_true",
+                                                                   help="a már vizsgált elemeket is")
+    s.add_argument("--dry-run", action="store_true"); s.set_defaults(fn=cmd_kesz_irany)
+    s = sub.add_parser("kesz-bovit", help="KÉSZ-ség-törzs bővítése a hiányjelöltekből (ALIAS / UJ / ELVET)")
+    s.add_argument("--chunk", type=int, default=40); s.add_argument("--dry-run", action="store_true")
+    s.add_argument("--from-dryrun", nargs="+", help="próbafutás-kimenetek (runs/dryrun/*.json); semmi nem íródik")
+    s.set_defaults(fn=cmd_kesz_bovit)
     s = sub.add_parser("split", help="jóváhagyott bontási javaslat (split_review) végrehajtása")
     s.add_argument("--review", type=int, action="append", help="a szakértői sor azonosítója (alapból mind)")
     s.set_defaults(fn=cmd_split)
