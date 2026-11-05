@@ -412,7 +412,13 @@ def cmd_kesz_irany(a):
 
     ctx = _ctx()
     try:
-        out = run_kesz_irany(ctx, chunk=a.chunk, apply=not a.dry_run, only_default=not (a.all or a.irany or a.csoport),
+        ids = None
+        if a.review_queue:  # a sorban nyitott irány-kérdések elemei (pl. új KÖZ-eg után)
+            lo, _, hi = a.review_queue.partition("-")
+            ids = {json.loads(r["payload_json"])["id"] for r in ctx.store.queue() if r["kind"] == "kesz_irany_review"
+                   and int(lo) <= r["id"] <= int(hi or lo)}
+        out = run_kesz_irany(ctx, chunk=a.chunk, apply=not a.dry_run,
+                             only_default=not (a.all or a.irany or a.csoport or ids), ids=ids,
                              iranyok=set(a.irany.split(",")) if a.irany else None,
                              csoportok=set(a.csoport.split(",")) if a.csoport else None, from_group=a.alapbol)
     finally:
@@ -577,6 +583,7 @@ def main(argv=None):
     s.add_argument("--chunk", type=int, default=60); s.add_argument("--all", action="store_true",
                                                                    help="a már vizsgált elemeket is")
     s.add_argument("--csoport", help="csak ezen csoportok elemei (vesszővel), pl. H1,H9")
+    s.add_argument("--review-queue", help="a sorban nyitott irány-kérdések elemei, azonosító-tartomány: 23-40")
     s.add_argument("--alapbol", action="store_true", help="az alapirány a csoporté, nem a jelenlegi (új csoport-irány után)")
     s.add_argument("--irany", help="csak ezen irányú elemek (vesszővel), pl. KOZ_DIGITALIS,KOZ_TARSAS; a már vizsgáltakat is")
     s.add_argument("--dry-run", action="store_true"); s.set_defaults(fn=cmd_kesz_irany)

@@ -83,6 +83,7 @@ def hiany_rows(job: dict, nivalo_graph_id: str, hianyok, keys: dict[str, str] | 
 # ------------------------------------------------------------------ kesz-irany: 1. tengely elemenként
 def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool = True,
                    iranyok: set[str] | None = None, csoportok: set[str] | None = None, from_group: bool = False,
+                   ids: set[str] | None = None,
                    log=print) -> dict:
     """A csoportból örökölt irány elemenkénti felülvizsgálata (P3-modell). Biztos eltérés: a yaml-ba (irany_forras
     llm); bizonytalan: szakértői sor (kesz_irany_review); a kiírás nélküli elem az alapirányt megerősíti."""
@@ -97,6 +98,8 @@ def run_kesz_irany(ctx, chunk: int = 60, apply: bool = True, only_default: bool 
         items = [x for x in items if set(torzs[x["id"]]["irany"]) & iranyok]
     if csoportok:
         items = [x for x in items if x["csoport"] in csoportok]
+    if ids:
+        items = [x for x in items if x["id"] in ids]
     # alapirány: a jelenlegi, vagy (from_group) a csoporté – pl. ha a csoport alapiránya új KÖZ-egre változott;
     # a kiírás nélküli elem az alapirányt kapja
     group = {c["kod"]: list(c.get("irany") or []) for c in h["csoportok"]}
