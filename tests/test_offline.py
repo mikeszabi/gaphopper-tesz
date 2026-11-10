@@ -1808,6 +1808,12 @@ def test_anthropic_invalid_env_key_falls_back_to_dotenv(monkeypatch):
     monkeypatch.setattr(llm, "dotenv_api_key", lambda: "jo")
     assert llm.AnthropicLLM(StepModel("anthropic", "m", None, 10)).complete("s", "u")[0] == "ok"
     assert keys == ["regi", "jo"]
+    # párhuzamos szálak: a második kliens még a régi kulccsal készült, de a környezetet már az első átállította
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "regi")
+    a = llm.AnthropicLLM(StepModel("anthropic", "m", None, 10))
+    b = llm.AnthropicLLM(StepModel("anthropic", "m", None, 10))
+    assert a.complete("s", "u")[0] == "ok" and os.environ["ANTHROPIC_API_KEY"] == "jo"
+    assert b.complete("s", "u")[0] == "ok"
     monkeypatch.setenv("ANTHROPIC_API_KEY", "regi")
     monkeypatch.setattr(llm, "dotenv_api_key", lambda: "regi")
     with pytest.raises(AuthenticationError):

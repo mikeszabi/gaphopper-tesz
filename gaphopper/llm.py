@@ -124,6 +124,9 @@ def anthropic_extra(cfg: StepModel) -> dict:
 
 class AnthropicLLM:
     def __init__(self, cfg: StepModel):
+        import os
+
+        self._key = os.getenv("ANTHROPIC_API_KEY", "").strip()  # amivel a kliens készült (a 401-es tartalékhoz)
         self.client = anthropic_client()
         self.cfg = cfg
         self._send_temperature = cfg.temperature is not None
@@ -152,10 +155,13 @@ class AnthropicLLM:
                 resp = send()
             except anthropic.AuthenticationError:
                 # a shellben exportált, elavult kulcs felülírja a .env-et (2026-11-10: a UI-ból a #73 jóváhagyása
-                # emiatt bukott el); egyszer újra a .env kulcsával
-                if not use_dotenv_key():
+                # emiatt bukott el); egyszer újra a .env kulcsával. Párhuzamos szálaknál egy másik szál már
+                # átállíthatta a környezetet: ilyenkor is újra kell építeni ennek a szálnak a kliensét.
+                k = dotenv_api_key()
+                if not k or k == self._key:
                     raise
-                self.client = anthropic_client()
+                use_dotenv_key()
+                self.client, self._key = anthropic_client(), k
                 resp = send()
             except anthropic.NotFoundError as exc:
                 # hibás ANTHROPIC_WORKSPACE_ID (pl. a .env-ben): egyszer újra, munkaterület-fejléc nélkül
