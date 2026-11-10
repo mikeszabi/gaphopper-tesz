@@ -1812,3 +1812,22 @@ def test_anthropic_invalid_env_key_falls_back_to_dotenv(monkeypatch):
     monkeypatch.setattr(llm, "dotenv_api_key", lambda: "regi")
     with pytest.raises(AuthenticationError):
         llm.AnthropicLLM(StepModel("anthropic", "m", None, 10)).complete("s", "u")
+
+
+def test_web_send_ignores_closed_client():
+    """2026-11-10: a böngésző a válasz előtt bontotta a kapcsolatot; a szerver dupla tracebacket írt (500 a lezárt
+    socketre). Most csendben kihagyja, és utána sem próbál írni."""
+    from gaphopper import web
+
+    class W:
+        def write(self, b):
+            raise BrokenPipeError(32, "Broken pipe")
+
+    h = web.Handler.__new__(web.Handler)
+    h.wfile, h.request_version, h.requestline, h.command = W(), "HTTP/1.1", "GET /api/x HTTP/1.1", "GET"
+    h._headers_buffer = []
+    h.send_response = h.send_header = lambda *a, **k: None
+    h.end_headers = lambda: h.wfile.write(b"")
+    h._send(200, b"{}", "application/json")
+    assert h._closed
+    h.json({"error": "x"}, 500)          # nem dob kivételt, nem ír
