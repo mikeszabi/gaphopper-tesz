@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="430" viewBox="0 0 860 430" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">
+  <defs><marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#555"/></marker></defs>
+  <style>.n{fill:#eef3fb;stroke:#4a6fa5;stroke-width:1.5;rx:8}.k{fill:#f3f8ee;stroke:#5a8a3a;stroke-width:1.5}.e{stroke:#555;stroke-width:1.3;fill:none;marker-end:url(#a)}.l{fill:#333;font-size:11px}.t{font-weight:bold}</style>
+  <rect class="n" x="20" y="30" width="150" height="46" rx="8"/><text x="95" y="50" text-anchor="middle" class="t">MunkaKor</text><text x="95" y="67" text-anchor="middle" class="l">munkakör</text>
+  <rect class="n" x="250" y="30" width="170" height="46" rx="8"/><text x="335" y="50" text-anchor="middle" class="t">TeszSzin</text><text x="335" y="67" text-anchor="middle" class="l">TESZ-SZÍN (mikrotanúsítvány)</text>
+  <rect class="n" x="500" y="30" width="170" height="46" rx="8"/><text x="585" y="50" text-anchor="middle" class="t">TeszNivalo</text><text x="585" y="67" text-anchor="middle" class="l">TESZ-nivaló</text>
+  <path class="e" d="M170,53 L248,53"/><text x="209" y="45" text-anchor="middle" class="l">TARTALMAZ_TESZT</text>
+  <path class="e" d="M420,53 L498,53"/><text x="459" y="45" text-anchor="middle" class="l">SZINEZI</text>
+  <rect class="n" x="190" y="150" width="120" height="40" rx="8"/><text x="250" y="175" text-anchor="middle" class="t">Kozeg</text>
+  <rect class="n" x="330" y="150" width="120" height="40" rx="8"/><text x="390" y="175" text-anchor="middle" class="t">Helyzet</text>
+  <path class="e" d="M300,76 L255,148"/><text x="230" y="115" class="l">KOZEGBEN_ZAJLIK</text>
+  <path class="e" d="M350,76 L385,148"/><text x="378" y="115" class="l">HELYZETBEN_VEGZENDO</text>
+  <rect class="n" x="470" y="150" width="130" height="40" rx="8"/><text x="535" y="175" text-anchor="middle" class="t">SzerElem</text>
+  <path class="e" d="M400,76 L500,148"/><text x="452" y="128" class="l">HASZNAL</text>
+  <path class="e" d="M570,76 L545,148"/><text x="562" y="118" class="l">IRANYUL</text>
+  <rect class="n" x="690" y="150" width="130" height="40" rx="8"/><text x="755" y="175" text-anchor="middle" class="t">TeszTipus</text>
+  <path class="e" d="M630,76 L735,148"/><text x="690" y="110" class="l">TIPUSA</text>
+  <rect class="k" x="500" y="260" width="170" height="46" rx="8"/><text x="585" y="280" text-anchor="middle" class="t">Keszseg</text><text x="585" y="297" text-anchor="middle" class="l">KÉSZ-ség (törzselem)</text>
+  <path class="e" d="M630,76 C 700,140 680,210 640,258"/><text x="672" y="230" class="l">IGENYEL {suly}</text>
+  <rect class="k" x="250" y="260" width="170" height="46" rx="8"/><text x="335" y="280" text-anchor="middle" class="t">KeszHiany</text><text x="335" y="297" text-anchor="middle" class="l">hiányjelölt</text>
+  <path class="e" d="M560,76 C 480,170 420,220 400,258"/><text x="425" y="240" class="l">HIANYZIK</text>
+  <path class="e" d="M420,283 L498,283"/><text x="459" y="276" text-anchor="middle" class="l">BEOLVADT</text>
+  <rect class="k" x="500" y="360" width="170" height="40" rx="8"/><text x="585" y="385" text-anchor="middle" class="t">KeszsegCsoport</text>
+  <rect class="k" x="700" y="360" width="140" height="40" rx="8"/><text x="770" y="385" text-anchor="middle" class="t">KeszsegKategoria</text>
+  <path class="e" d="M585,306 L585,358"/><text x="592" y="336" class="l">CSOPORTJA</text>
+  <path class="e" d="M670,380 L698,380"/><text x="655" y="415" class="l">KATEGORIAJA</text>
+  <path class="e" d="M500,300 C 330,330 260,260 250,192"/><text x="300" y="345" class="l">IRANYUL (irány)</text>
+</svg>

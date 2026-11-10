@@ -208,3 +208,25 @@ def format_text(x: dict) -> str:
     L.append(f"  Jóváhagyás: {x['tetel']['jovahagyas']}")
     L.append(f"  Elutasítás: {x['tetel']['elutasitas']}")
     return "\n".join(L)
+
+
+HELP_PATH = ROOT / "docs" / "hasznalati-segedlet.md"
+
+
+def rules_markdown() -> str:
+    """A Használati segéd szabálytáblája a config/szabalyok.yaml-ból (egy forrás)."""
+    rows = ["| kód | név | jelentés |", "|---|---|---|"]
+    rows += [f"| {k} | {v['nev']} | {v['jelentes']} |" for k, v in (szabalyok().get("szabalyok") or {}).items()]
+    return "\n".join(rows)
+
+
+def help_markdown(sync: bool = False) -> str:
+    """A Használati segéd szövege, a szabálytábla a yaml-ból frissítve (sync: a fájlba is visszaírja)."""
+    import re
+
+    text = HELP_PATH.read_text(encoding="utf-8")
+    new = re.sub(r"(<!-- szabalyok:start -->\n).*?(\n<!-- szabalyok:end -->)",
+                 lambda m: m.group(1) + rules_markdown() + m.group(2), text, flags=re.S)
+    if sync and new != text:
+        HELP_PATH.write_text(new, encoding="utf-8")
+    return new

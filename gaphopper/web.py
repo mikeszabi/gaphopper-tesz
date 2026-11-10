@@ -117,6 +117,7 @@ class _GraphHolder:
 
 
 GRAPH = _GraphHolder()
+_SENT = object()  # a végpont maga küldte a választ (pl. kép)
 
 
 def store() -> Store:
@@ -871,7 +872,8 @@ class Handler(BaseHTTPRequestHandler):
         parts = path[5:].strip("/").split("/")
         try:
             res = self._api(method, parts, q)
-            self.json(res if res is not None else {"ok": True})
+            if res is not _SENT:
+                self.json(res if res is not None else {"ok": True})
         except KeyError as exc:
             self.json({"error": f"Nem található: {exc}"}, 404)
         except (ValueError, sqlite3.Error) as exc:
@@ -934,6 +936,16 @@ class Handler(BaseHTTPRequestHandler):
             if d is None:
                 raise KeyError(p[1])
             return d
+        if head == "help" and m == "GET":
+            from .review_view import HELP_PATH, help_markdown
+            if len(p) == 1:
+                return {"markdown": help_markdown()}
+            if len(p) == 3 and p[1] == "img":
+                f = (HELP_PATH.parent / "img" / p[2]).resolve()
+                if f.parent != (HELP_PATH.parent / "img").resolve() or f.suffix not in (".png", ".svg") or not f.is_file():
+                    raise KeyError(p[2])
+                self._send(200, f.read_bytes(), "image/svg+xml" if f.suffix == ".svg" else "image/png")
+                return _SENT
         if head == "kesz":
             from .web_kesz import kesz_decide, kesz_detail, kesz_list, kesz_queue, start_maint
             if m == "GET" and len(p) == 1:

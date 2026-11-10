@@ -380,6 +380,9 @@ Egyetlen JavaScript-oldal (`web/`), a Python oldalon csak a standard könyvtár 
 - **Karbantartás:** `kesz-bovit` (próba, futtatás, próbafutásokból, próbafutásokból a sorba), `kesz-irany`, `generalize`,
   `split` gombok, ugyanúgy a háttérben futó CLI-paranccsal; alatta a próbafutások KÉSZ-ség-hiányjelöltjei (név,
   csoport, irány, R23-állapot, TESZ-nivaló). A munkakör próbafutás-eredményében (Futás oldal) is látszanak.
+- **Használati segéd:** a `docs/hasznalati-segedlet.md` (fogalmak, indítás, lánc, fülek képernyőképpel, szakértői
+  döntések, karbantartás, KÉSZ-ség-törzs, kimenetek, parancsok, GYIK) tartalomjegyzékkel és kereséssel; minden fül
+  fejlécében a „?” a megfelelő fejezetre visz. A szabálytábla a `config/szabalyok.yaml`-ból frissül.
 - **Adatbázis:** összevetés: hány munkakör van a gráfban, hány nincs, melyik „kész” munkakör hiányzik a gráfból, mi van csak a gráfban, hány TESZ-SZÍN-nek nincs még igazolása. Kész lekérdezések: TESZ-nivalók mélyítési létrája, mélyítési jelöltek, TESZ-típus × SZÍN. A SQLite állapotai és a neo4j csomópontjai, kapcsolatai; csak olvasó Cypher- és SQL-lekérdezés.
 - **Modellek:** lépésenként szolgáltató és modell; API-ból frissíthető modellválaszték; OpenAI-kompatibilis API és beágyazó modell beállítása és ellenőrzése; szerkeszthető egységárak; P2-mód. A mentés a `config/models.yaml`-ba kerül, és erősebb, mint a `.env`.
 - **Promptok:** a lépés sorrendjében, melyik lépés használja; szerkesztés, eltérés mentés előtt, korábbi változatok (`prompts/.history/`) betöltése.

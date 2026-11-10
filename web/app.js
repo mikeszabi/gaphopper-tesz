@@ -46,11 +46,17 @@ const pill = (state, label) => {
 // ------------------------------------------------------------------ útválasztás és élő jelzés
 const pages = {};
 let current = null, timer = null;
+// a fülek súgó-fejezete a Használati segédben
+const HELP_OF = { futas: "4-1-futas", kesz: "4-3-kesz-seg", keszsor: "4-4-kesz-seg-sor", karbantartas: "4-5-karbantartas",
+  adatbazis: "4-6-adatbazis", komponensek: "4-7-komponensek", modellek: "4-8-modellek", promptok: "4-9-promptok",
+  feltoltes: "4-10-feltoltes" };
 function route() {
   const tab = (location.hash.slice(1) || "futas").split("/")[0];
+  const hl = $("#helplink"); if (hl) hl.href = "#segito/" + (HELP_OF[tab] || "");
   $$("nav a").forEach((a) => a.classList.toggle("on", a.dataset.tab === tab));
   clearInterval(timer); timer = null;
   closeDrawer();
+  if (tab === "segito" && current === "segito") { helpScroll(); return; }
   current = tab;
   (pages[tab] || pages.futas)($("#view"));
 }
@@ -559,6 +565,83 @@ pages.karbantartas = async (view) => {
     const { runs } = await api("dryrun");
     $("#mdry").innerHTML = runs.length ? runs.map((r) => `<details><summary>${esc(r.title || r.job_id)} <span class="muted small">${esc(r.time)} · ${(r.kesz_hiany || []).length} hiányjelölt</span></summary>${hianyTable(r.kesz_hiany)}</details>`).join("") : '<p class="muted">Nincs próbafutás.</p>';
   } catch (e) { $("#mdry").innerHTML = `<p class="bad">${esc(e.message)}</p>`; }
+};
+
+// ------------------------------------------------------------------ HASZNÁLATI SEGÉD (docs/hasznalati-segedlet.md)
+const slug = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+function mdInline(t) {
+  let h = esc(t);
+  h = h.replace(/!\[([^\]]*)\]\(img\/([^)]+)\)/g, (m, a, f) => `<img alt="${a}" src="/api/help/img/${f}" style="max-width:100%;border:1px solid var(--line, #ddd);border-radius:6px;margin:6px 0">`);
+  h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, a, u) => /\.md$|^\.\.\//.test(u) ? `<b>${a}</b>` : `<a href="${u}">${a}</a>`);
+  h = h.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+  return h;
+}
+function mdRender(md) {
+  const L = md.split("\n"), out = [], toc = [];
+  let i = 0;
+  const cells = (l) => l.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+  while (i < L.length) {
+    const l = L[i];
+    if (/^<!--/.test(l.trim())) { i++; continue; }
+    if (l.startsWith("```")) {
+      const buf = []; i++;
+      while (i < L.length && !L[i].startsWith("```")) buf.push(L[i++]);
+      i++; out.push(`<pre>${esc(buf.join("\n"))}</pre>`); continue;
+    }
+    const hm = l.match(/^(#{1,3}) (.*)$/);
+    if (hm) {
+      const lv = hm[1].length, id = slug(hm[2]);
+      if (lv > 1) toc.push({ lv, id, t: hm[2] });
+      out.push(`<h${lv} id="h-${id}" data-sec="${lv === 2 ? id : ""}">${mdInline(hm[2])}</h${lv}>`); i++; continue;
+    }
+    if (l.trim().startsWith("|")) {
+      const rows = [];
+      while (i < L.length && L[i].trim().startsWith("|")) rows.push(L[i++]);
+      const head = cells(rows[0]), body = rows.slice(2).map(cells);
+      out.push(`<div style="overflow:auto"><table><thead><tr>${head.map((c) => `<th>${mdInline(c)}</th>`).join("")}</tr></thead><tbody>${body.map((r) => `<tr>${r.map((c) => `<td class="small">${mdInline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`);
+      continue;
+    }
+    if (/^\s*(- |\d+\. )/.test(l)) {
+      const ordered = /^\s*\d+\. /.test(l), items = [];
+      while (i < L.length && (/^\s*(- |\d+\. )/.test(L[i]) || (/^\s{2,}\S/.test(L[i]) && items.length))) {
+        const m = L[i].match(/^(\s*)(?:- |\d+\. )(.*)$/);
+        if (m) items.push({ d: m[1].length, t: m[2] }); else items[items.length - 1].t += " " + L[i].trim();
+        i++;
+      }
+      const tag = ordered ? "ol" : "ul";
+      out.push(`<${tag}>${items.map((x) => `<li style="margin-left:${x.d * 8}px">${mdInline(x.t)}</li>`).join("")}</${tag}>`);
+      continue;
+    }
+    if (!l.trim()) { i++; continue; }
+    const buf = [];
+    while (i < L.length && L[i].trim() && !/^(#|```|\||\s*- |\s*\d+\. )/.test(L[i]) && !/^<!--/.test(L[i].trim())) buf.push(L[i++]);
+    out.push(`<p>${mdInline(buf.join(" "))}</p>`);
+  }
+  return { html: out.join("\n"), toc };
+}
+function helpScroll() {
+  const a = location.hash.split("/")[1];
+  const el = a && document.getElementById("h-" + a);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+pages.segito = async (view) => {
+  view.innerHTML = `<h1>Használati segéd</h1><p class="sub">A rendszer részletes leírása példákkal. Forrás: <span class="mono">docs/hasznalati-segedlet.md</span>. Minden fülön a fejléc „?” jele ide, a megfelelő fejezetre visz.</p><div id="hv">betöltés…</div>`;
+  let d;
+  try { d = await api("help"); } catch (e) { $("#hv").innerHTML = `<p class="bad">${esc(e.message)}</p>`; return; }
+  const { html, toc } = mdRender(d.markdown);
+  $("#hv").innerHTML = `<div class="row" style="align-items:flex-start">
+    <div class="card" id="htoc" style="flex:0 0 260px;position:sticky;top:70px;max-height:80vh;overflow:auto;display:block">
+      <input id="hq" placeholder="keresés a leírásban" style="width:100%;margin-bottom:8px">
+      ${toc.map((x) => `<div style="margin:3px 0 3px ${(x.lv - 2) * 12}px" class="small"><a href="#segito/${x.id}">${esc(x.t)}</a></div>`).join("")}</div>
+    <article class="card" id="hdoc" style="flex:1 1 600px;min-width:0">${html}</article></div>`;
+  // keresés: a 2. szintű fejezetek közül csak a találatot tartalmazók látszanak
+  const secs = []; let cur = null;
+  [...$("#hdoc").children].forEach((el) => { if (el.dataset.sec) { cur = [el]; secs.push(cur); } else if (cur) cur.push(el); });
+  $("#hq").oninput = (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    secs.forEach((s) => { const hit = !q || s.some((el) => el.textContent.toLowerCase().includes(q)); s.forEach((el) => (el.style.display = hit ? "" : "none")); });
+  };
+  helpScroll();
 };
 
 // ------------------------------------------------------------------ ADATBÁZIS

@@ -103,3 +103,9 @@ details > summary { cursor: pointer; color: var(--muted); font-weight: 500; marg
 @media (max-width: 800px) { .prompts { grid-template-columns: 1fr; } header { gap: 10px; overflow-x: auto; } .brand span { display: none; } }
 
 tr.mag td { background: var(--wait-bg); border-top: 2px solid var(--line); }
+.helplink { margin-left: auto; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center;
+  justify-content: center; border: 1px solid var(--line, #ccc); text-decoration: none; font-weight: bold; }
+.helplink + .live { margin-left: 8px; }
+#hdoc h2 { margin-top: 28px; border-bottom: 1px solid var(--line, #ddd); padding-bottom: 4px; }
+#hdoc h3 { margin-top: 18px; }
+#hdoc pre { white-space: pre-wrap; }

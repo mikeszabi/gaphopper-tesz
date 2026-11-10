@@ -1831,3 +1831,42 @@ def test_web_send_ignores_closed_client():
     h._send(200, b"{}", "application/json")
     assert h._closed
     h.json({"error": "x"}, 500)          # nem dob kivételt, nem ír
+
+
+def test_help_page_api_and_sync(tmp_path, monkeypatch):
+    """Használati segéd: a docs/hasznalati-segedlet.md a forrás; a szabálytábla a config/szabalyok.yaml-ból szinkronban
+    van; az API a szöveget és a képeket adja (csak a docs/img-ből); a felületen saját fül és '?' súgólink van."""
+    import threading
+    import urllib.error
+    import urllib.request
+    from http.server import ThreadingHTTPServer
+
+    from gaphopper import web
+    from gaphopper.review_view import HELP_PATH, help_markdown, rules_markdown, szabalyok
+
+    text = HELP_PATH.read_text(encoding="utf-8")
+    assert rules_markdown() in text, "a szabálytábla elavult: python -c 'from gaphopper.review_view import help_markdown; help_markdown(sync=True)'"
+    for code in szabalyok()["szabalyok"]:
+        assert f"| {code} |" in text
+    for sec in ("## 1. Áttekintés", "## 2. Indítás", "## 3. A feldolgozási lánc", "## 4. A felület fülei",
+                "## 5. Szakértői döntések", "## 6. Karbantartási kör", "## 7. A KÉSZ-ség-törzs", "## 8. Kimenetek",
+                "## 9. Parancssori referencia", "## 10. GYIK"):
+        assert sec in text
+    imgs = re.findall(r"\]\(img/([^)]+)\)", text)
+    assert len(imgs) >= 12 and all((HELP_PATH.parent / "img" / f).is_file() for f in imgs)
+    monkeypatch.setenv("GH_STATE_DB", str(tmp_path / "state.sqlite"))
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), web.Handler)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{srv.server_address[1]}"
+    try:
+        with urllib.request.urlopen(base + "/api/help") as r:
+            assert json.loads(r.read())["markdown"] == help_markdown()
+        with urllib.request.urlopen(base + "/api/help/img/futas.png") as r:
+            assert r.headers["Content-Type"] == "image/png" and r.read()[:4] == b"\x89PNG"
+        with pytest.raises(urllib.error.HTTPError):
+            urllib.request.urlopen(base + "/api/help/img/..%2F..%2F.env")
+        with urllib.request.urlopen(base + "/") as r:
+            html = r.read().decode()
+        assert "#segito" in html and 'id="helplink"' in html
+    finally:
+        srv.shutdown()
