@@ -1534,8 +1534,12 @@ def test_anthropic_bad_workspace_retries_without_header(monkeypatch):
         headers.append(ws)
         return SimpleNamespace(messages=SimpleNamespace(stream=lambda **k: Stream(ws)))
 
+    class AuthenticationError(Exception):
+        status_code = 401
+
     fake = types.ModuleType("anthropic")
     fake.Anthropic, fake.NotFoundError, fake.BadRequestError = fake_client, NotFoundError, BadRequestError
+    fake.AuthenticationError = AuthenticationError
     monkeypatch.setitem(sys.modules, "anthropic", fake)
     monkeypatch.setenv("ANTHROPIC_WORKSPACE_ID", "nincs-ilyen")
     monkeypatch.setattr(llm, "_WS_BAD", False)
@@ -1754,3 +1758,57 @@ def test_review_explain_names_rules_and_elements(tmp_path):
     assert x["job"]["label_en"] == "Registered nurse" and f["kulonbseg"]
     txt = format_text(x)
     assert "R18 – Összevonási jelölt" in txt and "Jóváhagyás:" in txt and n2["label_hu"] in txt and "előtte:" in txt
+
+
+def test_anthropic_invalid_env_key_falls_back_to_dotenv(monkeypatch):
+    """2026-11-10: a UI-folyamat környezetében exportált, érvénytelen ANTHROPIC_API_KEY felülírta a .env kulcsát
+    (401). A hívás egyszer megismétlődik a .env kulcsával; ha az azonos vagy nincs, a hiba marad."""
+    import os
+    import sys
+    import types
+
+    from gaphopper import llm
+    from gaphopper.config import StepModel
+
+    class AuthenticationError(Exception):
+        status_code = 401
+
+    class NotFoundError(Exception):
+        status_code = 404
+
+    keys = []
+
+    class Msg:
+        stop_reason = "end_turn"
+        content = [SimpleNamespace(type="text", text="ok")]
+        usage = SimpleNamespace(model_dump=lambda: {})
+
+    class Stream:
+        def __enter__(self):
+            if os.environ["ANTHROPIC_API_KEY"] != "jo":
+                raise AuthenticationError("invalid x-api-key")
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def get_final_message(self):
+            return Msg()
+
+    def fake_client(default_headers=None, **kw):
+        keys.append(os.environ["ANTHROPIC_API_KEY"])
+        return SimpleNamespace(messages=SimpleNamespace(stream=lambda **k: Stream()))
+
+    fake = types.ModuleType("anthropic")
+    fake.Anthropic, fake.AuthenticationError, fake.NotFoundError = fake_client, AuthenticationError, NotFoundError
+    fake.BadRequestError = type("BadRequestError", (Exception,), {})
+    monkeypatch.setitem(sys.modules, "anthropic", fake)
+    monkeypatch.delenv("ANTHROPIC_WORKSPACE_ID", raising=False)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "regi")
+    monkeypatch.setattr(llm, "dotenv_api_key", lambda: "jo")
+    assert llm.AnthropicLLM(StepModel("anthropic", "m", None, 10)).complete("s", "u")[0] == "ok"
+    assert keys == ["regi", "jo"]
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "regi")
+    monkeypatch.setattr(llm, "dotenv_api_key", lambda: "regi")
+    with pytest.raises(AuthenticationError):
+        llm.AnthropicLLM(StepModel("anthropic", "m", None, 10)).complete("s", "u")

@@ -68,6 +68,32 @@ def anthropic_client():
     return anthropic.Anthropic(default_headers={"anthropic-workspace-id": ws} if ws else None)
 
 
+def dotenv_api_key() -> str:
+    """Az ANTHROPIC_API_KEY a .env fájlból (a környezeti változó elsőbbséget élvez, ezért ez külön olvasandó)."""
+    try:
+        from dotenv import dotenv_values
+
+        from .config import ROOT
+
+        return (dotenv_values(ROOT / ".env").get("ANTHROPIC_API_KEY") or "").strip()
+    except Exception:
+        return ""
+
+
+def use_dotenv_key() -> bool:
+    """Érvénytelen (401) környezeti kulcsnál a .env kulcsára vált, ha az más; a kulcsot nem írja ki."""
+    import os
+
+    k = dotenv_api_key()
+    if not k or k == os.getenv("ANTHROPIC_API_KEY", "").strip():
+        return False
+    os.environ["ANTHROPIC_API_KEY"] = k
+    print("Figyelem: a környezeti ANTHROPIC_API_KEY érvénytelen (401), és eltér a .env-ben lévőtől; a hívások a "
+          ".env kulcsával mennek. Töröld vagy javítsd a shellben exportált kulcsot (unset ANTHROPIC_API_KEY).",
+          file=sys.stderr, flush=True)
+    return True
+
+
 def is_bad_workspace(exc: Exception) -> bool:
     return getattr(exc, "status_code", None) == 404 and "workspace" in str(exc).lower()
 
@@ -123,6 +149,13 @@ class AnthropicLLM:
 
         try:
             try:
+                resp = send()
+            except anthropic.AuthenticationError:
+                # a shellben exportált, elavult kulcs felülírja a .env-et (2026-11-10: a UI-ból a #73 jóváhagyása
+                # emiatt bukott el); egyszer újra a .env kulcsával
+                if not use_dotenv_key():
+                    raise
+                self.client = anthropic_client()
                 resp = send()
             except anthropic.NotFoundError as exc:
                 # hibás ANTHROPIC_WORKSPACE_ID (pl. a .env-ben): egyszer újra, munkaterület-fejléc nélkül
