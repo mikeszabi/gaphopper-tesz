@@ -159,31 +159,22 @@ svg .dot-sel { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
 svg .dist { fill: var(--accent); }
 svg .hit { fill: transparent; cursor: pointer; }
 
-/* --- kompetenciatér --- */
-.space-wrap { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
-#space-svg .hull { fill: var(--surface-2); stroke: var(--surface-2); transition: opacity .15s; }
-#space-svg .sedge { stroke: var(--axis); opacity: .55; }
-#space-svg .dist-on { stroke: var(--ink-2); stroke-width: 1.5; }
-#space-svg .dist-off { stroke: var(--axis); stroke-width: 1; }
-#space-svg .snode circle:not(.hit) { stroke: var(--surface); stroke-width: 2; }
-#space-svg .snode .n-extra { stroke: var(--ink-2); stroke-width: 1.5; }
-#space-svg .snode .n-req { opacity: .85; }
-#space-svg .snode:hover circle:not(.hit), #space-svg .snode:focus circle:not(.hit) { stroke: var(--ink); }
-#space-svg .nglyph { fill: #fff; font-size: 9px; font-weight: 700; pointer-events: none; }
-#space-svg .nglyph.dark { fill: #0b0b0b; }
-#space-svg .nlabel { fill: var(--ink-2); font-size: 11px; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
-#space-svg .cllabel { fill: var(--muted); font-size: 11px; font-weight: 650; letter-spacing: .4px; text-transform: uppercase; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; pointer-events: none; }
-#space-svg .anchor rect { fill: var(--surface); stroke: var(--ink-2); stroke-width: 1.5; cursor: pointer; }
-#space-svg .anchor.on rect { fill: var(--ink); stroke: var(--surface); stroke-width: 2; }
-#space-svg .alabel { fill: var(--ink-2); font-size: 11px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; pointer-events: none; }
-#space-svg .alabel.on { fill: var(--ink); } #space-svg .alabel.me { fill: var(--accent-ink); }
-#space-svg .anchor text { fill: var(--ink-2); font-size: 11px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
-#space-svg .anchor.on text { fill: var(--ink); }
-#space-svg .anchor.me circle:first-child { fill: none; stroke: var(--accent); stroke-width: 2.5; }
-#space-svg .anchor.me circle:nth-child(2) { fill: var(--accent); }
-#space-svg.focus-cl [data-cl]:not(.hl) { opacity: .18; }
-.anchor-sw { fill: var(--surface); stroke: var(--ink-2); stroke-width: 1.5; } .me-sw { fill: none; stroke: var(--accent); stroke-width: 2; }
-circle.n-extra { stroke: var(--ink-2); stroke-width: 1.5; }
+/* --- kompetenciatér (3D) --- */
+.space3d { position: relative; height: min(68vh, 680px); min-height: 420px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; touch-action: none; outline: none;
+  background: radial-gradient(ellipse at 50% 40%, var(--surface) 0%, var(--surface-2) 100%); }
+.space3d canvas { display: block; cursor: grab; }
+.space3d canvas:active { cursor: grabbing; }
+.l3 { pointer-events: none; white-space: nowrap; font: 11px/1.2 system-ui, sans-serif; }
+.l3 span { display: inline-block; text-shadow: 0 0 3px var(--surface), 0 0 3px var(--surface), 0 0 2px var(--surface); }
+.l3.n3 { color: var(--ink-2); }
+.l3.cl3 { color: var(--muted); font-weight: 700; letter-spacing: .5px; text-transform: uppercase; font-size: 11px; }
+.l3.jobchip span { pointer-events: auto; cursor: pointer; text-shadow: none; font-size: 12px; font-weight: 650; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--axis); border-radius: 99px; padding: 4px 11px; box-shadow: 0 2px 10px rgba(0,0,0,.12); transition: transform .12s, border-color .12s; }
+.l3.jobchip span::before { content: "◆"; color: var(--ink-2); margin-right: 6px; font-size: 10px; }
+.l3.jobchip span:hover, .l3.jobchip span:focus-visible { border-color: var(--accent); transform: scale(1.06); outline: none; }
+.l3.jobchip.on span { background: var(--accent); border-color: var(--accent); color: #fff; cursor: default; }
+.l3.jobchip.on span::before { color: #fff; }
+.l3.a3 { color: var(--ink-2); font-weight: 650; } .l3.a3.on { color: var(--ink); } .l3.a3.me { color: var(--accent-ink); }
 .cl { padding: 8px 0; border-bottom: 1px solid var(--line); cursor: default; }
 .cl:hover, .cl:focus { background: color-mix(in srgb, var(--accent) 5%, transparent); outline: none; }
 .cl-head { display: flex; justify-content: space-between; gap: 8px; color: var(--ink); margin-bottom: 3px; }

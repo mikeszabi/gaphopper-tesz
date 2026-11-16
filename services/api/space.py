@@ -8,7 +8,10 @@
 - Távolság: a k legközelebbi szomszéd gráfján (élsúly 1 − sim) vett legrövidebb út (Isomap-szerű); így a lánc
   mentén összefüggő kompetenciák is értelmes távolságot kapnak. Az össze nem függő részek a legnagyobb távolság
   1,2-szeresére kerülnek.
-- Elrendezés: klasszikus többdimenziós skálázás (MDS) két dimenzióba, [0, 1]-re normálva (determinisztikus).
+- Elrendezés: klasszikus többdimenziós skálázás (MDS) három dimenzióba (determinisztikus).
+- Klaszterszétválasztás: a klaszterközéppontok SEPARATION-szörösre tolódnak a tér középpontjától, a tagok
+  COHESION-szörösre húzódnak a saját középpontjukhoz; a klaszteren belüli viszonyok megmaradnak. Végül [-1, 1]-be
+  skálázva.
 - Klaszterek: átlagos kapcsolású hierarchikus csoportosítás ugyanezen a távolságon; a név a tagok leggyakoribb
   KÉSZ-csoportja.
 """
@@ -21,6 +24,8 @@ from itertools import combinations
 import numpy as np
 
 K_NEIGHBOURS = 6
+SEPARATION = 2.2
+COHESION = 0.7
 PRIOR_WEIGHT = 0.25
 PRIOR = {"group": 1.0, "category": 0.4}
 
@@ -74,16 +79,18 @@ def geodesic(sim: np.ndarray, k: int = K_NEIGHBOURS) -> np.ndarray:
     return d
 
 
-def mds(d: np.ndarray) -> np.ndarray:
+def mds(d: np.ndarray, dims: int = 2) -> np.ndarray:
     n = len(d)
     if n == 1:
-        return np.array([[0.5, 0.5]])
+        return np.full((1, dims), 0.5)
     j = np.eye(n) - np.ones((n, n)) / n
     b = -0.5 * j @ (d ** 2) @ j
     w, v = np.linalg.eigh(b)
-    idx = np.argsort(w)[::-1][:2]
+    idx = np.argsort(w)[::-1][:dims]
     xy = v[:, idx] * np.sqrt(np.maximum(w[idx], 1e-9))
-    for c in range(2):                          # előjel rögzítése: determinisztikus tájolás
+    if xy.shape[1] < dims:                      # kevés pont: hiányzó dimenzió nullával
+        xy = np.hstack([xy, np.zeros((n, dims - xy.shape[1]))])
+    for c in range(dims):                       # előjel rögzítése: determinisztikus tájolás
         if xy[np.argmax(np.abs(xy[:, c])), c] < 0:
             xy[:, c] *= -1
     lo, hi = xy.min(axis=0), xy.max(axis=0)
@@ -111,6 +118,19 @@ def clusters(d: np.ndarray, k: int) -> list[int]:
     return label
 
 
+def separate(p: np.ndarray, lab: list[int]) -> np.ndarray:
+    """Klaszterek széthúzása: középpont × SEPARATION + (pont − középpont) × COHESION, majd [-1, 1]-be skálázás."""
+    out = p.copy()
+    lab = np.asarray(lab)
+    for c in set(lab.tolist()):
+        m = lab == c
+        cen = p[m].mean(axis=0)
+        out[m] = cen * SEPARATION + (p[m] - cen) * COHESION
+    out -= out.mean(axis=0)
+    scale = np.abs(out).max() or 1.0
+    return out / scale
+
+
 def build_space(data: dict, gaps: list[dict], person: dict | None) -> dict:
     """Csomópontok: a kiválasztott munkakörök és az egyén kompetenciái. gaps: a lab.gap eredményei munkakörönként
     (személy nélkül a puszta profilok, állapot nélkül)."""
@@ -125,9 +145,9 @@ def build_space(data: dict, gaps: list[dict], person: dict | None) -> dict:
         return {"nodes": [], "edges": [], "clusters": [], "jobs": [], "person": None}
     sim = similarity(ids, single, pair, catalog)
     dist = geodesic(sim)
-    xy = mds(dist)
     k = max(2, min(8, round(math.sqrt(len(ids) / 2)))) if len(ids) >= 4 else 1
     lab = clusters(dist, k) if k > 1 else [0] * len(ids)
+    xy = separate(mds(dist, 3) * 2 - 1, lab)
     pos = {cid: i for i, cid in enumerate(ids)}
 
     nodes = []
@@ -140,7 +160,7 @@ def build_space(data: dict, gaps: list[dict], person: dict | None) -> dict:
                 per_job[g["job_id"]] = {k2: hit.get(k2) for k2 in ("status", "required_eqf", "person_eqf", "importance", "weight", "shortfall")}
         nodes.append({"id": cid, "label": c["label"], "group_label": c.get("group_label", ""),
                       "category_label": c.get("category_label", ""), "x": round(float(xy[i, 0]), 4),
-                      "y": round(float(xy[i, 1]), 4), "cluster": lab[i], "own": cid in own,
+                      "y": round(float(xy[i, 1]), 4), "z": round(float(xy[i, 2]), 4), "cluster": lab[i], "own": cid in own,
                       "own_eqf": own.get(cid), "jobs": per_job,
                       "importance": max([v["importance"] or 0 for v in per_job.values()], default=0)})
     # hálózat: minden csomópont legerősebb 2 kapcsolata (ritka, recesszív háttér)
@@ -154,14 +174,14 @@ def build_space(data: dict, gaps: list[dict], person: dict | None) -> dict:
         tot = sum(weights.values())
         if not tot:
             return None
-        return {"x": round(float(sum(xy[pos[c], 0] * w for c, w in weights.items()) / tot), 4),
-                "y": round(float(sum(xy[pos[c], 1] * w for c, w in weights.items()) / tot), 4)}
+        return {a: round(float(sum(xy[pos[c], i] * w for c, w in weights.items()) / tot), 4)
+                for i, a in enumerate("xyz")}
 
     jobs = []
     for g in gaps:
         w = {c["id"]: c["weight"] for c in g["competencies"] if c["id"] in pos}
         jobs.append({"job_id": g["job_id"], "title": g["title"], "fit": g.get("fit"), "eqf": g["eqf"]["typical"],
-                     **(centroid(w) or {"x": .5, "y": .5})})
+                     **(centroid(w) or {"x": 0.0, "y": 0.0, "z": 0.0})})
     me = centroid({c: 1.0 for c in own if c in pos}) if own else None
 
     cl = []
@@ -186,4 +206,4 @@ def build_space(data: dict, gaps: list[dict], person: dict | None) -> dict:
         if seen[c["label"]] > 1:
             c["label"] = f"{c['label']} · {c['label_2']}" if c["label_2"] else f"{c['label']} ({c['id'] + 1})"
     return {"nodes": nodes, "edges": edges, "clusters": cl, "jobs": jobs, "person": me,
-            "method": {"neighbours": K_NEIGHBOURS, "clusters": k, "tesz_count": sum(len(p["tesz"]) for p in profiles.values())}}
+            "method": {"neighbours": K_NEIGHBOURS, "separation": SEPARATION, "cohesion": COHESION, "clusters": k, "tesz_count": sum(len(p["tesz"]) for p in profiles.values())}}

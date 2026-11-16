@@ -597,14 +597,27 @@ function gapDetail(g) {
     ${all.length > 25 ? `<button type="button" class="link more" data-more="${esc(key)}">${state.showAll[key] ? 'Csak az első 25' : `Mind a ${all.length} kompetencia`}</button>` : ''}</div>`;
 }
 
-// ------------------------------------------------------------------ 5. kompetenciatér
-/* A szerver adja az MDS-koordinátákat (0–1) és a klasztereket; itt: átfedésmentesítés, burkok, rajz, nagyítás. */
-const SW = 1000, SH = 680, SPAD = 70;
+// ------------------------------------------------------------------ 5. kompetenciatér (Three.js, 3D)
+/* A szerver adja a 3D-koordinátákat ([-1, 1], MDS + klaszterszétválasztás) és a klasztereket; itt a jelenet:
+   gömbök (méret = fontosság, szín = állapot a nézőponthoz), áttetsző klaszterburkok, horgonypontok, kapcsolatok.
+   Kezelés: OrbitControls (forgatás, nagyítás görgővel / két ujjal, mozgatás jobb gombbal). */
+const R3 = 120;
+let T3 = null;
+const view3 = { ctx: null };
+
+async function loadThree() {
+  if (!T3) {
+    const [THREE, oc, css] = await Promise.all([import('three'), import('/vendor/three/OrbitControls.js'), import('/vendor/three/CSS2DRenderer.js')]);
+    T3 = { THREE, OrbitControls: oc.OrbitControls, CSS2DRenderer: css.CSS2DRenderer, CSS2DObject: css.CSS2DObject };
+  }
+  return T3;
+}
 
 async function runSpace() {
   const stage = $('space-stage');
   const hasPerson = activeComps().length > 0;
   if (!state.jobs.length && !hasPerson) {
+    disposeSpace();
     stage.innerHTML = '<div class="empty"><h2>Nincs mit megjeleníteni</h2><p>Válassz munkakört (1. vagy 3. fül), és/vagy készíts egyéni profilt (2. fül).</p></div>';
     $('space-clusters').textContent = '–'; return;
   }
@@ -612,164 +625,254 @@ async function runSpace() {
     setStatus('space-status', 'A tér számítása…');
     try {
       state.space = await api('lab/space', { job_ids: state.jobs.map((j) => j.id), person: hasPerson ? personPayload() : null });
-      relax(state.space);
-      state.spaceView = { x: 0, y: 0, k: 1 };
       setStatus('space-status', '');
     } catch (e) { setStatus('space-status', e.message, true); return; }
   }
-  const sp = state.space, opts = [...sp.jobs.map((j) => [j.job_id, j.title + (j.fit != null ? ` · ${pct(j.fit)}` : '')])];
+  const sp = state.space;
   if (!sp.jobs.some((j) => j.job_id === state.spaceFocus)) state.spaceFocus = sp.jobs.some((j) => j.job_id === state.active) ? state.active : sp.jobs[0]?.job_id || '';
-  $('space-focus').innerHTML = opts.map(([v, t]) => `<option value="${esc(v)}" ${v === state.spaceFocus ? 'selected' : ''}>${esc(t)}</option>`).join('') + `<option value="" ${!state.spaceFocus ? 'selected' : ''}>${hasPerson ? 'csak az egyéni profil' : 'munkakör nélkül'}</option>`;
-  drawSpace();
+  $('space-focus').innerHTML = sp.jobs.map((j) => `<option value="${esc(j.job_id)}" ${j.job_id === state.spaceFocus ? 'selected' : ''}>${esc(j.title + (j.fit != null ? ` · ${pct(j.fit)}` : ''))}</option>`).join('')
+    + `<option value="" ${!state.spaceFocus ? 'selected' : ''}>${hasPerson ? 'csak az egyéni profil' : 'munkakör nélkül'}</option>`;
+  await drawSpace();
 }
 $('space-focus').onchange = (e) => { state.spaceFocus = e.target.value; drawSpace(); };
 $('space-edges').onchange = $('space-labels').onchange = () => drawSpace();
 
-function nodeR(n) { return 4.5 + 10 * (n.importance || (n.own ? 0.25 : 0)); }
-function relax(sp) {
-  // képernyőkoordináták + determinisztikus átfedésmentesítés (a sorrend és a lépésszám rögzített)
-  const W = SW - 2 * SPAD, H = SH - 2 * SPAD;
-  for (const n of sp.nodes) { n.sx = SPAD + n.x * W; n.sy = SPAD + (1 - n.y) * H; }
-  for (let it = 0; it < 120; it++) {
-    let moved = false;
-    for (let i = 0; i < sp.nodes.length; i++) for (let j = i + 1; j < sp.nodes.length; j++) {
-      const a = sp.nodes[i], b = sp.nodes[j], min = nodeR(a) + nodeR(b) + 5;
-      let dx = b.sx - a.sx, dy = b.sy - a.sy, d = Math.hypot(dx, dy);
-      if (d >= min) continue;
-      if (d < 0.01) { dx = ((i * 7 + j * 3) % 11) - 5 || 1; dy = ((i * 5 + j) % 9) - 4 || 1; d = Math.hypot(dx, dy); }
-      const push = (min - d) / 2, ux = dx / d, uy = dy / d;
-      a.sx -= ux * push; a.sy -= uy * push; b.sx += ux * push; b.sy += uy * push; moved = true;
-    }
-    if (!moved) break;
-  }
-  for (const n of sp.nodes) { n.sx = Math.max(24, Math.min(SW - 24, n.sx)); n.sy = Math.max(24, Math.min(SH - 24, n.sy)); }
-  const at = (p) => ({ sx: SPAD + p.x * W, sy: SPAD + (1 - p.y) * H });
-  for (const j of sp.jobs) Object.assign(j, at(j));
-  if (sp.person) Object.assign(sp.person, at(sp.person));
-}
-
-function hull(points) {
-  // konvex burok (monoton lánc)
-  const p = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  if (p.length < 3) return p;
-  const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
-  const lower = [], upper = [];
-  for (const q of p) { while (lower.length >= 2 && cross(lower.at(-2), lower.at(-1), q) <= 0) lower.pop(); lower.push(q); }
-  for (const q of p.reverse()) { while (upper.length >= 2 && cross(upper.at(-2), upper.at(-1), q) <= 0) upper.pop(); upper.push(q); }
-  return lower.slice(0, -1).concat(upper.slice(0, -1));
-}
-
 function nodeState(n, focus) {
-  // ok / under / missing a nézőpont munkakörénél; extra: csak az egyéné; other: más kiválasztott munkakör igényli
   if (focus && n.jobs[focus]) return n.jobs[focus].status || 'req';
   if (n.own) return 'extra';
   return 'other';
 }
 const NODE_STYLE = {
-  ok: ['var(--good)', '✓', 'megvan'], under: ['var(--warn)', '▽', 'szint alatt'], missing: ['var(--crit)', '✕', 'hiányzik'],
-  req: ['var(--accent)', '', 'a munkakör igényli'], extra: ['var(--surface)', '', 'többlet: csak a te profilodban'],
-  other: ['var(--dot-off)', '', 'más kiválasztott munkakör igényli'],
+  ok: ['--good', '✓', 'megvan'], under: ['--warn', '▽', 'szint alatt'], missing: ['--crit', '✕', 'hiányzik'],
+  req: ['--accent', '', 'a munkakör igényli'], extra: ['--ink-2', '', 'többlet: csak a te profilodban'],
+  other: ['--dot-off', '', 'más kiválasztott munkakör igényli'],
 };
+const cssVar = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888';
+const nodeSize = (n) => 2.2 + 5.5 * (n.importance || (n.own ? 0.2 : 0));
 
-function drawSpace() {
+function disposeSpace() {
+  const c = view3.ctx; if (!c) return;
+  cancelAnimationFrame(c.raf); c.ro?.disconnect(); c.controls.dispose();
+  c.scene.traverse((o) => { o.geometry?.dispose(); (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m?.dispose()); });
+  c.renderer.dispose(); c.renderer.forceContextLoss?.();
+  view3.ctx = null;
+}
+
+async function drawSpace() {
   const sp = state.space; if (!sp) return;
   const focus = state.spaceFocus, showEdges = $('space-edges').checked, allLabels = $('space-labels').checked;
-  const byId = Object.fromEntries(sp.nodes.map((n) => [n.id, n]));
-  const v = state.spaceView;
-  let s = `<svg id="space-svg" viewBox="0 0 ${SW} ${SH}" width="100%" role="img" aria-label="Kompetenciák tere: klaszterek és illeszkedés" style="touch-action:none;cursor:grab"><g transform="translate(${v.x} ${v.y}) scale(${v.k})">`;
-  // klaszterburkok: vastag, lekerekített körvonal ugyanazzal a kitöltéssel = sima „buborék”
-  for (const c of sp.clusters) {
-    const pts = sp.nodes.filter((n) => n.cluster === c.id).map((n) => [n.sx, n.sy]);
-    if (!pts.length) continue;
-    const h = hull(pts), d = h.length === 1 ? `M${h[0][0]} ${h[0][1]}h0.1` : 'M' + h.map((q) => q.join(' ')).join('L') + 'Z';
-    s += `<path d="${d}" class="hull" data-cl="${c.id}" stroke-width="54" stroke-linejoin="round" stroke-linecap="round"/>`;
-  }
-  if (showEdges) for (const e of sp.edges) {
-    const a = byId[e.a], b = byId[e.b];
-    s += `<line class="sedge" x1="${a.sx}" y1="${a.sy}" x2="${b.sx}" y2="${b.sy}" stroke-width="${0.6 + e.w * 1.6}"/>`;
-  }
-  // távolságvonalak: egyén → munkakörök (a nézőpont kiemelve)
-  if (sp.person) for (const j of sp.jobs) {
-    const on = j.job_id === focus;
-    s += `<line class="${on ? 'dist-on' : 'dist-off'}" x1="${sp.person.sx}" y1="${sp.person.sy}" x2="${j.sx}" y2="${j.sy}"/>`;
-  }
-  // csomópontok
-  for (const n of sp.nodes) {
-    const st = nodeState(n, focus), [fill, glyph, txt] = NODE_STYLE[st], r = nodeR(n), j = focus && n.jobs[focus];
-    const tip = `<b>${esc(n.label)}</b>${esc(n.group_label)}<br>${esc(txt)}${j ? ` · elvárt EQF ${j.required_eqf ?? '–'}` : ''}${n.own ? ` · saját ${n.own_eqf ?? 'szint nélkül'}` : ''}${j ? `<br>fontosság ${pct(j.importance)}` : ''}<br><span style="color:var(--muted)">${esc(sp.clusters[n.cluster]?.label || '')}</span>`;
-    s += `<g class="snode" data-node="${esc(n.id)}" data-cl="${n.cluster}" data-tip="${esc(tip)}" tabindex="0">
-      <circle cx="${n.sx}" cy="${n.sy}" r="${r + 6}" class="hit"/>
-      <circle cx="${n.sx}" cy="${n.sy}" r="${r}" fill="${fill}" class="n-${st}"/>
-      ${glyph && r >= 8 ? `<text x="${n.sx}" y="${n.sy + 3.5}" text-anchor="middle" class="nglyph ${st === 'under' ? 'dark' : ''}">${glyph}</text>` : ''}</g>`;
-  }
-  // címkék: fontossági sorrendben, ütközéselkerüléssel (a horgonypontoké elöl)
-  const short = (t) => (t.length > 30 ? t.slice(0, 29) + '…' : t);
-  const items = [];
-  for (const j of sp.jobs) items.push({ x: j.sx, y: j.sy, r: 9, text: j.title + (j.fit != null ? ' · ' + pct(j.fit) : ''), cls: 'alabel' + (j.job_id === focus ? ' on' : '') });
-  if (sp.person) items.push({ x: sp.person.sx, y: sp.person.sy, r: 11, text: 'te', cls: 'alabel me' });
-  // klaszternevek: a burok fölé, ha ott nincs hely, alá (a keretbe szorítva)
-  for (const c of sp.clusters) {
-    const m = sp.nodes.filter((n) => n.cluster === c.id); if (!m.length) continue;
-    const cx = m.reduce((a, n) => a + n.sx, 0) / m.length, top = Math.min(...m.map((n) => n.sy)), bottom = Math.max(...m.map((n) => n.sy));
-    const text = c.label.length > 42 ? c.label.slice(0, 41) + '…' : c.label, w = text.length * 7.4 + 4;
-    const clamp = (v) => Math.max(8, Math.min(SW - 8 - w, v)), x = clamp(cx - w / 2);
-    const tries = [];
-    for (const dx of [0, -0.4 * w, 0.4 * w, -0.8 * w, 0.8 * w]) tries.push([clamp(x + dx), top - 44, 'start'], [clamp(x + dx), bottom + 30, 'start']);
-    tries.push([x, top - 60, 'start'], [x, bottom + 46, 'start']);
-    items.push({ text, cls: 'cllabel', w, tries });
-  }
-  const ranked = [...sp.nodes].sort((a, b) => (b.importance + (nodeState(b, focus) === 'missing' ? .3 : 0)) - (a.importance + (nodeState(a, focus) === 'missing' ? .3 : 0)));
-  for (const n of allLabels ? ranked : ranked.slice(0, 18)) items.push({ x: n.sx, y: n.sy, r: nodeR(n), text: short(n.label), cls: 'nlabel' });
-  s += placeLabels(items, sp.nodes);
-  // horgonypontok: munkakörök (négyzet) és az egyén (gyűrű)
-  for (const j of sp.jobs) {
-    const on = j.job_id === focus;
-    s += `<g class="anchor ${on ? 'on' : ''}" data-tip="<b>${esc(j.title)}</b>a munkakör kompetenciáinak súlypontja${j.fit != null ? `<br>illeszkedés ${pct(j.fit)}` : ''} · tipikus EQF ${j.eqf ?? '–'}" data-focus="${esc(j.job_id)}" tabindex="0">
-      <rect x="${j.sx - 8}" y="${j.sy - 8}" width="16" height="16" rx="3"/></g>`;
-  }
-  if (sp.person) s += `<g class="anchor me" data-tip="<b>Te</b>a profilod kompetenciáinak súlypontja"><circle cx="${sp.person.sx}" cy="${sp.person.sy}" r="10"/><circle cx="${sp.person.sx}" cy="${sp.person.sy}" r="4"/></g>`;
-  s += '</g></svg>';
-
+  const prevCam = view3.ctx ? { p: view3.ctx.camera.position.clone(), t: view3.ctx.controls.target.clone(), rot: view3.ctx.controls.autoRotate } : null;
+  disposeSpace();
   const legend = (focus ? ['ok', 'under', 'missing'] : sp.person ? [] : ['req']).concat(sp.person ? ['extra'] : [], sp.jobs.length > 1 || (!focus && sp.jobs.length) ? ['other'] : [])
-    .map((k) => `<span><svg width="14" height="14" style="display:inline;vertical-align:-2px"><circle cx="7" cy="7" r="6" fill="${NODE_STYLE[k][0]}" class="n-${k}"/></svg> ${NODE_STYLE[k][1] ? NODE_STYLE[k][1] + ' ' : ''}${esc(NODE_STYLE[k][2])}</span>`).join('');
+    .map((k) => `<span><span class="sw" style="background:var(${NODE_STYLE[k][0]})"></span>${NODE_STYLE[k][1] ? NODE_STYLE[k][1] + ' ' : ''}${esc(NODE_STYLE[k][2])}</span>`).join('');
   const rows = [...sp.nodes].sort((a, b) => a.cluster - b.cluster || b.importance - a.importance).map((n) => {
     const st = nodeState(n, focus), j = focus && n.jobs[focus];
     return `<tr><td>${esc(n.label)}</td><td class="small">${esc(sp.clusters[n.cluster]?.label || '')}</td><td>${['ok', 'under', 'missing'].includes(st) ? stPill(st) : `<span class="small muted">${esc(NODE_STYLE[st][2])}</span>`}</td><td class="num">${j?.required_eqf ?? '–'}</td><td class="num">${n.own ? (n.own_eqf ?? '✓') : '–'}</td></tr>`;
   }).join('');
-  $('space-stage').innerHTML = `<div class="card"><div class="card-head"><div><span class="eyebrow">KOMPETENCIATÉR</span><h2>${focus ? esc(sp.jobs.find((j) => j.job_id === focus)?.title || '') + ' — illeszkedés a térben' : 'A kompetenciák tere'}</h2>
+  $('space-stage').innerHTML = `<div class="card"><div class="card-head"><div><span class="eyebrow">KOMPETENCIATÉR · 3D</span><h2>${focus ? esc(sp.jobs.find((j) => j.job_id === focus)?.title || '') + ' — illeszkedés a térben' : 'A kompetenciák tere'}</h2>
       <p class="small muted" style="margin:4px 0 0">${sp.nodes.length} kompetencia · ${sp.clusters.length} klaszter · a közelség az együttes előfordulást jelzi ${sp.method.tesz_count} TESZ-SZÍN alapján</p></div>
-      <div class="row-buttons" style="margin:0"><button type="button" class="secondary" id="space-reset">Nézet visszaállítása</button></div></div>
-    <div class="legend">${legend}<span><svg width="14" height="14" style="display:inline;vertical-align:-2px"><rect x="1" y="1" width="12" height="12" rx="3" class="anchor-sw"/></svg> munkakör</span>${sp.person ? '<span><svg width="14" height="14" style="display:inline;vertical-align:-2px"><circle cx="7" cy="7" r="5.5" class="me-sw"/></svg> te</span>' : ''}<span class="muted">nagyobb kör = fontosabb</span></div>
-    <div class="space-wrap">${s}</div>
-    <p class="muted small">Görgetéssel nagyítás, húzással mozgatás · egy munkakör négyzetére kattintva az lesz a nézőpont · a klaszter fölé állva kiemelődik.</p>
+      <div class="row-buttons" style="margin:0"><button type="button" class="secondary" id="space-rotate">${prevCam && !prevCam.rot ? 'Forgatás' : 'Forgatás leállítása'}</button><button type="button" class="secondary" id="space-reset">Nézet visszaállítása</button></div></div>
+    <div class="legend">${legend}<span><span class="sw" style="background:var(--ink-2);border-radius:2px;transform:rotate(45deg)"></span>munkakör (a névre kattintva nézőpont; kék = aktuális)</span>${sp.person ? '<span><span class="sw" style="background:none;box-shadow:inset 0 0 0 2px var(--accent)"></span>te</span>' : ''}<span class="muted">nagyobb gömb = fontosabb</span></div>
+    <div class="space3d" id="space-3d" tabindex="0" aria-label="Kompetenciák háromdimenziós tere; a táblázatos nézet alább"></div>
+    <p class="muted small">Húzás: forgatás · görgő vagy két ujj: nagyítás · jobb gomb vagy Shift + húzás: mozgatás · egy munkakör nevére vagy rombuszára kattintva az lesz a nézőpont · a bal oldali klaszterlistán a klaszter fölé állva kiemelődik.</p>
     <details class="io"><summary>Táblázatos nézet (${sp.nodes.length} kompetencia)</summary><div class="scroll-x"><table><thead><tr><th>Kompetencia</th><th>Klaszter</th><th>Állapot</th><th>Elvárt EQF</th><th>Saját</th></tr></thead><tbody>${rows}</tbody></table></div></details></div>`;
   renderClusters(sp, focus);
-  wireSpace();
-}
 
-function placeLabels(items, nodes) {
-  // mohó elhelyezés: jobbra, balra, fölé, alá; ami sehová nem fér, kimarad (a tooltip és a táblázat mutatja)
-  const boxes = nodes.map((n) => { const r = nodeR(n); return [n.sx - r, n.sy - r, n.sx + r, n.sy + r]; });
-  const hit = (b) => b[0] < 4 || b[2] > SW - 4 || b[1] < 4 || b[3] > SH - 4 || boxes.some((o) => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
-  let out = '';
-  for (const it of items) {
-    const w = it.w || it.text.length * (it.cls.startsWith('alabel') ? 6.6 : 6.1) + 4, h = 13, g = (it.r || 0) + 4;
-    const tries = it.tries || [[it.x + g, it.y - h / 2, 'start'], [it.x - g - w, it.y - h / 2, 'end'], [it.x - w / 2, it.y - g - h, 'middle'], [it.x - w / 2, it.y + g, 'middle']];
-    for (const [bx, by, anchor] of tries) {
-      const b = [bx, by, bx + w, by + h];
-      // a saját csomópont dobozát nem számítjuk ütközésnek
-      const own = it.x == null ? -1 : boxes.findIndex((o) => Math.abs((o[0] + o[2]) / 2 - it.x) < 0.5 && Math.abs((o[1] + o[3]) / 2 - it.y) < 0.5);
-      const saved = own >= 0 ? boxes.splice(own, 1)[0] : null;
-      const bad = hit(b);
-      if (saved) boxes.splice(own, 0, saved);
-      if (bad) continue;
-      boxes.push(b);
-      const tx = anchor === 'start' ? bx : anchor === 'end' ? bx + w : bx + w / 2;
-      out += `<text class="${it.cls}" x="${tx}" y="${by + 10}" text-anchor="${anchor}">${esc(it.text)}</text>`;
-      break;
+  let t;
+  try { t = await loadThree(); } catch (e) { $('space-3d').innerHTML = `<p class="status err" style="padding:20px">A 3D-könyvtár nem tölthető be (${esc(e.message)}). A táblázatos nézet alább elérhető.</p>`; return; }
+  const { THREE, OrbitControls, CSS2DRenderer, CSS2DObject } = t;
+  const box = $('space-3d'), W = () => box.clientWidth, H = () => box.clientHeight;
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+  catch { box.innerHTML = '<p class="status err" style="padding:20px">A böngésző nem támogatja a WebGL-t; a táblázatos nézet alább elérhető.</p>'; return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setSize(W(), H()); box.appendChild(renderer.domElement);
+  const labels = new CSS2DRenderer(); labels.setSize(W(), H());
+  Object.assign(labels.domElement.style, { position: 'absolute', top: '0', left: '0', pointerEvents: 'none' });
+  box.appendChild(labels.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, W() / H(), 1, 4000);
+  camera.position.set(0, 40, 330);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  Object.assign(controls, { enableDamping: true, dampingFactor: 0.08, minDistance: 40, maxDistance: 900, autoRotate: prevCam ? prevCam.rot : true, autoRotateSpeed: 0.6, zoomSpeed: 1.1 });
+  controls.saveState();
+  if (prevCam) { camera.position.copy(prevCam.p); controls.target.copy(prevCam.t); }
+  controls.addEventListener('start', () => { controls.autoRotate = false; const b = $('space-rotate'); if (b) b.textContent = 'Forgatás'; });
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 2.2));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.4); sun.position.set(120, 200, 160); scene.add(sun);
+
+  const P = (o) => (o._p ? o._p.clone() : new THREE.Vector3(o.x * R3, o.y * R3, o.z * R3));
+  relax3d(sp, THREE);
+  const color = (v) => new THREE.Color(cssVar(v));
+  const allLabelObjs = [];
+  const label = (text, cls, pos, dx = 0, prio = 0) => {
+    const el = document.createElement('div'); el.className = 'l3 ' + cls;
+    const span = document.createElement('span'); span.textContent = text; if (dx) span.style.marginLeft = dx + 'px'; el.appendChild(span);
+    const o = new CSS2DObject(el); o.position.copy(pos); o.userData.prio = prio; o.userData.span = span; scene.add(o); allLabelObjs.push(o); return o;
+  };
+
+  // klaszterburkok: áttetsző gömb + halvány drótháló, név a burok tetején
+  const hulls = [];
+  for (const c of sp.clusters) {
+    const m = sp.nodes.filter((n) => n.cluster === c.id); if (!m.length) continue;
+    const cen = m.reduce((a, n) => a.add(P(n)), new THREE.Vector3()).divideScalar(m.length);
+    const ds = m.map((n) => P(n).distanceTo(cen) + nodeSize(n)).sort((a, b) => a - b);
+    const rad = Math.max(14, ds[Math.min(ds.length - 1, Math.floor(ds.length * 0.8))] + 6);   // 80. percentilis: a kilógó tag ne fújja fel a burkot
+    const shell = new THREE.Mesh(new THREE.SphereGeometry(rad, 40, 28), new THREE.MeshBasicMaterial({ color: color('--ink-2'), transparent: true, opacity: 0.045, depthWrite: false }));
+    const wire = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(rad, 2)), new THREE.LineBasicMaterial({ color: color('--ink-2'), transparent: true, opacity: 0.1 }));
+    shell.position.copy(cen); wire.position.copy(cen); scene.add(shell, wire);
+    const lab = label(c.label, 'cl3', cen.clone().add(new THREE.Vector3(0, rad + 6, 0)), 0, 200 - c.id);
+    hulls.push({ id: c.id, objs: [shell, wire], lab, base: [0.045, 0.1] });
+  }
+
+  // kapcsolatok
+  const byId = Object.fromEntries(sp.nodes.map((n) => [n.id, n]));
+  if (showEdges && sp.edges.length) {
+    const pts = []; for (const e of sp.edges) pts.push(P(byId[e.a]), P(byId[e.b]));
+    scene.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: color('--axis'), transparent: true, opacity: 0.55 })));
+  }
+
+  // csomópontok
+  const sphere = new THREE.SphereGeometry(1, 28, 20), pick = [], nodeObjs = [];
+  for (const n of sp.nodes) {
+    const st = nodeState(n, focus), r = nodeSize(n);
+    const mat = st === 'extra'
+      ? new THREE.MeshBasicMaterial({ color: color('--ink-2'), wireframe: true, transparent: true, opacity: 0.45 })
+      : new THREE.MeshStandardMaterial({ color: color(NODE_STYLE[st][0]), roughness: 0.45, metalness: 0.05, transparent: true, opacity: 1 });
+    const mesh = new THREE.Mesh(sphere, mat); mesh.position.copy(P(n)); mesh.scale.setScalar(r);
+    const j = focus && n.jobs[focus];
+    mesh.userData = { kind: 'node', cluster: n.cluster, tip: `<b>${esc(n.label)}</b>${esc(n.group_label)}<br>${esc(NODE_STYLE[st][2])}${j ? ` · elvárt EQF ${j.required_eqf ?? '–'}` : ''}${n.own ? ` · saját ${n.own_eqf ?? 'szint nélkül'}` : ''}${j ? `<br>fontosság ${pct(j.importance)}` : ''}<br><span style="color:var(--muted)">${esc(sp.clusters[n.cluster]?.label || '')}</span>` };
+    scene.add(mesh); pick.push(mesh); nodeObjs.push(mesh);
+  }
+  const ranked = [...sp.nodes].sort((a, b) => (b.importance + (nodeState(b, focus) === 'missing' ? .3 : 0)) - (a.importance + (nodeState(a, focus) === 'missing' ? .3 : 0)));
+  const nodeLabels = [];
+  for (const [i, n] of (allLabels ? ranked : ranked.slice(0, 24)).entries()) {
+    const o = label(n.label.length > 30 ? n.label.slice(0, 29) + '…' : n.label, 'n3', P(n), nodeSize(n) * 2.2 + 8, 50 - i);
+    o.userData.cluster = n.cluster; nodeLabels.push(o);
+  }
+
+  // horgonypontok: munkakörök (oktaéder) és az egyén (kamera felé forduló gyűrű), távolságvonalak
+  // munkakör: nagyobb rombusz (a nézőpont kék), láthatatlan nagy találati gömb, és kattintható névchip
+  const oct = new THREE.OctahedronGeometry(8.5), hitGeo = new THREE.SphereGeometry(15, 12, 8), jobMeshes = [];
+  const focusJob = (id) => { state.spaceFocus = id; $('space-focus').value = id; tip.hidden = true; drawSpace(); };
+  for (const j of sp.jobs) {
+    const on = j.job_id === focus, pos = P(j);
+    const tipHtml = `<b>${esc(j.title)}</b>a munkakör kompetenciáinak súlypontja${j.fit != null ? `<br>illeszkedés ${pct(j.fit)}` : ''} · tipikus EQF ${j.eqf ?? '–'}${on ? '' : '<br><span style="color:var(--muted)">kattints: legyen ez a nézőpont</span>'}`;
+    const mesh = new THREE.Mesh(oct, new THREE.MeshStandardMaterial({ color: color(on ? '--accent' : '--ink-2'), roughness: 0.3, metalness: 0.15, emissive: color(on ? '--accent' : '--ink-2'), emissiveIntensity: on ? 0.35 : 0.1 }));
+    mesh.position.copy(pos);
+    const hitMesh = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
+    hitMesh.position.copy(pos);
+    hitMesh.userData = mesh.userData = { kind: 'job', job: j.job_id, mesh, tip: tipHtml };
+    scene.add(mesh, hitMesh); pick.push(hitMesh); jobMeshes.push(mesh);
+    const o = label(j.title + (j.fit != null ? ' · ' + pct(j.fit) : ''), 'jobchip' + (on ? ' on' : ''), pos, 26, on ? 400 : 300);
+    const chip = o.userData.span;
+    chip.setAttribute('role', 'button'); chip.tabIndex = 0;
+    chip.setAttribute('aria-label', `${j.title}${on ? ' (aktuális nézőpont)' : ': legyen ez a nézőpont'}`);
+    chip.onclick = () => { if (!on) focusJob(j.job_id); };
+    chip.onkeydown = (e) => { if ((e.key === 'Enter' || e.key === ' ') && !on) { e.preventDefault(); focusJob(j.job_id); } };
+    chip.onmouseenter = () => { mesh.scale.setScalar(1.35); tip.innerHTML = tipHtml; showTip(chip); };
+    chip.onmouseleave = () => { mesh.scale.setScalar(1); tip.hidden = true; };
+    // a chip fölött is nagyítson a görgő: továbbadjuk a vászonnak
+    chip.addEventListener('wheel', (e) => { e.preventDefault(); renderer.domElement.dispatchEvent(new WheelEvent('wheel', e)); }, { passive: false });
+  }
+  let ring = null;
+  if (sp.person) {
+    const me = P(sp.person);
+    ring = new THREE.Mesh(new THREE.TorusGeometry(7, 1.4, 16, 48), new THREE.MeshBasicMaterial({ color: color('--accent') }));
+    ring.position.copy(me); ring.userData = { kind: 'me', tip: '<b>Te</b>a profilod kompetenciáinak súlypontja' };
+    const dot = new THREE.Mesh(new THREE.SphereGeometry(2.6, 16, 12), new THREE.MeshBasicMaterial({ color: color('--accent') })); dot.position.copy(me);
+    scene.add(ring, dot); pick.push(ring);
+    label('te', 'a3 me', me, 24, 110);
+    for (const j of sp.jobs) {
+      const on = j.job_id === focus;
+      scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([me, P(j)]), new THREE.LineBasicMaterial({ color: color(on ? '--ink-2' : '--axis'), transparent: true, opacity: on ? 0.95 : 0.5 })));
     }
   }
-  return out;
+
+  // egér: tooltip és kattintás (raycaster)
+  const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+  let hover = null;
+  const hit = (e) => {
+    const r = renderer.domElement.getBoundingClientRect();
+    mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(mouse, camera);
+    const hits = ray.intersectObjects(pick, false);
+    return (hits.find((h) => h.object.userData.kind === 'job') || hits[0])?.object || null;   // a munkakör elsőbbséget kap
+  };
+  renderer.domElement.addEventListener('pointermove', (e) => {
+    hover = hit(e);
+    for (const m of jobMeshes) m.scale.setScalar(hover?.userData.mesh === m ? 1.35 : 1);
+    renderer.domElement.style.cursor = hover ? (hover.userData.kind === 'job' ? 'pointer' : 'help') : 'grab';
+    if (hover) { tip.innerHTML = hover.userData.tip; tip.hidden = false; const w = tip.offsetWidth; tip.style.left = Math.max(4, Math.min(innerWidth - w - 4, e.clientX + 14)) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; }
+    else tip.hidden = true;
+  });
+  renderer.domElement.addEventListener('pointerleave', () => { tip.hidden = true; });
+  renderer.domElement.addEventListener('click', (e) => {
+    const o = hit(e);
+    if (o?.userData.kind === 'job' && o.userData.job !== state.spaceFocus) focusJob(o.userData.job);
+  });
+
+  const ctx = { renderer, labels, scene, camera, controls, raf: 0, ro: null, hulls, nodeObjs, nodeLabels, allLabelObjs, frame: 0 };
+  view3.ctx = ctx;
+  ctx.ro = new ResizeObserver(() => { if (!W()) return; camera.aspect = W() / H(); camera.updateProjectionMatrix(); renderer.setSize(W(), H()); labels.setSize(W(), H()); });
+  ctx.ro.observe(box);
+  const loop = () => {
+    if (view3.ctx !== ctx) return;
+    ctx.raf = requestAnimationFrame(loop);
+    if (state.tab !== 'space' || document.hidden) return;   // rejtett fülön nem rajzolunk
+    controls.update();
+    if (ring) ring.quaternion.copy(camera.quaternion);
+    renderer.render(scene, camera); labels.render(scene, camera);
+    if (ctx.frame++ % 6 === 0) declutter(ctx, box);
+  };
+  loop();
+  $('space-reset').onclick = () => { controls.reset(); };
+  $('space-rotate').onclick = (e) => { controls.autoRotate = !controls.autoRotate; e.target.textContent = controls.autoRotate ? 'Forgatás leállítása' : 'Forgatás'; };
+}
+
+function relax3d(sp, THREE) {
+  // a csomópontok szétfeszítése 3D-ben (rögzített lépésszám, determinisztikus): ne fedjék egymást
+  const pts = sp.nodes.map((n) => (n._p = new THREE.Vector3(n.x * R3, n.y * R3, n.z * R3)));
+  for (let it = 0; it < 80; it++) {
+    let moved = false;
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+      const min = nodeSize(sp.nodes[i]) + nodeSize(sp.nodes[j]) + 3, d = pts[i].distanceTo(pts[j]);
+      if (d >= min) continue;
+      const dir = d > 1e-3 ? pts[j].clone().sub(pts[i]).divideScalar(d) : new THREE.Vector3(((i * 7 + j) % 5) - 2 || 1, ((i + j * 3) % 5) - 2, 1).normalize();
+      const push = (min - d) / 2;
+      pts[i].addScaledVector(dir, -push); pts[j].addScaledVector(dir, push); moved = true;
+    }
+    if (!moved) break;
+  }
+}
+
+function declutter(ctx, box) {
+  // képernyőn ütköző címkék elrejtése, prioritás szerint (klaszternevek, horgonypontok, fontos kompetenciák)
+  const W = box.clientWidth, H = box.clientHeight, v = new (ctx.camera.position.constructor)();
+  const placed = [];
+  const items = ctx.allLabelObjs.map((o) => {
+    v.copy(o.position).project(ctx.camera);
+    return { o, x: (v.x + 1) / 2 * W, y: (1 - v.y) / 2 * H, front: v.z < 1 };
+  }).sort((a, b) => b.o.userData.prio - a.o.userData.prio);
+  const clash = (b) => placed.some((p) => b[0] < p[2] && b[2] > p[0] && b[1] < p[3] && b[3] > p[1]);
+  for (const it of items) {
+    const s = it.o.userData.span, w = s.offsetWidth, h = s.offsetHeight || 13, ml = parseFloat(s.style.marginLeft) || 0;
+    const x0 = it.x - w / 2 + ml;
+    if (it.o.element.classList.contains('jobchip')) {
+      // a munkakör-chip sosem rejtőzik el: ütközéskor függőlegesen eltolódik (lent, fent, egyre távolabb)
+      let dy = 0;
+      for (const k of [0, 1, -1, 2, -2, 3, -3]) { dy = k * (h + 6); if (!clash([x0, it.y - h / 2 + dy, x0 + w, it.y + h / 2 + dy])) break; }
+      s.style.marginTop = dy + 'px'; s.style.marginBottom = -dy + 'px';
+      it.o.element.style.visibility = it.front ? 'visible' : 'hidden';
+      placed.push([x0 - 4, it.y - h / 2 + dy - 2, x0 + w + 4, it.y + h / 2 + dy + 2]);
+      continue;
+    }
+    const b = [x0, it.y - h / 2, x0 + w, it.y + h / 2];
+    const ok = it.front && !clash(b);
+    it.o.element.style.visibility = ok ? 'visible' : 'hidden';
+    if (ok) placed.push([b[0] - 4, b[1] - 2, b[2] + 4, b[3] + 2]);
+  }
 }
 
 function renderClusters(sp, focus) {
@@ -781,36 +884,25 @@ function renderClusters(sp, focus) {
       <div class="muted" style="margin-top:2px">${c.top.map(esc).join(', ')}</div></div>`;
   }).join('');
   $('space-clusters').querySelectorAll('.cl').forEach((el) => {
-    el.onmouseenter = el.onfocus = () => highlightCluster(el.dataset.cl);
+    el.onmouseenter = el.onfocus = () => highlightCluster(Number(el.dataset.cl));
     el.onmouseleave = el.onblur = () => highlightCluster(null);
   });
 }
 function highlightCluster(id) {
-  const svg = $('space-svg'); if (!svg) return;
-  svg.classList.toggle('focus-cl', id != null);
-  svg.querySelectorAll('[data-cl]').forEach((e) => e.classList.toggle('hl', id != null && e.dataset.cl === String(id)));
+  const c = view3.ctx; if (!c) return;
+  for (const m of c.nodeObjs) m.material.opacity = id == null || m.userData.cluster === id ? (m.material.wireframe ? 0.9 : 1) : 0.12;
+  for (const h of c.hulls) {
+    const on = id == null || h.id === id;
+    h.objs[0].material.opacity = id == null ? h.base[0] : on ? 0.1 : 0.015;
+    h.objs[1].material.opacity = id == null ? h.base[1] : on ? 0.3 : 0.03;
+    h.lab.element.style.opacity = on ? 1 : 0.25;
+  }
+  for (const l of c.nodeLabels) l.element.style.opacity = id == null || l.userData.cluster === id ? 1 : 0.15;
 }
 
-function wireSpace() {
-  const svg = $('space-svg'), g = svg.querySelector('g'), v = state.spaceView;
-  const apply = () => g.setAttribute('transform', `translate(${v.x} ${v.y}) scale(${v.k})`);
-  svg.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const r = svg.getBoundingClientRect(), mx = (e.clientX - r.left) * SW / r.width, my = (e.clientY - r.top) * SH / r.height;
-    const k2 = Math.min(5, Math.max(0.5, v.k * (e.deltaY > 0 ? 0.9 : 1.1)));
-    v.x = mx - (mx - v.x) * k2 / v.k; v.y = my - (my - v.y) * k2 / v.k; v.k = k2; apply();
-  }, { passive: false });
-  let drag = null;
-  svg.onpointerdown = (e) => { if (e.target.closest('.anchor')) return; drag = { x: e.clientX, y: e.clientY, vx: v.x, vy: v.y }; svg.setPointerCapture(e.pointerId); svg.style.cursor = 'grabbing'; };
-  svg.onpointermove = (e) => { if (!drag) return; const r = svg.getBoundingClientRect(); v.x = drag.vx + (e.clientX - drag.x) * SW / r.width; v.y = drag.vy + (e.clientY - drag.y) * SH / r.height; apply(); };
-  svg.onpointerup = svg.onpointercancel = () => { drag = null; svg.style.cursor = 'grab'; };
-  svg.querySelectorAll('[data-focus]').forEach((a) => (a.onclick = a.onkeydown = (e) => {
-    if (e.type === 'keydown' && e.key !== 'Enter') return;
-    state.spaceFocus = a.dataset.focus; $('space-focus').value = state.spaceFocus; drawSpace();
-  }));
-  svg.querySelectorAll('.hull').forEach((h) => { h.onmouseenter = () => highlightCluster(h.dataset.cl); h.onmouseleave = () => highlightCluster(null); });
-  $('space-reset').onclick = () => { state.spaceView = { x: 0, y: 0, k: 1 }; drawSpace(); };
-}
+// téma váltásakor a jelenet színei újraszámolódnak
+new MutationObserver(() => { if (state.tab === 'space' && state.space) drawSpace(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (state.tab === 'space' && state.space) drawSpace(); });
 
 // ------------------------------------------------------------------ módszertan (a panelekben)
 const METHOD = `<ul>
@@ -825,7 +917,8 @@ $('method-gap').innerHTML = METHOD;
 $('method-space').innerHTML = `<ul>
   <li><b>Hasonlóság</b>: két kompetencia hányszor szerepel együtt ugyanannak a TESZ-SZÍN-nek az igényei között, az összes felbontott munkakörön: n(a,b) / √(n(a)·n(b)).</li>
   <li><b>Távolság</b>: a 6 legközelebbi szomszéd hálózatán vett legrövidebb út (élsúly 1 − hasonlóság), így a lánc mentén összefüggő kompetenciák is közel kerülnek.</li>
-  <li><b>Elrendezés</b>: klasszikus többdimenziós skálázás (MDS) két dimenzióba; utána csak az átfedéseket toljuk szét. A tengelyeknek nincs önálló jelentése, csak a távolságoknak.</li>
+  <li><b>Elrendezés</b>: klasszikus többdimenziós skálázás (MDS) három dimenzióba. A tengelyeknek nincs önálló jelentése, csak a távolságoknak.</li>
+  <li><b>Klaszterszétválasztás</b>: a klaszterek középpontjai 2,2-szeresükre tolódnak a tér közepétől, a tagok 0,7-szeresükre húzódnak a saját középpontjukhoz; a klaszteren belüli viszonyok megmaradnak, a klaszterek jól elkülönülnek.</li>
   <li><b>Klaszterek</b>: átlagos kapcsolású hierarchikus csoportosítás ugyanezen a távolságon; a név a tagok leggyakoribb KÉSZ-csoportja.</li>
   <li><b>Horgonypontok</b>: a munkakör a kompetenciáinak fontossággal súlyozott súlypontjában, az egyén a saját kompetenciái súlypontjában áll.</li>
   <li>A klaszterenkénti sáv a nézőpont munkakörének illeszkedése az adott klaszterben (ugyanaz a képlet, mint a 4. fülön).</li></ul>`;
