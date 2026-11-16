@@ -1,0 +1,58 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: gaphopper-services
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '3'
+    spec:
+      serviceAccountName: REPLACE_SERVICE_ACCOUNT
+      containerConcurrency: 4
+      timeoutSeconds: 600
+      containers:
+        - image: REPLACE_IMAGE
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+          env:
+            - name: SERVICE_COOKIE_SECURE
+              value: '1'
+            - name: NEO4J_URI
+              value: REPLACE_NEO4J_URI
+            - name: NEO4J_USER
+              value: neo4j
+            - name: NEO4J_DATABASE
+              value: neo4j
+            - name: SERVICE_AI_PROVIDER
+              value: anthropic
+            - name: SERVICE_AI_MODEL
+              value: REPLACE_MODEL_ID
+            - name: NEO4J_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gaphopper-neo4j-password
+                  key: latest
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gaphopper-anthropic-key
+                  key: latest
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gaphopper-gemini-key
+                  key: latest
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gaphopper-openai-key
+                  key: latest

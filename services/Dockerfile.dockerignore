@@ -1,0 +1,14 @@
+**
+!gaphopper/
+!gaphopper/__init__.py
+!gaphopper/config.py
+!gaphopper/llm.py
+!gaphopper/model_catalog.py
+!config/
+!config/vocab.yaml
+!services/
+!services/**
+services/**/__pycache__
+services/tests
+services/.env*
+services/**/*.pyc

@@ -287,9 +287,26 @@ class Resolver:
             hit = self._alias_hit("MUNKA_KOR", labels)
             if hit:
                 jid = hit
-        props = {"label_hu": p1_meta.get("job_label_hu") or title, "label_en": p1_meta.get("job_label_en", ""),
-                 "field": job.get("field", ""), "entry_route": job.get("entry_route", ""),
-                 "source": job.get("source", ""), "purpose_hu": p1_meta.get("purpose_hu", "")}
+        props = job_props(job, p1_meta)
         self.plan.job = {"id": jid, "props": props}
+        if job.get("refs"):  # job_all-rekord: a taxonómia-hivatkozások BESOROLVA élként (docs/taxonomia.md)
+            from .taxonomy import ref_rows
+
+            self.plan.job["besorolas"] = ref_rows(job)
         self.plan.alias("MUNKA_KOR", jid, labels, job.get("source", "catalog") or "catalog")
         return jid
+
+
+def job_codes(job: dict) -> dict:
+    """A MunkaKor kódtulajdonságai a rekord `codes`-ából (kod_onet, kod_isco, kod_esco_code, kod_feor)."""
+    codes = job.get("codes") or {}
+    return {f"kod_{k}": v for k, v in codes.items() if k in ("onet", "isco", "esco_code", "feor") and v}
+
+
+def job_props(job: dict, p1_meta: dict | None = None) -> dict:
+    """A MunkaKor-csomópont tulajdonságai; P1 nélkül (előzetes, besorolás-alapú csomópont) a rekord címeiből."""
+    p1_meta = p1_meta or {}
+    return {"label_hu": p1_meta.get("job_label_hu") or job.get("title", ""),
+            "label_en": p1_meta.get("job_label_en") or job.get("title_en", ""),
+            "field": job.get("field", ""), "entry_route": job.get("entry_route", ""),
+            "source": job.get("source", ""), "purpose_hu": p1_meta.get("purpose_hu", ""), **job_codes(job)}

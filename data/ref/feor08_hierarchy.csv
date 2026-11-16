@@ -1,0 +1,655 @@
+code,name,level,parent_code
+0,FEGYVERES SZERVEK FOGLALKOZÁSAI,1,
+0021,Fegyveres szervek középfokú képesítést igénylő foglalkozásai,3,002
+01,Fegyveres szervek felsőfokú képesítést igénylő foglalkozásai,2,0
+011,Fegyveres szervek felsőfokú képesítést igénylő foglalkozásai,3,01
+0110,Fegyveres szervek felsőfokú képesítést igénylő foglalkozásai,4,011
+02,Fegyveres szervek középfokú képesítést igénylő foglalkozásai,2,0
+021,Fegyveres szervek középfokú képesítést igénylő foglalkozásai,3,02
+0210,Fegyveres szervek középfokú képesítést igénylő foglalkozásai,4,021
+03,Fegyveres szervek középfokú képesítést nem igénylő foglalkozásai,2,0
+031,Fegyveres szervek közép fokú képesítést nem igénylő foglalkozásai,3,03
+0310,Fegyveres szervek középfokú képesítést nem igénylő foglalkozásai,4,031
+1,"GAZDASÁGI, IGAZGATÁSI, ÉRDEK-KÉPVISELETI VEZETŐK, TÖRVÉNYHOZÓK",1,
+11,"Törvényhozók, igazgatási és érdek-képviseleti vezetők",2,1
+111,"Törvényhozók, miniszterek, államtitkárok",3,11
+1110,"Törvényhozó, miniszter, államtitkár",4,111
+112,"Országos és területi közigazgatás, igazságszolgáltatás vezetői",3,11
+1121,"Országos és területi köz igazgatás, igazság szolgáltatás vezetője",4,112
+1122,Helyi önkormányzat választott vezetője,4,112
+1123,Helyi önkormányzat kinevezett vezetője,4,112
+113,"Országos és területi társadalmi (érdek-képviseleti), és egyéb szervezetek vezetői",3,11
+1131,Társadalmi (érdek-képviseleti) és egyéb szervezet vezetője,4,113
+1132,Egyházi vezető,4,113
+12,"Gazdasági, költségvetési szervezetek vezetői",2,1
+121,"Gazdasági, költségvetési szervezetek vezetői",3,12
+1210,"Gazdasági, költségvetési szervezet vezetője (igazgató, elnök, ügyvezető igazgató)",4,121
+13,Termelési és szolgáltatást nyújtó egységek vezetői,2,1
+131,Termelési egységek vezetői,3,13
+1311,"Mezőgazdasági, erdészeti, halászati és vadászati tevékenységet folytató egység vezetője",4,131
+1312,Ipari tevékenységet folytató egység vezetője,4,131
+1313,Építőipari tevékenységet folytató egység vezetője,4,131
+132,Szolgáltatást nyújtó egységek vezetői,3,13
+1321,"Szállítási, logisztikai és raktározási tevékenységet folytató egység vezetője",4,132
+1322,Informatikai és telekommunikációs tevékenységet folytató egység vezetője,4,132
+1323,Pénzintézeti tevékenységet folytató egység vezetője,4,132
+1324,Szociális tevékenységet folytató egység vezetője,4,132
+1325,Gyermekgondozási tevékenységet folytató egység vezetője,4,132
+1326,Idősgondozási tevékenységet folytató egység vezetője,4,132
+1327,Egészségügyi tevékenységet folytató egység vezetője,4,132
+1328,Oktatási-nevelési tevékenységet folytató egység vezetője,4,132
+1329,Egyéb szolgáltatást nyújtó egység vezetője,4,132
+133,"Kereskedelmi, vendéglátó és hasonló szolgáltatási tevékenység et folytató egységek vezetői",3,13
+1331,Szálláshely-szolgáltatási tevékenységet folytató egység vezetője,4,133
+1332,Vendéglátó tevékenységet folytató egység vezetője,4,133
+1333,Kereskedelmi tevékenységet folytató egység vezetője,4,133
+1334,Üzleti szolgáltatási tevékenységet folytató egység vezetője,4,133
+1335,Kulturális tevékenységet folytató egység vezetője,4,133
+1336,Sport- és rekreációs tevékenységet folytató egység vezetője,4,133
+1339,"Egyéb kereskedelmi, vendéglátó és hasonló szolgáltatási tevékenységet folytató egység vezetője",4,133
+14,Gazdasági tevékenységet segítő egységek vezetői,2,1
+141,Gazdasági tevékenységet segítő egységek vezetői,3,14
+1411,Számviteli és pénzügyi tevékenységet folytató egység vezetője,4,141
+1412,"Személyzeti vezető, humánpolitikai egység vezetője",4,141
+1413,Kutatási és fejlesztési tevékenységet folytató egység vezetője,4,141
+1414,Vállalati stratégiatervezési egység vezetője,4,141
+1415,Értékesítési és marketingtevékenységet folytató egység vezetője,4,141
+1416,"Reklám-, PR- és egyéb kommunikációs tevékenységet folytató egység vezetője",4,141
+1419,Egyéb gazdasági tevékenységet segítő egység vezetője,4,141
+2,FELSŐFOKÚ KÉPZETTSÉG ÖNÁLLÓ ALKALMAZÁSÁT IGÉNYLŐ FOGLALKOZÁSOK,1,
+21,"Műszaki, informatikai és természettudományi foglalkozások",2,2
+211,"Ipari, építőipari mérnökök",3,21
+2111,Bányamérnök,4,211
+2112,Kohó- és anyagmérnök,4,211
+2113,Élelmiszer-ipari mérnök,4,211
+2114,Fa- és könnyűipari mérnök,4,211
+2115,Építészmérnök,4,211
+2116,Építőmérnök,4,211
+2117,Vegyészmérnök,4,211
+2118,Gépészmérnök,4,211
+212,Elektromérnökök,3,21
+2121,Villamosmérnök (energetikai mérnök) ,4,212
+2122,Villamosmérnök (elektronikai mérnök),4,212
+2123,Telekommunikációs mérnök ,4,212
+213,Egyéb mérnökök,3,21
+2131,Mezőgazdasági mérnök,4,213
+2132,Erdő- és természetvédelmi mérnök,4,213
+2133,Táj- és kertépítészmérnök,4,213
+2134,Település- és közlekedéstervező mérnök,4,213
+2135,Földmérő és térinformatikus,4,213
+2136,Grafikus és multimédia-tervező,4,213
+2137,Minőségbiztosítási mérnök,4,213
+2139,"Egyéb, máshova nem sorolható mérnök",4,213
+214,"Szoftver- és alkalmazásfejlesztők, -elemzők",3,21
+2141,Rendszerelemző (informatikai),4,214
+2142,Szoftverfejlesztő,4,214
+2143,Hálózat- és multimédia-fejlesztő,4,214
+2144,Alkalmazásprogramozó,4,214
+2149,"Egyéb szoftver- és alkalmazásfejlesztő, -elemző",4,214
+215,"Adatbázis- és hálózati elemzők, üzemeltetők",3,21
+2151,Adatbázis-tervező és -üzemeltető,4,215
+2152,Rendszergazda,4,215
+2153,"Számítógép-hálózati elemző, üzemeltető",4,215
+2159,"Egyéb adatbázis- és hálózati elemző, üzemeltető",4,215
+216,Természettudományi foglalkozások,3,21
+2161,Fizikus,4,216
+2162,Csillagász,4,216
+2163,Meteorológus,4,216
+2164,Kémikus,4,216
+2165,Geológus,4,216
+2166,Matematikus,4,216
+2167,"Biológus, botanikus, zoológus és rokon foglalkozású",4,216
+2168,"Környezetfelmérő, -tanácsadó",4,216
+2169,Egyéb természettudományi foglalkozású,4,216
+22,Egészségügyi foglalkozások (felsőfokú képzettséghez kapcsolódó),2,2
+221,"Orvosi, gyógyszerészi foglalkozások",3,22
+2211,Általános orvos,4,221
+2212,Szakorvos,4,221
+2213,"Fogorvos, fogszakorvos",4,221
+2214,"Gyógyszerész, szakgyógyszerész",4,221
+222,Humán-egészségügyi (társ)foglalkozások,3,22
+2221,Környezet- és foglalkozás-egészségügyi foglalkozású,4,222
+2222,Optometrista,4,222
+2223,Dietetikus és táplálkozási tanácsadó,4,222
+2224,Gyógytornász,4,222
+2225,Védőnő,4,222
+2226,Mentőtiszt,4,222
+2227,Hallás- és beszédterapeuta,4,222
+2228,Alternatív gyógymódot alkalmazó,4,222
+2229,Egyéb humán-egészségügyi (társ)foglalkozású,4,222
+223,"Ápoló, szülész(nő) (felsőfokú képzettséghez kapcsolódó)",3,22
+2231,Ápoló (felsőfokú képzettséghez kapcsolódó),4,223
+2232,Szülész(nő) (felsőfokú képzettséghez kapcsolódó),4,223
+224,Állat- és növény-egészségügyi foglalkozások,3,22
+2241,Állatorvos ,4,224
+2242,Növényorvos (növényvédelmi szakértő),4,224
+23,Szociális szolgáltatási foglalkozások (felsőfokú képzettséghez kapcsolódó),2,2
+231,Szociális szolgáltatási foglalkozások,3,23
+2311,Szociálpolitikus,4,231
+2312,Szociális munkás és tanácsadó,4,231
+24,"Oktatók, pedagógusok",2,2
+241,"Felsőoktatási intézményi oktatók, tanárok",3,24
+2410,"Egyetemi, főiskolai oktató, tanár",4,241
+242,"Középfokú nevelési-oktatási intézményi oktatók, tanárok",3,24
+2421,Középiskolai tanár,4,242
+2422,"Középfokú nevelési-oktatási intézményi szakoktató, gyakorlati oktató",4,242
+243,"Óvodai és alapfokú nevelési-oktatási intézményi tanárok, oktatók, nevelők",3,24
+2431,"Általános iskolai tanár, tanító",4,243
+2432,"Csecsemő- és kisgyermeknevelő, óvodapedagógus",4,243
+244,"Speciális oktatók, nevelők",3,24
+2441,Gyógypedagógus,4,244
+2442,Konduktor,4,244
+249,"Egyéb szakképzett oktatók, nevelők",3,24
+2491,"Pedagógiai szakértő, szaktanácsadó",4,249
+2492,Nyelvtanár (iskolarendszeren kívül),4,249
+2493,Zenetanár (iskolarendszeren kívül),4,249
+2494,Egyéb művészetek tanára (iskolarendszeren kívül),4,249
+2495,Informatikatanár (iskolarendszeren kívül),4,249
+2499,"Egyéb szakképzett oktató, nevelő",4,249
+25,Gazdálkodási jellegű foglalkozások,2,2
+251,Pénzügyi és számviteli foglalkozások,3,25
+2511,Pénzügyi elemző és befektetési tanácsadó,4,251
+2512,"Adótanácsadó, adószakértő",4,251
+2513,"Könyvvizsgáló, könyvelő, könyvszakértő",4,251
+2514,Kontroller,4,251
+252,"Szervezetirányítási, üzletpolitikai foglalkozások",3,25
+2521,"Szervezetirányítási elemző, szervező",4,252
+2522,"Üzletpolitikai elemző, szervező",4,252
+2523,Személyzeti és pályaválasztási szakértő,4,252
+2524,Képzési és személyzetfejlesztési szakértő,4,252
+253,Kereskedelmi és marketingfoglalkozások,3,25
+2531,"Piackutató, reklám- és marketingtevékenységet tervező, szervező",4,253
+2532,"PR-tevékenységet tervező, szervező",4,253
+2533,"Kereskedelmi tervező, szervező",4,253
+2534,"Informatikai és telekommunikációs technológiai termékek értékesítését tervező, szervező",4,253
+26,Jogi és társadalomtudományi foglalkozások,2,2
+261,Jogi foglalkozások,3,26
+2611,"Jogász, jogtanácsos",4,261
+2612,Ügyész,4,261
+2613,Bíró,4,261
+2614,Közjegyző,4,261
+2615,Ügyvéd,4,261
+2619,Egyéb jogi foglalkozású,4,261
+262,Társadalomtudományi foglalkozások,3,26
+2621,"Filozófus, politológus",4,262
+2622,"Történész, régész",4,262
+2623,Néprajzkutató,4,262
+2624,Elemző közgazdász,4,262
+2625,Statisztikus,4,262
+2626,"Szociológus, demográfus",4,262
+2627,"Nyelvész, fordító, tolmács",4,262
+2628,Pszichológus,4,262
+2629,Egyéb társadalomtudományi foglalkozású,4,262
+27,"Kulturális, sport-, művészeti és vallási foglalkozások (felsőfokú képzettséghez kapcsolódó)",2,2
+271,Kulturális és sportfoglalkozások (felsőfokú képzettséghez kapcsolódó),3,27
+2711,"Könyvtáros, informatikus könyvtáros",4,271
+2712,Levéltáros,4,271
+2713,"Muzeológus, múzeumi gyűjteménygondnok",4,271
+2714,Kulturális szervező,4,271
+2715,Könyv- és lapkiadó szerkesztője,4,271
+2716,"Újságíró, rádióműsor-, televízióműsor-szerkesztő",4,271
+2717,"Szakképzett edző, sportszervező, -irányító",4,271
+2719,Egyéb kulturális és sportfoglalkozású (felsőfokú képzettséghez kapcsolódó),4,271
+272,Alkotó- és előadó-művészi foglalkozások (felsőfokú képzettséghez kapcsolódó),3,27
+2721,Író (újságíró nélkül),4,272
+2722,Képzőművész,4,272
+2723,"Iparművész, gyártmány- és ruhatervező",4,272
+2724,"Zeneszerző, zenész, énekes",4,272
+2725,"Rendező, operatőr",4,272
+2726,"Színész, bábművész",4,272
+2727,"Táncművész, koreográfus",4,272
+2728,Cirkuszi- és hasonló előadóművész,4,272
+2729,Egyéb alkotó- és előadó-művészi foglalkozású (felsőfokú képzettséghez kapcsolódó),4,272
+273,Vallási foglalkozások (felsőfokú képzettséghez kapcsolódó),3,27
+2730,"Pap (lelkész), egyházi foglalkozású",4,273
+29,Egyéb magasan képzett ügyintézők,2,2
+291,Egyéb magasan képzett ügyintézők,3,29
+2910,Egyéb magasan képzett ügyintéző,4,291
+3,EGYÉB FELSŐFOKÚ VAGY KÖZÉPFOKÚ KÉPZETTSÉGET IGÉNYLŐ,1,
+31,Technikusok és hasonló műszaki foglalkozások,2,3
+311,"Ipari, építőipari technikusok",3,31
+3111,Bányászati technikus,4,311
+3112,Kohó- és anyagtechnikus,4,311
+3113,Élelmiszer-ipari technikus,4,311
+3114,Fa- és könnyűipari technikus,4,311
+3115,Vegyésztechnikus,4,311
+3116,Gépésztechnikus,4,311
+3117,Építő- és építésztechnikus,4,311
+312,Elektrotechnikusok,3,31
+3121,Villamosipari technikus (energetikai technikus),4,312
+3122,Villamosipari technikus (elektronikai technikus),4,312
+313,Egyéb technikusok,3,31
+3131,Mezőgazdasági technikus,4,313
+3132,Erdő- és természetvédelmi technikus,4,313
+3133,Földmérő és térinformatikai technikus,4,313
+3134,Környezetvédelmi technikus,4,313
+3135,Minőségbiztosítási technikus,4,313
+3136,"Műszaki rajzoló, szerkesztő",4,313
+3139,"Egyéb, máshova nem sorolható technikus",4,313
+314,Számítástechnikai (informatikai) és kommunikációs foglalkozások,3,31
+3141,Informatikai és kommunikációs rendszereket kezelő technikus,4,314
+3142,Informatikai és kommunikációs rendszerek felhasználóit támogató technikus,4,314
+3143,Számítógéphálózat- és rendszertechnikus,4,314
+3144,Webrendszer- (hálózati) technikus,4,314
+3145,Műsorszóró és audiovizuális technikus,4,314
+3146,Telekommunikációs technikus,4,314
+315,Folyamatirányítók (berendezések vezérlői),3,31
+3151,Energetikai (erőművi) berendezés vezérlője,4,315
+3152,"Égető-, víz- és csatornaművi berendezés vezérlője",4,315
+3153,Vegyipari alapanya g-feldolgozó berendezés vezérlője,4,315
+3154,Kőolaj- és földgázfinomító berendezés vezérlője,4,315
+3155,Fémgyártási berendezés vezérlője,4,315
+3159,Egyéb folyamatirányító berendezés vezérlője,4,315
+316,Üzemfenntartási foglalkozások,3,31
+3161,Munka- és termelésszervező,4,316
+3162,Energetikus,4,316
+3163,Munkavédelmi és üzembiztonsági foglalkozású,4,316
+317,"Vízi- és légijármű-vezetők, légiirányítók",3,31
+3171,"Tengeri és belvízi hajóparancsnok, fedélzeti tiszt",4,317
+3172,"Légijármű-vezető, hajózómérnök",4,317
+3173,Légiforgalmi irányító,4,317
+3174,Légiforgalmi irányítástechnikai berendezések üzemeltetője,4,317
+319,Egyéb műszaki foglalkozások,3,31
+3190,Egyéb műszaki foglalkozású,4,319
+32,"Szakmai irányítók, felügyelők",2,3
+321,"Ipari, építőipari szakmai irányítók, felügyelők",3,32
+3211,"Bányászati szakmai irányító, felügyelő",4,321
+3212,"Feldolgozóipari szakmai irányító, felügyelő",4,321
+3213,"Építőipari szakmai irányító, felügyelő",4,321
+322,"Egyéb szakmai irányítók, felügyelők",3,32
+3221,"Irodai szakmai irányító, felügyelő",4,322
+3222,"Konyhafőnök, séf",4,322
+33,Egészségügyi foglalkozások,2,3
+331,Ápolási és szülészeti kapcsolódó foglalkozások,3,33
+3311,"Ápoló, szakápoló",4,331
+3312,Szülész(nő)i tevékenység segítője,4,331
+332,Egészségügyi asszisztensek,3,33
+3321,Általános egészségügyi asszisztens,4,332
+3322,Egészségügyi dokumentátor,4,332
+3323,Orvosi képalkotó diagnosztikai és terápiás berendezések kezelője,4,332
+3324,Orvosi laboratóriumi asszisztens,4,332
+3325,Fogászati asszisztens,4,332
+3326,Gyógyszertári és gyógyszerellátási asszisztens,4,332
+3327,Alternatív gyógymódok alkalmazásának segítője,4,332
+333,Humánegészségügyhöz kapcsolódó foglalkozások,3,33
+3331,Környezet- és foglalkozás-egészségügyi kiegészítő foglalkozású,4,333
+3332,"Fizioterápiás asszisztens, masszőr",4,333
+3333,Fogtechnikus,4,333
+3334,Ortopédiai eszközkészítő,4,333
+3335,Látszerész,4,333
+3339,"Egyéb, humánegészségügyhöz kapcsolódó foglalkozású",4,333
+334,Állat- és növényegészségügyhöz kapcsolódó foglalkozások,3,33
+3341,Állatorvosi asszisztens,4,334
+3342,Növényorvosi ( növényvédelmi) asszisztens,4,334
+34,Oktatási asszisztensek,2,3
+341,Oktatási asszisztensek,3,34
+3410,Oktatási asszisztens,4,341
+35,Szociális gondozási és munkaerő-piaci szolgáltatási foglalkozások,2,3
+351,Szociális foglalkozások,3,35
+3511,Szociális segítő,4,351
+3512,"Hivatásos nevelőszülő, főállású anya",4,351
+3513,"Szociális gondozó, szakgondozó",4,351
+3514,Jelnyelvi tolmács,4,351
+3515,Ifjúságsegítő,4,351
+352,Munkaerő-piaci szolgáltatási ügyintézők,3,35
+3520,Munkaerő-piaci szolgáltatási ügyintéző,4,352
+36,"Üzleti jellegű szolgáltatások ügyintézői, hatósági ügyintézők, ügynökök",2,3
+361,"Pénzügyi, gazdasági ügyintézők",3,36
+3611,Pénzügyi ügyintéző (a pénzintézeti ügyintéző kivételével),4,361
+3612,Pénzintézeti ügyintéző,4,361
+3613,"Tőzsde- és pénzügyi ügynök, bróker",4,361
+3614,Számviteli ügyintéző,4,361
+3615,Statisztikai ügyintéző,4,361
+3616,"Értékbecslő, kárbecslő, kárszakértő",4,361
+362,"Kereskedelmi és értékesítési ügyintézők, ügynökök",3,36
+3621,"Biztosítási ügynök, ügyintéző",4,362
+3622,Kereskedelmi ügyintéző,4,362
+3623,"Anyaggazdálkodó, felvásárló",4,362
+3624,Ügynök (a biztosítási ügynök kivételével),4,362
+363,Egyéb üzleti jellegű szolgáltatások ügyintézői,3,36
+3631,Konferencia- és rendezvényszervező,4,363
+3632,Marketing- és PR-ügyintéző,4,363
+3633,"Ingatlanügynök, ingatlanforgalmazási ügyintéző",4,363
+3639,"Egyéb, máshova nem sorolható üzleti jellegű szolgáltatás ügyintézője",4,363
+364,Igazgatási és jogi asszisztensek,3,36
+3641,Személyi asszisztens,4,364
+3642,Jogi asszisztens,4,364
+3649,Egyéb igazgatási és jogi asszisztens,4,364
+365,Hatósági ügyintézők,3,36
+3651,Vám- és pénzügyőr,4,365
+3652,Adó- és illetékhivatali ügyintéző,4,365
+3653,Társadalombiztosítási és segélyezési hatósági ügyintéző,4,365
+3654,Hatósági engedélyek kiadásával foglalkozó ügyintéző,4,365
+3655,Nyomozó,4,365
+3656,"Végrehajtó, adósságbehajtó",4,365
+3659,Egyéb hatósági ügyintéző,4,365
+37,"Művészeti, kulturális, sport- és vallási foglalkozások",2,3
+371,Művészeti és kulturális foglalkozások,3,37
+3711,"Segédszínész, statiszta",4,371
+3712,Segédrendező,4,371
+3713,Fényképész,4,371
+3714,"Díszletező, díszítő",4,371
+3715,Kiegészítő filmgyártási és színházi foglalkozású,4,371
+3716,"Lakberendező, dekoratőr",4,371
+3717,Kulturális intézményi szaktechnikus,4,371
+3719,Egyéb művészeti és kulturális foglalkozású,4,371
+372,Sport- és szabadidős foglalkozások,3,37
+3721,Sportoló,4,372
+3722,Fitnesz- és rekreációs program irányítója,4,372
+373,Egyéb vallási foglalkozások,3,37
+3730,Egyéb vallási foglalkozású,4,373
+39,Egyéb ügyintézők,2,3
+391,Egyéb ügyintézők,3,39
+3910,Egyéb ügyintéző,4,391
+4,IRODAI ÉS ÜGYVITELI (ÜGYFÉLKAPCSOLATI) FOGLALKOZÁSOK,1,
+41,"Irodai, ügyviteli foglalkozások",2,4
+411,"Általános irodai, ügyviteli foglalkozások",3,41
+4111,Titkár(nő),4,411
+4112,Általános irodai adminisztrátor,4,411
+4113,"Gépíró, szövegszerkesztő",4,411
+4114,"Adatrögzítő, kódoló",4,411
+412,Számviteli foglalkozások,3,41
+4121,Könyvelő (analitikus),4,412
+4122,Bérelszámoló,4,412
+4123,"Pénzügyi, statisztikai, biztosítási adminisztrátor",4,412
+4129,Egyéb számviteli foglalkozású,4,412
+413,Irodai szaknyilvántartási foglalkozások,3,41
+4131,Készlet- és anyagnyilvántartó,4,413
+4132,"Szállítási, szállítmányozási nyilvántartó",4,413
+4133,"Könyvtári, levéltári nyilvántartó",4,413
+4134,Humánpolitikai adminisztrátor,4,413
+4135,"Postai szolgáltató (kézbesítő, válogató)",4,413
+4136,"Iratkezelő, irattáros",4,413
+419,"Egyéb irodai, ügyviteli foglalkozások",3,41
+4190,"Egyéb, máshova nem sorolható irodai, ügyviteli foglalkozású",4,419
+42,Ügyfélkapcsolati foglalkozások,2,4
+421,"Pénzkezelők, pénzintézeti pénztárosok",3,42
+4211,Banki pénztáros,4,421
+4212,Szerencsejáték-szervező,4,421
+4213,Zálogházi ügyintéző és pénzkölcsönző,4,421
+422,Ügyfélkapcsolati foglalkozások,3,42
+4221,"Utazásszervező, tanácsadó",4,422
+4222,Recepciós,4,422
+4223,Szállodai recepciós,4,422
+4224,Ügyfél- (vevő)tájékoztató,4,422
+4225,Ügyfélszolgálati központ tájékoztatója,4,422
+4226,"Lakossági kérdező, összeíró",4,422
+4227,Postai ügyfélkapcsolati foglalkozású,4,422
+4229,Egyéb ügyfélkapcsolati foglalkozású,4,422
+5,KERESKEDELMI ÉS SZOLGÁLTATÁSI FOGLALKOZÁSOK,1,
+51,Kereskedelmi és vendéglátóipari foglalkozások,2,5
+511,Kereskedelmi foglalkozások,3,51
+5111,Kereskedő,4,511
+5112,Vezető eladó,4,511
+5113,Bolti eladó,4,511
+5114,Kölcsönző,4,511
+5115,"Piaci, utcai árus",4,511
+5116,"Piaci, utcai étel- és italárus",4,511
+5117,"Bolti pénztáros, jegypénztáros",4,511
+512,Egyéb kereskedelmi foglalkozások,3,51
+5121,Üzemanyagtöltő állomás kezelője,4,512
+5122,Áru- és divatbemutató,4,512
+5123,Telefonos (multimédiás) értékesítési ügynök,4,512
+5129,"Egyéb, máshova nem sorolható kereskedelmi foglalkozású",4,512
+513,Vendéglátóipari foglalkozások,3,51
+5131,Vendéglős,4,513
+5132,Pincér,4,513
+5133,Pultos,4,513
+5134,Szakács,4,513
+5135,Cukrász,4,513
+52,Szolgáltatási foglalkozások,2,5
+521,Személyi szolgáltatási foglalkozások,3,52
+5211,Fodrász,4,521
+5212,Kozmetikus,4,521
+5213,"Manikűrös, pedikűrös",4,521
+5219,Egyéb személyi szolgáltatási foglalkozású,4,521
+522,Személygondozási foglalkozások,3,52
+5221,"Gyermekfelügyelő, dajka",4,522
+5222,"Segédápoló, műtőssegéd",4,522
+5223,Házi gondozó,4,522
+5229,Egyéb személygondozási foglalkozású,4,522
+523,"Utaskísérők, jegykezelők",3,52
+5231,"Kalauz, menetjegyellenőr",4,523
+5232,"Utaskísérő (repülőn, hajón)",4,523
+5233,Idegenvezető,4,523
+524,Épületfenntartási foglalkozások,3,52
+5241,Vezető takarító,4,524
+5242,Házvezető,4,524
+5243,Épületgondnok,4,524
+525,Személy- és vagyonvédelmi foglalkozások,3,52
+5251,Rendőr,4,525
+5252,Tűzoltó,4,525
+5253,Büntetés-végrehajtási őr,4,525
+5254,"Vagyonőr, testőr",4,525
+5255,Természetvédelmi őr,4,525
+5256,Közterület-felügyelő,4,525
+5259,Egyéb személy- és vagyonvédelmi foglalkozású,4,525
+529,Egyéb szolgáltatási foglalkozások,3,52
+5291,Járművezető-oktató,4,529
+5292,"Hobbiállat-gondozó, -kozmetikus",4,529
+5293,Temetkezési foglalkozású,4,529
+5299,"Egyéb, máshova nem sorolható szolgáltatási foglalkozású",4,529
+6,MEZŐGAZDASÁGI ÉS ERDŐGAZDÁLKODÁSI FOGLALKOZÁSOK,1,
+61,Mezőgazdasági foglalkozások,2,6
+611,Növénytermesztési foglalkozások,3,61
+6111,Szántóföldi növény-termesztő,4,611
+6112,Bionövény-termesztő,4,611
+6113,Zöldségtermesztő,4,611
+6114,"Szőlő-, gyümölcstermesztő",4,611
+6115,"Dísznövény-, virág- és faiskolai kertész, csemetenevelő",4,611
+6116,Gyógynövénytermesztő,4,611
+6119,Egyéb növénytermesztési foglalkozású,4,611
+612,Állattenyésztési és állatgondozási foglalkozások,3,61
+6121,"Szarvasmarha-, ló-, sertés-, juhtartó és -tenyésztő",4,612
+6122,Baromfitartó és -tenyésztő,4,612
+6123,Méhész,4,612
+6124,Kisállattartó és -tenyésztő,4,612
+613,Vegyes profilú gazdálkodók,3,61
+6130,Vegyes profilú gazdálkodó,4,613
+62,"Erdőgazdálkodási, vadgazdálkodási és halászati foglalkozások",2,6
+621,Erdőgazdálkodási foglalkozások,3,62
+6211,Erdészeti foglalkozású,4,621
+6212,Fakitermelő (favágó),4,621
+622,Vadgazdálkodási foglalkozások,3,62
+6220,Vadgazdálkodási foglalkozású,4,622
+623,Halászati foglalkozások,3,62
+6230,Halászati foglalkozású,4,623
+7,IPARI ÉS ÉPÍTŐIPARI FOGLALKOZÁSOK,1,
+71,Élelmiszer-ipari foglalkozások,2,7
+711,"Élelmiszergyártók, -feldolgozók és -tartósítók",3,71
+7111,Húsfeldolgozó,4,711
+7112,"Gyümölcs- és zöldségfeldolgozó, -tartósító",4,711
+7113,"Tejfeldolgozó, tejtermékgyártó",4,711
+7114,"Pék, édesiparitermék-gyártó",4,711
+7115,"Borász és egyéb szeszesital-gyártó, szikvízkészítő",4,711
+72,Könnyűipari foglalkozások,2,7
+721,Ruha- és bőripari foglalkozások,3,72
+7211,Szabásminta-készítő,4,721
+7212,"Szabó, varró",4,721
+7213,"Kalapos, kesztyűs",4,721
+7214,"Szűcs, szőrmefestő",4,721
+7215,Tímár,4,721
+7216,"Bőrdíszműves, bőröndös, bőrtermékkészítő, -javító",4,721
+7217,"Cipész, cipőkészítő, -javító",4,721
+722,Faipari foglalkozások,3,72
+7221,Famegmunkáló,4,722
+7222,Faesztergályos,4,722
+7223,Bútorasztalos,4,722
+7224,Kárpitos,4,722
+7225,"Kádár, bognár",4,722
+723,Nyomdaipari foglalkozások,3,72
+7231,Nyomdai előkészítő,4,723
+7232,"Nyomdász, nyomdai gépmester",4,723
+7233,Könyvkötő,4,723
+73,Fém- és villamosipari foglalkozások,2,7
+731,Kohászati foglalkozások,3,73
+7310,Fémöntőminta-készítő,4,731
+732,Fémmegmunkálók,3,73
+7321,Lakatos,4,732
+7322,Szerszámkészítő,4,732
+7323,Forgácsoló,4,732
+7324,"Fémcsiszoló, köszörűs, szerszámköszörűs",4,732
+7325,"Hegesztő, lángvágó",4,732
+7326,Kovács,4,732
+7327,"Festékszóró, fényező",4,732
+7328,Fém- és egyéb tartószerkezet-szerelő,4,732
+733,"Gépek, berendezések karbantartói, javítói",3,73
+7331,"Gépjármű- és motorkarbantartó, -javító",4,733
+7332,"Repülőgépmotor-karbantartó, -javító",4,733
+7333,"Mezőgazdasági és ipari gép (motor) karbantartója, javítója",4,733
+7334,"Mechanikaigép-karbantartó, -javító (műszerész)",4,733
+7335,"Kerékpár-karbantartó, -javító",4,733
+734,"Villamossági berendezések műszerészei, szerelői",3,73
+7341,"Villamos gépek és készülékek műszerésze, javítója",4,734
+7342,"Informatikai és telekommunikációs berendezések műszerésze, javítója",4,734
+7343,"Elektromoshálózat-szerelő, -javító",4,734
+74,Kézműipari foglalkozások,2,7
+741,Kézműipari foglalkozások,3,74
+7411,Címfestő,4,741
+7412,"Ékszerkészítő, ötvös, drágakőcsiszoló",4,741
+7413,Keramikus,4,741
+7414,Üveggyártó,4,741
+7415,Hangszerkészítő,4,741
+7416,Szőr- és tollfeldolgozó,4,741
+7417,"Nád- és fűzfeldolgozó, seprű-, kefegyártó",4,741
+7418,"Textilműves, hímző, csipkeverő",4,741
+7419,Egyéb kézműipari foglalkozású,4,741
+742,Finommechanikai műszerészek,3,74
+7420,Finommechanikai műszerész,4,742
+75,Építőipari foglalkozások,2,7
+751,Építőmesteri foglalkozások,3,75
+7511,Kőműves,4,751
+7512,"Gipszkartonozó, stukkózó",4,751
+7513,Ács,4,751
+7514,Épületasztalos,4,751
+7515,Építményszerkezet-szerelő,4,751
+7519,Egyéb építőmesteri foglalkozású,4,751
+752,"Építési, szerelési foglalkozások",2,1
+7521,"Vezeték- és csőhálózat-szerelő (víz, gáz, fűtés)",4,752
+7522,"Szellőző-, hűtő- és klimatizálóberendezés-szerelő",4,752
+7523,Felvonószerelő,4,752
+7524,"Épületvillamossági szerelő, villanyszerelő",4,752
+7529,"Egyébépítési, szerelési foglalkozású",4,752
+753,Építési szakipari foglalkozások,3,75
+7531,Szigetelő,4,753
+7532,Tetőfedő,4,753
+7533,"Épület-, építménybádogos",4,753
+7534,Burkoló,4,753
+7535,Festő és mázoló,4,753
+7536,"Kőfaragó, műköves",4,753
+7537,Kályha- és kandallóépítő,4,753
+7538,Üvegező,4,753
+7539,Egyébépítési szakipari foglalkozású,4,753
+79,Egyéb ipariés építőipari foglalkozások,2,7
+791,Egyéb ipari és építőipari foglalkozások,3,79
+7911,Ipari búvár,4,791
+7912,Ipari alpinista,4,791
+7913,Robbantómester,4,791
+7914,"Kártevőirtó, gyomirtó",4,791
+7915,"Kéményseprő, épületszerkezet-tisztító",4,791
+7919,"Egyéb, máshova nem sorolható ipari és építőipari foglalkozású",4,791
+8,"GÉPKEZELŐK, ÖSSZESZERELŐK, JÁRMŰVEZETŐK",1,
+81,Feldolgozóipari gépek kezelői,2,8
+811,"Élelmiszer-, ital-, dohánygyártó gépek kezelői",3,81
+8111,"Élelmiszer-, italgyártó gép kezelője",4,811
+8112,Dohánygyártó gép kezelője,4,811
+812,Könnyűipari gépek kezelői és gyártósor mellett dolgozók,3,81
+8121,Textilipari gép kezelője és gyártósor mellett dolgozó,4,812
+8122,Ruházati gép kezelője és gyártósor mellett dolgozó,4,812
+8123,Bőrkikészítő és -feldolgozó gép kezelője és gyártósor mellett dolgozó,4,812
+8124,Cipőgyártó gép kezelője és gyártósor mellett dolgozó,4,812
+8125,Fafeldolgozó gép kezelője és gyártósor mellett dolgozó,4,812
+8126,Papír- és cellulóztermék-gyártó gép kezelője és gyártósor mellett dolgozó,4,812
+813,"Vegyipari alapanyagot és terméket gyártók, gépkezelők",3,81
+8131,Kőolaj- és földgázfeldolgozó gép kezelője,4,813
+8132,Vegyi alapanyagot és terméket gyártó gép kezelője,4,813
+8133,Gyógyszergyártó gép kezelője,4,813
+8134,Műtrágya- és növényvédőszer-gyártó gép kezelője,4,813
+8135,Műanyagtermék-gyártó gép kezelője,4,813
+8136,Gumitermékgyártó gép kezelője,4,813
+8137,Fotó- és mozgófilmlaboráns,4,813
+814,Alapanyaggyártó gépek kezelői,3,81
+8141,Kerámiaipari terméket gyártó gép kezelője,4,814
+8142,Üveget és üvegterméket gyártó gép kezelője,4,814
+8143,"Cement-, kő- és egyéb ásványianyag-feldolgozó gép kezelője",4,814
+8144,Papíripari alapanyagot gyártó gép kezelője,4,814
+815,Fémfeldolgozó és -megmunkáló gépek kezelői,3,81
+8151,Fémfeldolgozó gép kezelője,4,815
+8152,"Fémmegmunkáló, felületkezelő gép kezelője",4,815
+819,Egyéb feldolgozóipari gépek kezelői,3,81
+8190,"Egyéb, máshova nem sorolható feldolgozóipari gép kezelője",4,819
+82,Összeszerelők,2,8
+821,Összeszerelők,3,82
+8211,Mechanikaigép-összeszerelő,4,821
+8212,Villamosberendezés-összeszerelő,4,821
+8219,Egyéb termék-összeszerelő,4,821
+83,Helyhez kötött gépek kezelői,2,8
+831,Bányászati gépek kezelői,3,83
+8311,"Szilárdásvány-kitermelő gép kezelője (szén, kő)",4,831
+8312,"Kútfúró, mélyfúró gép kezelője (kőolaj, földgáz, víz)",4,831
+832,"Egyéb, helyhez kötött gépek kezelői",3,83
+8321,Energetikai gép kezelője,4,832
+8322,Vízgazdálkodási gép kezelője,4,832
+8323,Kazángépkezelő,4,832
+8324,"Sugármentesítő gép, berendezés kezelője",4,832
+8325,"Csomagoló-, palackozó- és címkézőgép kezelője",4,832
+8326,"Mozigépész, vetítőgépész",4,832
+8327,Mosodai gép kezelője,4,832
+8329,"Egyéb, máshova nem sorolható, helyhez kötött gép kezelője",4,832
+84,Járművezetőkés mobil gépek kezelői,2,8
+841,Járművezetőkés kapcsolódó foglalkozások,3,84
+8411,Mozdonyvezető,4,841
+8412,Vasútijármű-vezetéshez kapcsolódó foglalkozású,4,841
+8413,Villamosvezető,4,841
+8414,Metróvezető,4,841
+8415,Trolibuszvezető,4,841
+8416,Személygépkocsi-vezető,4,841
+8417,"Tehergépkocsi-vezető, kamionsofőr",4,841
+8418,Autóbuszvezető,4,841
+8419,Egyéb járművezető és kapcsolódó foglalkozású,4,841
+842,Mobil gépek kezelői,3,84
+8421,"Mezőgazdasági, erdőgazdasági, növényvédő gép kezelője",4,842
+8422,Földmunkagép és hasonló könnyű- és nehézgép kezelője,4,842
+8423,"Köztisztasági, településtisztasági gép kezelője",4,842
+8424,"Daru, felvonó és hasonló anyagmozgató gép kezelője",4,842
+8425,Targoncavezető,4,842
+843,Hajózási foglalkozások,3,84
+8430,"Hajószemélyzet, kormányos, matróz",4,843
+9,SZAKKÉPZETTSÉGET NEM IGÉNYLŐ (EGYSZERŰ) FOGLALKOZÁSOK,1,
+91,Takarítókés hasonló jellegű egyszerű foglalkozások,2,9
+911,Takarítókés kisegítők,3,91
+9111,Háztartási takarító és kisegítő,4,911
+9112,Intézményi takarító és kisegítő,4,911
+9113,"Kézi mosó, vasaló",4,911
+9114,Járműtakarító,4,911
+9115,Ablaktisztító,4,911
+9119,Egyéb takarító és kisegítő,4,911
+92,"Egyszerű szolgáltatási, szállítási és hasonló foglalkozások",2,9
+921,Szemétgyűjtőkés hasonló foglalkozások,3,92
+9211,"Szemétgyűjtő, utcaseprő",4,921
+9212,Hulladékosztályozó,4,921
+922,Szállítási foglalkozások és rakodók,3,92
+9221,Pedálos vagy kézi hajtású gépek vezetője,4,922
+9222,Állati erővel vont jármű hajtója,4,922
+9223,Rakodómunkás,4,922
+9224,"Pultfeltöltő, árufeltöltő",4,922
+9225,Kézi csomagoló,4,922
+923,Egyéb egyszerű szolgáltatási és szállítási foglalkozások,3,92
+9231,"Portás, telepőr, egyszerű őr",4,923
+9232,Mérőóra-leolvasó és hasonló egyszerű foglalkozású,4,923
+9233,"Hivatalsegéd, kézbesítő",4,923
+9234,"Hordár, csomagkihordó",4,923
+9235,Gyorséttermi eladó,4,923
+9236,Konyhai kisegítő,4,923
+9237,Háztartási alkalmazott,4,923
+9238,Parkolóőr,4,923
+9239,"Egyéb, máshova nem sorolható egyszerű szolgáltatási és szállítási foglalkozású",4,923
+93,"Egyszerű ipari, építőipari, mezőgazdasági foglalkozások",2,9
+931,Egyszerű ipari foglalkozások,3,93
+9310,Egyszerű ipari foglalkozású,4,931
+932,Egyszerű építőipari foglalkozások,3,93
+9321,Kubikos,4,932
+9329,Egyéb egyszerű építőipari foglalkozású,4,932
+933,"Egyszerű mezőgazdasági, erdészeti, vadászati és halászati foglalkozások",3,93
+9331,Egyszerű mezőgazdasági foglalkozású,4,933
+9332,"Egyszerű erdészeti, vadászati és halászati foglalkozású",4,933

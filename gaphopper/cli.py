@@ -60,6 +60,33 @@ def cmd_import(a):
     print(f"{len(recs)} rekord beolvasva, ebből {new} új vagy változott.")
 
 
+def cmd_crawl_export(a):
+    from .crawl_export import DEFAULT_PSQL, run_crawl_export
+
+    ctx = _ctx(with_graph=False)
+    run_crawl_export(ctx, Path(a.out), only=a.occupation, workers=a.workers, min_postings=a.min_postings,
+                     psql=a.psql or DEFAULT_PSQL, dump_name=a.dump_name, fetched_at=a.fetched_at,
+                     dry_run=a.dry_run)
+
+
+def cmd_job_all(a):
+    from .job_all import run_job_all
+
+    ctx = None if a.dry_run else _ctx(with_graph=False)
+    run_job_all(ctx, Path(a.esco_dir), Path(a.ref_dir), Path(a.statements), Path(a.ratings) if a.ratings else None,
+                Path(a.out), Path(a.job100) if a.job100 else None, Path(a.crawl) if a.crawl else None,
+                Path(a.cache), dry_run=a.dry_run, fetched_at=a.fetched_at)
+
+
+def cmd_taxonomy(a):
+    from .taxonomy import run_taxonomy
+
+    ctx = _ctx(with_graph=not a.dry_run)
+    run_taxonomy(ctx, Path(a.esco_dir), Path(a.ref_dir), Path(a.jobs) if a.jobs else None,
+                 link=not a.no_link, dry_run=a.dry_run, create_jobs=a.munkakorok)
+    ctx.close()
+
+
 def cmd_extract(a):
     from .extract import ExtractError, extract_file, iter_files, write_jsonl
 
@@ -595,6 +622,34 @@ def main(argv=None):
     s = sub.add_parser("split", help="jóváhagyott bontási javaslat (split_review) végrehajtása")
     s.add_argument("--review", type=int, action="append", help="a szakértői sor azonosítója (alapból mind)")
     s.set_defaults(fn=cmd_split)
+    s = sub.add_parser("crawl-export", help="C0: munkakör-rekordok (jsonl) a crawler PostgreSQL-adatbázisából")
+    s.add_argument("--out", default="data/jobs_crawl.jsonl")
+    s.add_argument("--occupation", action="append", help="gaphopper_id vagy magyar név (alapból mind)")
+    s.add_argument("--min-postings", type=int, default=30); s.add_argument("--workers", type=int, default=6)
+    s.add_argument("--psql", default=None, help="psql-parancs (alap: docker exec -i gh_jobs_pg psql ...)")
+    s.add_argument("--dump-name", default="", help="a forrás dump neve a source mezőbe")
+    s.add_argument("--fetched-at", default="", help="a gyűjtés dátuma (alap: ma)")
+    s.add_argument("--dry-run", action="store_true", help="csak a promptok kiírása, LLM-hívás nélkül")
+    s.set_defaults(fn=cmd_crawl_export)
+    s = sub.add_parser("job-all", help="J0: egységes munkakör-rekordok O*NET + ESCO/ISCO + FEOR + crawl hivatkozással")
+    s.add_argument("--out", default="data/job_all.jsonl")
+    s.add_argument("--esco-dir", default="../esco/data", help="ESCO/ és ONET/ almappák")
+    s.add_argument("--ref-dir", default="data/ref", help="feor08_hierarchy.csv, isco08_feor08_crosswalk.csv")
+    s.add_argument("--statements", default="/mnt/data/Dokumentumok/Gaphopper/TESZreKÉSZ/ONET/task_statements.csv")
+    s.add_argument("--ratings", default="/mnt/data/Dokumentumok/Gaphopper/TESZreKÉSZ/ONET/task_ratings.csv")
+    s.add_argument("--job100", default="data/job_100.jsonl"); s.add_argument("--crawl", default="data/jobs_crawl.jsonl")
+    s.add_argument("--cache", default="data/ref/job_all_llm_decisions.json", help="az LLM-döntések gyorsítótára")
+    s.add_argument("--fetched-at", default="")
+    s.add_argument("--dry-run", action="store_true", help="LLM nélkül; a nyitott tételek külön fájlba")
+    s.set_defaults(fn=cmd_job_all)
+    s = sub.add_parser("taxonomy", help="T0: ISCO/ESCO/FEOR/SOC/O*NET-hierarchia és ISIC/WEF-ágazatok a neo4j-be")
+    s.add_argument("--esco-dir", default="../esco/data"); s.add_argument("--ref-dir", default="data/ref")
+    s.add_argument("--jobs", default="data/job_all.jsonl", help="a J0-döntések és az ágazat-származtatás forrása")
+    s.add_argument("--no-link", action="store_true", help="a meglévő munkakörök BESOROLVA éleit nem írja")
+    s.add_argument("--munkakorok", action="store_true",
+                   help="a --jobs minden rekordjához előzetes MunkaKor-csomópont (TESZ-felbontás nélkül) BESOROLVA élekkel")
+    s.add_argument("--dry-run", action="store_true", help="csak összesítés, a gráf nem változik")
+    s.set_defaults(fn=cmd_taxonomy)
     s = sub.add_parser("report"); s.add_argument("--job", action="append")
     s.add_argument("--by", default="prompt_version,step"); s.set_defaults(fn=cmd_report)
     s = sub.add_parser("models"); s.add_argument("--check-local", action="store_true"); s.set_defaults(fn=cmd_models)

@@ -1276,6 +1276,9 @@ class _KeszGraph:
     def kesz_hiany_status(self, ids, st, ok=""):
         self.calls.append(("status", ids, st))
 
+    def kesz_hiany_seen(self, ids):
+        self.calls.append(("seen", ids))
+
     def update_kesz_profil(self):
         self.calls.append(("profil",))
 
@@ -1329,6 +1332,7 @@ def test_kesz_bovit_alias_uj_elvet_and_approve(tmp_path, monkeypatch):
         assert [c["kesz"] for c in out["alias"]] == ["gh_c_286"]
         assert len(out["uj"]) == 1 and out["uj"][0]["munkakorok"] == ["j1", "j2"]
         assert [v["label_hu"] for v in out["var"]] == ["Ritka érzék"]        # 1 munkakör: vár, nem javaslat
+        assert ("seen", out["var"][0]["ids"]) in ctx.graph.calls           # megnézve: a Karbantartás nem jelez újra
         assert ("resolve", ["gh_kh_a"], "gh_c_286", "ALIAS") in ctx.graph.calls
         assert ("status", ["gh_kh_e"], "ELVETVE") in ctx.graph.calls
         assert "hu:Hibakeresés" in config.kesz_torzs()["gh_c_286"]["aliases"]   # a yaml-ba is
@@ -1619,6 +1623,10 @@ def test_web_kesz_pages_api(tmp_path, monkeypatch):
         assert call("/api/kesz/gh_c_9999")[0] == 404
         _, qd = call("/api/kesz/queue")
         assert [q["id"] for q in qd["queue"]] == [q1, q2]                  # a munkakör-kérés nem ide tartozik
+        # Karbantartás-állapot: kártyánként teendő és bizonyíték (csak olvas)
+        _, ms = call("/api/kesz/maint")
+        assert ms["bovit"]["sorban"] == 1 and ms["irany"]["sorban"] == 1 and not ms["split"]["teendo"]
+        assert ms["osszes_kesz"] == len(config.kesz_torzs()) and ms["bovit"]["min_munkakor"] >= 1
         # UJ: átnevezés jóváhagyás előtt, a régi név alias lesz; a jóváhagyás a CLI review-parancsa
         assert call(f"/api/kesz/queue/{q1}/approve", "POST", {"label_hu": "Egyéni igényekhez igazítás",
                                                              "label_en": "Individual needs adaptation"})[0] == 200

@@ -19,8 +19,9 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
 from . import tasks
-from .config import (MODELS_PATH, PRICES, MODEL_CATALOG, GEMINI_PRICE_NOTE, PROMPT_DIR, PROVIDERS, ROOT, STEP_NAMES, STEPS, VOCAB_PATH, price,
+from .config import (MODELS_PATH, PRICES, GEMINI_PRICE_NOTE, PROMPT_DIR, PROVIDERS, ROOT, STEP_NAMES, STEPS, VOCAB_PATH, price,
                      prompt_version, save_ui_models, settings, ui_models)
+from .model_catalog import list_models, verify_model, ModelDiscoveryError
 from .store import Store
 
 WEB_DIR = ROOT / "web"
@@ -149,7 +150,8 @@ def _art_index(S: Store) -> dict[str, dict[str, dict]]:
 
 
 def _graph_counts() -> dict[str, dict] | None:
-    rows = GRAPH.read("MATCH (m:MunkaKor) OPTIONAL MATCH (m)-[:TARTALMAZ_TESZT]->(t:TeszSzin) "
+    rows = GRAPH.read("MATCH (m:MunkaKor) WHERE m.elozetes IS NULL "  # előzetes (csak besorolás): nincs felbontva
+                      "OPTIONAL MATCH (m)-[:TARTALMAZ_TESZT]->(t:TeszSzin) "
                       "RETURN m.id AS id, count(t) AS n, "
                       "sum(CASE WHEN t.attestation_hu IS NOT NULL THEN 1 ELSE 0 END) AS r",
                       limit=10 ** 7)
@@ -458,7 +460,8 @@ def db_state(S: Store) -> dict:
         "missing": [r["job_id"] for r in rows if r["db"]["state"] == "missing"],
     }
     known = {r["db"].get("graph_id") for r in rows} | {r["job_id"] for r in rows}
-    orphan = GRAPH.read("MATCH (m:MunkaKor) RETURN m.id AS id, m.label_hu AS label", limit=10 ** 7) or []
+    orphan = GRAPH.read("MATCH (m:MunkaKor) WHERE m.elozetes IS NULL RETURN m.id AS id, m.label_hu AS label",
+                        limit=10 ** 7) or []
     out["compare"]["orphans"] = [o for o in orphan if o["id"] not in known][:200]
     return out
 
@@ -480,10 +483,10 @@ def models_state() -> dict:
         "p2": {"mode": s.p2_mode, "sample": s.p2_sample}, "has_ui_file": MODELS_PATH.exists(),
         "prices": [{"model": k, "input": v[0], "output": v[1], "cache": v[2]}
                    for k, v in (PRICES | (data.get("prices") or {})).items()],
-        "catalog": {k: list(dict.fromkeys(v + (data.get("catalog", {}).get(k) or []))) for k, v in (MODEL_CATALOG | {k: [] for k in data.get("catalog", {}) if k not in MODEL_CATALOG}).items()},
+        "catalog": {p: [] for p in ("anthropic", "gemini", "openai", "local")},
         "gemini_price_note": GEMINI_PRICE_NOTE, "openai": {"base_url": s.openai_base_url, "api_key_env": s.openai_api_key_env, "json_mode": s.openai_json_mode, "timeout": s.openai_timeout},
         "embed": {"provider": s.embed_provider, "model": s.embed_model, "host": s.ollama_host, "prefix": s.embed_prefix},
-        "anthropic_models": ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"]}
+        "anthropic_models": []}
 
 
 def save_models(body: dict) -> None:
@@ -527,45 +530,33 @@ def save_models(body: dict) -> None:
             if model in (ui_models().get("prices") or {}) or tuple(values) != PRICES.get(model):
                 prices[model] = values
         data["prices"] = prices
+    checked = set()
+    for step, row in steps.items():
+        provider = row['provider']
+        if provider == 'manual':
+            continue
+        identity=(provider,row['model'])
+        if identity not in checked:
+            verify_model(provider,row['model'],
+                base_url=(data.get('openai',{}).get('base_url') or current.openai_base_url) if provider=='openai'
+                         else (data.get('local',{}).get('base_url') or current.local_base_url),
+                api_key_env=data.get('openai',{}).get('api_key_env') or current.openai_api_key_env,
+                local_api_key=current.local_api_key)
+            checked.add(identity)
     save_ui_models(data)
 
 
 def discover_models(body: dict) -> dict:
-    from .config import StepModel
-    from .llm import LocalLLM, anthropic_client
-    import os
-
     s = settings()
     provider = body.get("provider", "local")
     try:
-        if provider == "anthropic":
-            try:
-                ids = [m.id for m in anthropic_client().models.list(limit=100)]
-            except Exception as exc:  # hibás munkaterület-fejléc vagy elavult környezeti kulcs: egyszer újra
-                from .llm import drop_workspace, is_bad_workspace, use_dotenv_key
-
-                if is_bad_workspace(exc):
-                    drop_workspace()
-                elif not (getattr(exc, "status_code", None) == 401 and use_dotenv_key()):
-                    raise
-                ids = [m.id for m in anthropic_client().models.list(limit=100)]
-        elif provider == "gemini":
-            from google import genai
-            ids = [m.name.removeprefix("models/") for m in genai.Client().models.list()
-                   if "generateContent" in (m.supported_actions or [])]
-        else:
-            remote = provider == "openai"
-            url = body.get("base_url") or (s.openai_base_url if remote else s.local_base_url)
-            key = os.getenv(body.get("api_key_env") or s.openai_api_key_env, "") if remote else s.local_api_key
-            ids = LocalLLM(StepModel(provider, "probe", None, 1), url, key, timeout=15,
-                           use_proxy=remote).models()
-        ids = sorted(set(ids))
-        data = ui_models()
-        data.setdefault("catalog", {})[provider] = ids
-        save_ui_models(data)
+        ids = list_models(provider,
+            base_url=body.get("base_url") or (s.openai_base_url if provider=="openai" else s.local_base_url),
+            api_key_env=body.get("api_key_env") or s.openai_api_key_env,
+            local_api_key=s.local_api_key)
         return {"ok": True, "models": ids}
-    except Exception as exc:
-        return {"ok": False, "error": str(exc)[:300]}
+    except ModelDiscoveryError as exc:
+        return {"ok": False, "models": [], "error": str(exc)}
 
 
 def test_embed(body: dict) -> dict:
@@ -877,7 +868,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(res if res is not None else {"ok": True})
         except KeyError as exc:
             self.json({"error": f"Nem található: {exc}"}, 404)
-        except (ValueError, sqlite3.Error) as exc:
+        except (ValueError, ModelDiscoveryError, sqlite3.Error) as exc:
             self.json({"error": str(exc)}, 400)
         except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
             self._closed = True
@@ -948,9 +939,11 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(200, f.read_bytes(), "image/svg+xml" if f.suffix == ".svg" else "image/png")
                 return _SENT
         if head == "kesz":
-            from .web_kesz import kesz_decide, kesz_detail, kesz_list, kesz_queue, start_maint
+            from .web_kesz import kesz_decide, kesz_detail, kesz_list, kesz_queue, maint_status, start_maint
             if m == "GET" and len(p) == 1:
                 return kesz_list(GRAPH)
+            if m == "GET" and p[1:] == ["maint"]:
+                return maint_status(S, GRAPH)
             if m == "GET" and p[1:] == ["queue"]:
                 return kesz_queue(S, GRAPH)
             if m == "POST" and len(p) == 4 and p[1] == "queue":

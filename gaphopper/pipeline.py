@@ -114,8 +114,19 @@ def _retry_note(ctx: Context, job_id: str, step: str) -> str:
             + "\nKerüld el ezt a hibát, és a teljes JSON-t add vissza.")
 
 
+# A rekord mezői, amelyek a felbontáshoz nem kellenek (besorolás, eredet): a P1/P2 bemenetéből kimaradnak, a tárolt
+# rekordban és a P3-ban (MunkaKor-kódok, BESOROLVA élek) megmaradnak. A besorolás külön, LLM nélküli lépés.
+LLM_INPUT_SKIP = ("refs", "codes", "sets", "source", "source_url", "fetched_at", "tasks_source")
+
+
+def llm_job_view(job: dict) -> dict:
+    """A munkakör-rekord P1/P2-bemenete: a besorolási és eredetmezők nélkül."""
+    return {k: v for k, v in job.items() if k not in LLM_INPUT_SKIP}
+
+
 def build_p1(ctx: Context, job: dict) -> str:
-    return (render(prompt("p1_felbontas"), job_record_json=json.dumps(job, ensure_ascii=False, separators=(",", ":")))
+    return (render(prompt("p1_felbontas"), job_record_json=json.dumps(llm_job_view(job), ensure_ascii=False,
+                                                                      separators=(",", ":")))
             + _retry_note(ctx, job["job_id"], "P1"))
 
 
@@ -235,7 +246,7 @@ def _json(obj) -> str:
 def build_p2(ctx: Context, job: dict, p1: P1Output) -> tuple[str, list]:
     flags = check_rules(p1, job, torzs_size=len(ctx.tesz_torzs()))
     user = render(prompt("p2_biralat"),
-                  job_record_json=_json(job),
+                  job_record_json=_json(llm_job_view(job)),
                   p1_json=_json(p2_view(p1)),
                   rule_flags_json=_json([{k: v for k, v in f.as_dict().items() if v and k != "severity"}
                                          for f in flags]))
@@ -740,6 +751,7 @@ def run_generalize(ctx: Context, min_jobs: int = 2, chunk: int = 20, apply: bool
                 ctx.graph.generalize_szer(szer)
         log(f"P6: {min(i + chunk, len(rows))}/{len(rows)} TESZ-nivaló")
     out["ido_mp"] = round(time.monotonic() - started, 1)
+    out["proba"] = not apply   # a Karbantartás oldal a legutóbbi valódi futáshoz méri az azóta feldolgozott munkaköröket
     d = ROOT / "runs"
     d.mkdir(exist_ok=True)
     f = d / f"generalize-{datetime.now().strftime('%Y%m%d-%H%M%S')}.json"

@@ -264,6 +264,8 @@ def run_kesz_bovit(ctx, rows: list[dict] | None = None, chunk: int = 40, apply: 
                         "csoport": c.csoport, "irany": c.irany, "munkakorok": jobs, "indok": c.indok_hu}
                 if len(jobs) < min_jobs:
                     out["var"].append(prop)   # kevés bizonyíték: a jelölt marad, a következő futás újra nézi
+                    if apply:                 # megnézve: új munkakör (last_seen) után lesz újra teendő
+                        ctx.graph.kesz_hiany_seen(c.ids)
                     continue
                 out["uj"].append(prop)
                 if apply or queue:

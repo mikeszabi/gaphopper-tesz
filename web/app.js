@@ -448,12 +448,13 @@ function hianyTable(list) {
     <td class="small">${esc((h.irany || []).join(", "))}</td><td>${pill(h.status === "JELOLT" ? "review" : h.status === "TORZSBEN" ? "done" : "skip", R23_HU[h.status] || h.status)}
     ${h.ok ? `<div class="muted small">${esc(h.ok)}</div>` : ""}</td><td class="small">${esc(h.nivalo || "")}</td></tr>`).join("")}</tbody></table>`;
 }
-async function taskBox(el, tid) {
-  // a parancs naplója (ugyanaz, mint a Futás oldalon); amíg fut, frissül
+async function taskBox(el, tid, onDone) {
+  // a parancs naplója (ugyanaz, mint a Futás oldalon); amíg fut, frissül; a végén onDone (pl. állapotfrissítés)
   const tick = async () => {
     let d; try { d = await api(`tasks/${tid}?lines=60`); } catch { return; }
     el.innerHTML = `<p>${pill(d.status === "fut" ? "run" : d.status === "kész" ? "done" : "error", d.status)} ${esc(d.label)}</p><pre>${esc(d.log || "")}</pre>`;
     if (d.status === "fut") setTimeout(tick, 2000);
+    else if (onDone) onDone(d);
   };
   tick();
 }
@@ -545,27 +546,55 @@ pages.keszsor = async (view) => {
 };
 
 pages.karbantartas = async (view) => {
-  view.innerHTML = `<h1>Karbantartás</h1><p class="sub">Törzskarbantartó parancsok. Ugyanúgy külön folyamatban futnak, mint a parancssorból; a napló alább és a Futás oldalon is látszik. A javaslatok a <a href="#keszsor">KÉSZ-ség-sor</a>ba kerülnek.</p>
-    <div class="row">
-      <div class="card" style="flex:1 1 380px"><h2>KÉSZ-ség-törzs bővítése (kesz-bovit)</h2><p class="small muted">A hiányjelöltek csoportosítása: ALIAS azonnal, UJ a sorba (legalább 2 munkakörnél), ELVET.</p>
-        <div class="controls"><button data-m="kesz-bovit" data-o='{"dry_run":true}'>Próba (gráfból)</button><button class="primary" data-m="kesz-bovit" data-o='{}'>Futtatás</button></div>
-        <div class="controls"><button data-m="kesz-bovit" data-o='{"from_dryrun":true}'>Próba a próbafutásokból</button><button data-m="kesz-bovit" data-o='{"from_dryrun":true,"queue":true}'>Próbafutásokból, UJ a sorba</button></div></div>
-      <div class="card" style="flex:1 1 380px"><h2>KÉSZ-ség-irányok (kesz-irany)</h2><p class="small muted">A még csak csoportból örökölt irányok elemenkénti felülvizsgálata; a bizonytalan a sorba kerül.</p>
-        <div class="controls"><button data-m="kesz-irany" data-o='{"dry_run":true}'>Próba</button><button class="primary" data-m="kesz-irany" data-o='{}'>Futtatás</button><button data-m="kesz-irany" data-o='{"all":true,"dry_run":true}'>Mind, próba</button></div></div>
-      <div class="card" style="flex:1 1 380px"><h2>TESZ-nivalók általánosítása (generalize)</h2><p class="small muted">A több munkakörben használt, túl szűk nevek; a bontási javaslat a sorba kerül.</p>
-        <div class="controls"><button data-m="generalize" data-o='{"dry_run":true}'>Próba</button><button class="primary" data-m="generalize" data-o='{}'>Futtatás</button></div></div>
-      <div class="card" style="flex:1 1 380px"><h2>Bontás végrehajtása (split)</h2><p class="small muted">A jóváhagyott bontási javaslatok végrehajtása.</p>
-        <div class="controls"><button class="primary" data-m="split" data-o='{}'>Végrehajtás</button></div></div>
-    </div><div id="mtask"></div><div class="card"><h2>Próbafutások KÉSZ-ség-hiányjelöltjei</h2><div id="mdry">betöltés…</div></div>`;
-  $$("button[data-m]", view).forEach((b) => (b.onclick = async () => {
-    const r = await act(() => api(`kesz/maint/${b.dataset.m}`, { method: "POST", body: JSON.parse(b.dataset.o) }), "Elindult.");
-    taskBox($("#mtask"), r.task);
+  view.innerHTML = `<h1>Karbantartás</h1><p class="sub">Törzskarbantartó parancsok, külön folyamatban (a napló alább és a Futás oldalon is látszik). Minden kártya mutatja, van-e most teendő; a javaslatok a <a href="#keszsor">KÉSZ-ség-sor</a>ba kerülnek.</p>
+    <div class="card"><h2>Mikor mit?</h2><ol class="small" style="margin:4px 0 0 18px;padding:0">
+      <li><b>Munkakörök feldolgozása</b> a Futás oldalon.</li>
+      <li><b>KÉSZ-ség-törzs bővítése → Futtatás</b>, ha a kártya teendőt jelez; utána a javaslatok jóváhagyása a <a href="#keszsor">KÉSZ-ség-sor</a>ban. Új KÉSZ-ség csak a jóváhagyással lesz.</li>
+      <li><b>TESZ-nivalók általánosítása</b> kb. 10–20 új munkakörönként; a bontási javaslatot a KÉSZ-ség-sorban jóváhagyva a program rögtön végre is hajtja.</li>
+      <li>A <b>KÉSZ-ség-irányok</b> futtatása csak akkor kell, ha a kártya örökölt irányt jelez.</li></ol></div>
+    <div id="mcards"><p class="muted">betöltés…</p></div><div id="mtask"></div>`;
+  await maintCards(view);
+};
+
+async function maintCards(view) {
+  const btn = (m, o, label, primary, disabled, title) => `<button ${primary ? 'class="primary"' : ""} data-m="${m}" data-o='${JSON.stringify(o)}' ${disabled ? "disabled" : ""} ${title ? `title="${esc(title)}"` : ""}>${label}</button>`;
+  const head = (title, todo, na) => `<h2>${title} ${todo ? pill("review", "teendő") : pill(na ? "unknown" : "done", na || "nincs teendő")}</h2>`;
+  const adv = (inner) => `<details><summary>Haladó</summary>${inner}</details>`;
+  let st;
+  try { st = await api("kesz/maint"); } catch (e) { $("#mcards").innerHTML = `<p class="bad">${esc(e.message)}</p>`; return; }
+  const { bovit: b, irany: ir, generalize: g, split: sp } = st;
+  $("#mcards").innerHTML = `<div class="row">
+    <div class="card" style="flex:1 1 380px">${head("KÉSZ-ség-törzs bővítése", b.teendo, b.graph_ok ? "" : "a gráf nem érhető el")}
+      <p class="small">A P1 által jelzett hiányzó KÉSZ-ségek csoportosítása: <b>ALIAS</b> (meglévő elem új neve) azonnal, <b>UJ</b> a sorba (legalább ${b.min_munkakor} munkakörnél), <b>ELVET</b> (szakmai tudás vagy tevékenység).</p>
+      <p class="small">${b.uj ? `<b>${b.uj}</b> új vagy azóta újra felbukkant jelölt vár feldolgozásra.` : "Nincs új jelölt."}
+        ${b.jelolt ? `<span class="muted">Összesen ${b.jelolt} nyitott jelölt, ebből ${b.tobb_munkakor} legalább ${b.min_munkakor} munkakörből; az egy munkakörös jelöltek további bizonyítékra várnak.</span>` : ""}</p>
+      <p class="small muted">KÉSZ-ség-törzs: ${st.osszes_kesz} elem · a sorban ${b.sorban} javaslat${b.sorban ? ` (<a href="#keszsor">jóváhagyás</a>)` : ""} · utolsó futás: ${esc(b.utolso || "–")}</p>
+      <div class="controls">${btn("kesz-bovit", {}, "Futtatás", true, !b.uj, b.uj ? "" : "Nincs új jelölt")}</div>
+      ${adv(`<p class="small muted">Próba: megmutatja, mit tenne, de semmit nem ír. A próbafutásos változatok a Futás oldal próbafutásainak (runs/dryrun/) jelöltjeiből dolgoznak, nem a gráfból; az így sorba tett javaslat jóváhagyásakor még nincs igénylő munkakör (az IGENYEL él a munkakör valódi futásakor jön létre).</p>
+        <div class="controls">${btn("kesz-bovit", { dry_run: true }, "Próba (gráfból)")}${btn("kesz-bovit", { from_dryrun: true }, "Próba a próbafutásokból")}${btn("kesz-bovit", { from_dryrun: true, queue: true }, "Próbafutásokból, UJ a sorba")}</div>
+        <div id="mdry" class="small">betöltés…</div>`)}</div>
+    <div class="card" style="flex:1 1 380px">${head("TESZ-nivalók általánosítása", g.teendo)}
+      <p class="small">A több munkakörben, eltérő kontextussal használt TESZ-nivalók túl szűk nevét általánosítja (a régi név alias lesz); a gyűjtő-nevekre bontási javaslatot tesz a sorba.</p>
+      <p class="small">${g.utolso ? `Utolsó futás: ${esc(g.utolso)}; azóta <b>${g.uj_munkakor}</b> munkakör került a gráfba (ajánlott ${g.kuszob} után).` : `Még nem futott; ${g.munkakor} munkakör van a gráfban.`}</p>
+      <div class="controls">${btn("generalize", {}, "Futtatás", g.teendo)}</div>
+      ${adv(`<div class="controls">${btn("generalize", { dry_run: true }, "Próba")}</div>`)}</div>
+    <div class="card" style="flex:1 1 380px">${head("Bontási javaslatok", sp.teendo)}
+      <p class="small">${sp.sorban ? `<b>${sp.sorban}</b> bontási javaslat vár a <a href="#keszsor">KÉSZ-ség-sor</a>ban.` : "Nincs nyitott bontási javaslat."} A sorban adott jóváhagyás egyben végre is hajtja a bontást; külön lépés nem kell.</p>
+      ${adv(`<p class="small muted">Az összes nyitott bontási javaslat végrehajtása egyenkénti jóváhagyás nélkül (split).</p><div class="controls">${btn("split", {}, "Összes végrehajtása", false, !sp.sorban)}</div>`)}</div>
+    <div class="card" style="flex:1 1 380px">${head("KÉSZ-ség-irányok", ir.teendo)}
+      <p class="small">${ir.oroklott ? `<b>${ir.oroklott}</b> KÉSZ-ség irányát még csak a csoportjától örökölte; a futtatás elemenként felülvizsgálja, a bizonytalant a sorba teszi.` : `Mind a ${ir.osszes} KÉSZ-ség iránya elemenként ellenőrzött.`}${ir.sorban ? ` A sorban ${ir.sorban} irány-kérdés vár.` : ""}</p>
+      <div class="controls">${btn("kesz-irany", {}, "Futtatás", ir.teendo, !ir.teendo, ir.teendo ? "" : "Nincs örökölt irány")}</div>
+      ${adv(`<p class="small muted">A „Mind, próba” a már ellenőrzött irányokat is újranézi, de nem ír semmit.</p><div class="controls">${btn("kesz-irany", { dry_run: true }, "Próba")}${btn("kesz-irany", { all: true, dry_run: true }, "Mind, próba")}</div>`)}</div>
+  </div>`;
+  $$("button[data-m]", $("#mcards")).forEach((bt) => (bt.onclick = async () => {
+    const r = await act(() => api(`kesz/maint/${bt.dataset.m}`, { method: "POST", body: JSON.parse(bt.dataset.o) }), "Elindult.");
+    taskBox($("#mtask"), r.task, () => maintCards(view));
   }));
   try {
     const { runs } = await api("dryrun");
-    $("#mdry").innerHTML = runs.length ? runs.map((r) => `<details><summary>${esc(r.title || r.job_id)} <span class="muted small">${esc(r.time)} · ${(r.kesz_hiany || []).length} hiányjelölt</span></summary>${hianyTable(r.kesz_hiany)}</details>`).join("") : '<p class="muted">Nincs próbafutás.</p>';
+    $("#mdry").innerHTML = `<p class="muted">Próbafutások KÉSZ-ség-hiányjelöltjei:</p>` + (runs.length ? runs.map((r) => `<details><summary>${esc(r.title || r.job_id)} <span class="muted small">${esc(r.time)} · ${(r.kesz_hiany || []).length} hiányjelölt</span></summary>${hianyTable(r.kesz_hiany)}</details>`).join("") : '<p class="muted">Nincs próbafutás.</p>');
   } catch (e) { $("#mdry").innerHTML = `<p class="bad">${esc(e.message)}</p>`; }
-};
+}
 
 // ------------------------------------------------------------------ HASZNÁLATI SEGÉD (docs/hasznalati-segedlet.md)
 const slug = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -702,12 +731,6 @@ function table(rows) {
 
 // ------------------------------------------------------------------ MODELLEK
 const EFFORTS = [["", "alap"], ["low", "alacsony"], ["medium", "közepes"], ["high", "magas"], ["xhigh", "nagyon magas"], ["max", "max"]];
-const PRESETS = {
-  "Olcsó felhő": { E0: ["anthropic", "claude-sonnet-5-5", "low", ""], P1: ["anthropic", "claude-sonnet-5-5", "low", ""],
-    P2: ["anthropic", "claude-haiku-5-5", "low", ""], P3: ["anthropic", "claude-haiku-5-5", "low", "off"],
-    P4: ["anthropic", "claude-sonnet-5-5", "medium", ""], P5: ["anthropic", "claude-haiku-5-5", "low", "off"] },
-
-};
 let M = null;
 pages.modellek = async (view) => {
   M = await api("models");
@@ -719,7 +742,7 @@ function drawModels(view) {
   const rows = M.steps.map((s, i) => `<tr data-i="${i}">
     <td><b>${s.step}</b><div class="muted small">${esc(s.name)}</div></td>
     <td><select data-f="provider">${s.provider === "local" ? '<option value="local" selected disabled>Régi helyi beállítás – válassz szolgáltatót</option>' : ""}${M.providers.map((p) => `<option value="${p}" ${p === s.provider ? "selected" : ""}>${prov[p] || p}</option>`).join("")}</select></td>
-    <td><select data-f="choice" aria-label="Elérhető modellek"></select><input data-f="model" aria-label="Egyedi modellazonosító" value="${esc(s.model)}" placeholder="Egyedi modellazonosító" style="width:200px"></td>
+    <td><select data-f="choice" aria-label="Elérhető modellek"></select><input data-f="model" type="hidden" value="${esc(s.model)}"><span data-f="model-status" class="small muted"></span></td>
     <td><select data-f="effort" ${s.provider !== "anthropic" ? "disabled" : ""}>${EFFORTS.map(([v, l]) => `<option value="${v}" ${v === s.effort ? "selected" : ""}>${l}</option>`).join("")}</select></td>
     <td style="text-align:center"><input type="checkbox" data-f="thinking" ${s.thinking === "off" ? "checked" : ""}></td>
     <td><input data-f="max_tokens" type="number" step="256" value="${s.max_tokens}" style="width:90px"></td>
@@ -728,9 +751,9 @@ function drawModels(view) {
   view.innerHTML = `<h1>Modellek</h1>
     <p class="sub">Lépésenként melyik modell dolgozik. A mentés a <span class="mono">config/models.yaml</span> fájlba kerül, és erősebb a .env-nél. Az API-kulcsok a .env-ben maradnak.</p>
     <div class="card"><div class="controls" style="margin-bottom:12px"><h2 style="margin:0 auto 0 0">Lépések</h2>
-      <span class="muted small">Gyors beállítás:</span>${Object.keys(PRESETS).map((k) => `<button data-p="${esc(k)}">${esc(k)}</button>`).join("")}</div>
+      <span class="muted small">Csak az aktuális API-modelllistából választhatsz.</span></div>
       <table id="mt"><thead><tr><th>Lépés</th><th>Szolgáltató</th><th>Modell</th><th>Gondolkodás</th><th title="Gondolkodás kikapcsolása (Sonnet 5.5, Haiku 5.5, Qwen)">Gondolkodás ki</th><th>Max. kimenet</th><th>Ár / 1M token (be / ki)</th><th>Forrás</th></tr></thead><tbody>${rows}</tbody></table>
-      <div class="controls">${["anthropic", "gemini", "openai"].map(p => `<button data-discover="${p}">${esc(prov[p])}: modelllista frissítése</button>`).join("")}</div><p id="catalog-result" class="small muted">A lista a szolgáltató API-jából frissíthető. Egyedi modellazonosító is megadható.</p>
+      <div class="controls">${["anthropic", "gemini", "openai"].map(p => `<button data-discover="${p}">${esc(prov[p])}: modelllista frissítése</button>`).join("")}</div><p id="catalog-result" class="small muted">A listát az aktuális kulccsal és végponttal kérjük le. Sikertelen lekérésnél nincs beégetett tartaléklista. Mentéskor modellenként egy rövid, személyes adat nélküli generálási próba is fut; ez szolgáltatói díjat használhat.</p>
       <p class="muted small">P3 = egyesítés, P4 = KÉSZ-ség és EQF (kézi parancs), P5 = tanúsítási szöveg.</p></div>
     <div class="row">
       <div class="card"><h2>Bírálat (P2)</h2>
@@ -761,11 +784,15 @@ function drawModels(view) {
   const updateChoices = (tr, reset = false) => {
     const provider = $("[data-f=provider]", tr).value;
     const input = $("[data-f=model]", tr), select = $("[data-f=choice]", tr);
-    const ids = [...new Set([...(M.catalog[provider] || []), ...M.steps.filter(s => s.provider === provider).map(s => s.model)].filter(Boolean))];
+    const ids = M.catalog[provider] || [];
     if (reset) { input.value = ids[0] || ""; $("[data-f=effort]", tr).value = ""; $("[data-f=thinking]", tr).checked = false; }
-    select.innerHTML = `<option value="">Egyedi modellazonosító…</option>` + ids.map(m => `<option value="${esc(m)}">${esc(m)}${m.startsWith("gemini-2.5-") ? " (régi modell, új felhasználóknak nem elérhető)" : ""}${priceOf(m) ? " · " + esc(priceOf(m)) + " / 1M token" : " · ár nincs megadva"}</option>`).join("");
+    const manual = provider === "manual";
+    select.innerHTML = `<option value="">${manual ? "Kézi mód" : "Válassz az API-modelllistából…"}</option>` + ids.map(m => `<option value="${esc(m)}">${esc(m)}${priceOf(m) ? " · " + esc(priceOf(m)) + " / 1M token" : " · ár nincs megadva"}</option>`).join("");
     select.value = ids.includes(input.value) ? input.value : "";
-    select.onchange = () => { input.value = select.value; input.focus(); };
+    select.disabled = manual || ids.length === 0;
+    $("[data-f=model-status]",tr).textContent = !manual && input.value && !ids.includes(input.value)
+      ? `Mentett: ${input.value} – nem ellenőrzött; frissítsd a listát és válassz.` : "";
+    select.onchange = () => { input.value = select.value; $("[data-f=model-status]",tr).textContent=""; };
     input.oninput = () => { select.value = ids.includes(input.value) ? input.value : ""; };
     const priceCell = tr.children[6];
     const updatePrice = () => { priceCell.textContent = provider === "local" ? "ingyenes" : priceOf(input.value) || "ár nincs megadva"; };
@@ -780,11 +807,13 @@ function drawModels(view) {
     button.disabled = true;
     try {
       const provider = button.dataset.discover;
+      const endpoint=$("#ob").value,keyEnv=$("#okey").value;
       const r = await api("models/discover", {method:"POST", body:{provider,
-        base_url: $("#ob").value, api_key_env:$("#okey").value}});
+        base_url:endpoint,api_key_env:keyEnv}});
+      if(provider==="openai"&&(endpoint!==$("#ob").value||keyEnv!==$("#okey").value))return;
       $("#catalog-result").textContent = r.ok ? `${r.models.length} elérhető modell (${provider})` : r.error;
-      if (r.ok) { M.catalog[provider] = r.models; $$("#mt tbody tr").forEach(tr => updateChoices(tr)); }
-    } catch(e) { toast(e.message, true); } finally { button.disabled = false; }
+      M.catalog[provider] = r.ok ? r.models : []; $$("#mt tbody tr").forEach(tr => updateChoices(tr));
+    } catch(e) { M.catalog[button.dataset.discover]=[]; $$("#mt tbody tr").forEach(tr=>updateChoices(tr)); toast(e.message, true); } finally { button.disabled = false; }
   });
   const embedValues = () => ({provider:$("#ep").value, model:$("#em").value.trim(), host:$("#eh").value.trim(), prefix:$("#ex").value});
   $("#etest").onclick = async () => {
@@ -793,16 +822,6 @@ function drawModels(view) {
       $("#eres").textContent = r.ok ? `Elérhető. Dimenzió: ${r.dimension}; magyar–angol: ${r.similarity.toFixed(3)}; eltérő fogalom: ${r.unrelated.toFixed(3)}` : r.error;
     } catch(e) { toast(e.message, true); } finally { $("#etest").disabled = false; }
   };
-  $$("[data-p]").forEach((b) => b.onclick = () => {
-    const P = PRESETS[b.dataset.p];
-    $$("#mt tbody tr").forEach((tr) => {
-      const [pr, mo, ef, th] = P[M.steps[tr.dataset.i].step];
-      $("[data-f=provider]", tr).value = pr; $("[data-f=model]", tr).value = mo; $("[data-f=effort]", tr).value = ef;
-      $("[data-f=effort]", tr).disabled = pr !== "anthropic"; $("[data-f=thinking]", tr).checked = th === "off";
-    });
-    $$("#mt tbody tr").forEach(tr => updateChoices(tr));
-    toast(`„${b.dataset.p}” betöltve; a Mentéssel lép életbe.`);
-  });
   $("#otest").onclick = async () => {
     const button = $("#otest"), result = $("#ores");
     button.disabled = true; result.textContent = "Kapcsolat ellenőrzése…";
@@ -810,20 +829,28 @@ function drawModels(view) {
       const r = await api("models/openai-test", {method:"POST", body:{
         base_url:$("#ob").value.trim(), api_key_env:$("#okey").value.trim()}});
       result.textContent = r.ok ? `Kapcsolat rendben. Modelllista lekérve: ${r.models.length} modell. A generálási jogosultság külön ellenőrzést igényel.` : `Kapcsolati hiba: ${r.error}`;
-      if (r.ok) { M.catalog.openai = r.models; $$("#mt tbody tr").forEach(tr => updateChoices(tr)); }
+      M.catalog.openai=[]; $$("#mt tbody tr").forEach(tr => updateChoices(tr));
     } catch(e) { result.textContent = `Kapcsolati hiba: ${e.message}`; }
     finally { button.disabled = false; }
   };
   $("#msave").onclick = async () => {
+    const invalid=$$("#mt tbody tr").some(tr=>$("[data-f=provider]",tr).value!=="manual" && !$("[data-f=choice]",tr).value);
+    if(invalid){toast("Minden API-lépéshez válassz az aktuálisan lekért modelllistából.",true);return;}
     const steps = $$("#mt tbody tr").map((tr) => ({ step: M.steps[tr.dataset.i].step, provider: $("[data-f=provider]", tr).value,
       model: $("[data-f=model]", tr).value.trim(), effort: $("[data-f=effort]", tr).disabled ? "" : $("[data-f=effort]", tr).value,
       thinking: $("[data-f=thinking]", tr).checked ? "off" : "", max_tokens: +$("[data-f=max_tokens]", tr).value }));
+    const button=$("#msave");button.disabled=true;
+    try {
     M = await act(() => api("models", { method: "POST", body: { steps, embed:embedValues(),
       openai:{base_url:$("#ob").value.trim(), api_key_env:$("#okey").value.trim(), json_mode:$("#oj").value, timeout:+$("#otimeout").value},
       prices:$$("#prices tbody tr").map(tr => Object.fromEntries($$("input", tr).map(input => [input.dataset.price, input.dataset.price === "model" ? input.value.trim() : +input.value]))), p2: { mode: p2.mode, sample: +$("#p2s").value } } }), "Mentve. A következő futtatás már ezzel indul.");
     drawModels(view);
+    } catch(e) { /* act already displays the actionable error. */ }
+    finally { if(button.isConnected)button.disabled=false; }
   };
   if ($("#mreset")) $("#mreset").onclick = async () => { M = await act(() => api("models", { method: "DELETE" }), "Törölve, a .env érvényes."); drawModels(view); };
+  $("#ob").oninput = $("#okey").oninput = () => { M.catalog.openai=[]; $$("#mt tbody tr").forEach(tr=>updateChoices(tr)); };
+  $$('[data-discover]').forEach(button=>button.click());
 }
 
 // ------------------------------------------------------------------ PROMPTOK

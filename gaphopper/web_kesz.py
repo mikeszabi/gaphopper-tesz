@@ -147,3 +147,78 @@ def start_maint(cmd: str, body: dict) -> str:
         args += ["--review", str(int(body["review"]))]
     label = MAINT[cmd] + (" – próba" if dry or body.get("from_dryrun") else "")
     return tasks.start(label, args)
+
+
+GEN_AFTER_JOBS = 10   # generalize: ennyi új (gráfba írt) munkakör után ajánlott újra futtatni
+
+
+def _last_generalize() -> dict | None:
+    """A legutóbbi valódi (nem próba) generalize-futás eredményfájlja (runs/generalize-*.json)."""
+    from datetime import datetime, timezone
+
+    from .config import ROOT
+
+    for f in sorted((ROOT / "runs").glob("generalize-*.json"), reverse=True):
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not d.get("proba"):
+            return d | {"at": datetime.fromtimestamp(f.stat().st_mtime, timezone.utc)}
+    return None
+
+
+def _local(iso: str | None) -> str:
+    from datetime import datetime
+
+    try:
+        return datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone().strftime("%Y-%m-%d %H:%M") if iso else ""
+    except ValueError:
+        return iso[:16]
+
+
+def maint_status(S: Store, graph) -> dict:
+    """A Karbantartás oldal kártyáinak állapota: van-e teendő, és mi a bizonyíték rá. Csak olvas."""
+    from datetime import datetime
+
+    from .config import kesz_hierarchia
+
+    queue = [r["kind"] for r in S.queue()]
+    min_jobs = int(vocab()["rules"].get("kesz_bovit_min_munkakor", 2))
+    # 1. KÉSZ-ség-törzs bővítése: a még meg nem nézett (vagy azóta új munkakörben is felbukkant) jelöltek
+    rows = graph.read(
+        "MATCH (h:KeszHiany {status: 'JELOLT'})<-[e:HIANYZIK]-(:TeszNivalo) UNWIND e.munkakorok AS j "
+        "WITH h, count(DISTINCT j) AS n WHERE n > 0 "
+        "RETURN count(h) AS jelolt, sum(CASE WHEN h.bovit_at IS NULL OR h.last_seen > h.bovit_at THEN 1 ELSE 0 END) "
+        "AS uj, sum(CASE WHEN n >= $mj THEN 1 ELSE 0 END) AS tobb", mj=min_jobs)
+    last = graph.read("MATCH (h:KeszHiany) WHERE h.bovit_at IS NOT NULL RETURN toString(max(h.bovit_at)) AS at")
+    b = (rows or [{}])[0] if rows is not None else None
+    bovit = {"graph_ok": rows is not None, "jelolt": (b or {}).get("jelolt") or 0, "uj": (b or {}).get("uj") or 0,
+             "tobb_munkakor": (b or {}).get("tobb") or 0, "min_munkakor": min_jobs,
+             "sorban": queue.count("kesz_review"), "utolso": _local((last or [{}])[0].get("at"))}
+    bovit["teendo"] = bovit["uj"] > 0
+    # 2. KÉSZ-ség-irány: a csoportból örökölt (még elemenként meg nem nézett) irányok
+    kesz_cache_clear()
+    items = kesz_hierarchia()["items"]
+    irany = {"oroklott": sum(1 for x in items if x.get("irany_forras", "csoport") == "csoport"),
+             "ellenorzendo": sum(1 for x in items if x.get("irany_forras") == "ellenorzendo"),
+             "sorban": queue.count("kesz_irany_review"), "osszes": len(items)}
+    irany["teendo"] = irany["oroklott"] > 0
+    # 3. generalize: hány munkakör került a gráfba a legutóbbi valódi futás óta
+    g = _last_generalize()
+    since = None
+    if g:
+        since = 0
+        for r in S.jobs("GRAFBAN"):
+            try:
+                if r["updated_at"] and datetime.fromisoformat(r["updated_at"]) > g["at"]:
+                    since += 1
+            except ValueError:
+                pass
+    gen = {"utolso": g["at"].astimezone().strftime("%Y-%m-%d %H:%M") if g else "", "uj_munkakor": since,
+           "kuszob": GEN_AFTER_JOBS, "munkakor": len(S.jobs("GRAFBAN")), "sorban": queue.count("split_review")}
+    gen["teendo"] = (since is None and gen["munkakor"] > 0) or (since or 0) >= GEN_AFTER_JOBS
+    # 4. bontás: a nyitott javaslatokat a KÉSZ-ség-sor jóváhagyása hajtja végre
+    split = {"sorban": queue.count("split_review")}
+    split["teendo"] = split["sorban"] > 0
+    return {"bovit": bovit, "irany": irany, "generalize": gen, "split": split, "osszes_kesz": len(items)}

@@ -81,6 +81,24 @@ A fő (Core) feladatok fontossági sorrendben a `tasks`, a kiegészítők a `tas
 tasks (;-vel elválasztva), requirements, conditions, entry_route, source, locale`.
 Hirdetésnél a `job_id` legyen `ad:` előtagú: ilyenkor a rendszer alias alapján keresi a kanonikus munkakört.
 
+Crawler-hirdetésekből (PostgreSQL, pl. a `gh_jobs_pg` konténerbe töltött dump) foglalkozásonként egy rekord:
+`python -m gaphopper crawl-export --out data/jobs_crawl.jsonl` (C0; LLM-mel összevont, tisztított magyar
+feladatlista; `--dry-run`: csak a promptok).
+
+Egységes, teljes munkakörlista (`data/job_all.jsonl`, J0): `python -m gaphopper job-all`. Egy rekord = egy
+feladatlistával rendelkező O\*NET-foglalkozás (`onet:<kód>`, a job_100 mezőivel és kurált adataival), és
+minden rekord hivatkozik ESCO-, ISCO-08- és FEOR-08-kódra. A `codes` az elsődleges kódokat, a `refs` rendszerenként
+a hivatkozások listáját adja egységes elemekkel (`system, code, uri, name_en, name_hu, match, method, primary,
+confidence, path`), ahol `path` a hierarchia a gyökértől (SOC major→O\*NET, ISCO 1→4→ESCO, FEOR 1→4); új forrás
+= új kulcs a `refs`-ben. A crawl-adatok (magyar feladatok, elvárások) a `refs.crawl`-ba kerülnek. Források:
+`--esco-dir ../esco/data` (ESCO, O\*NET, ESCO–O\*NET crosswalk), `data/ref/` (FEOR-08, ISCO–FEOR; lásd
+`data/ref/README.md`), O\*NET Task Statements/Ratings. Ahol a megfeleltetés nem egyértelmű (több ESCO-jelölt
+pontos egyezés nélkül, nincs ESCO-pár, több FEOR-jelölt), az LLM a jelöltlistából választ (`method: llm` vagy
+`crosswalk+llm`); a döntések a `data/ref/job_all_llm_decisions.json` gyorsítótárba kerülnek.
+
+A besorolási hierarchiák és az ISIC/WEF-ágazatok a gráfban: `python -m gaphopper taxonomy` (T0, LLM nélkül,
+újrafuttatható; `--munkakorok`: a job_all minden munkaköre előzetes `MunkaKor`-csomópontként, TESZ-felbontás nélkül). Gráfmodell, élek, lekérdezési példák: [docs/taxonomia.md](docs/taxonomia.md).
+
 ## 3. Tömeges futtatás
 
 **Kötegelt mód (Anthropic Message Batches API)** – sok munkakörre a legolcsóbb: a kérések aszinkron, kedvezményes áron futnak (a feltételeket a szolgáltató aktuális dokumentációjában nézd meg).
@@ -173,7 +191,7 @@ ezután ugyanígy a P2. A P3 kézi módban csak pontos alias-egyezést használ;
    kontextussal használt TESZ-nivalókra egy csomagolt Haiku-hívás eldönti, igaz-e a név mindegyikre. MARAD; ATNEVEZ
    (általánosabb név, a régi alias lesz, az azonosító és a kapcsolatok maradnak; szűk meghatározó SZER-ELEM-nél új,
    fajta szintű SZER-ELEM, a régi `FAJTAJA` éllel alá kerül); BONT (gyűjtő-TESZ-nivaló, pl. „Működés ellenőrzése…”
-   szoftvertesztelésre és villamos mérésre: szakértői sorba kerül; jóváhagyás után `split` hajtja végre: új
+   szoftvertesztelésre és villamos mérésre: szakértői sorba kerül; a jóváhagyás (`review --approve`, vagy minden nyitottra a `split`) végre is hajtja: új
    TESZ-nivaló a javasolt névvel, a felsorolt munkakörök TESZ-SZÍN-jei és KÉSZ-ség-súlyai átkerülnek, a régi név és
    aliasai a régin maradnak, az új meghatározó SZER-ELEM a munkakör saját P1-es SZER-ELEM-fajtája). `--dry-run`: csak a lista. A változások listája:
    `runs/generalize-<idő>.json`. Kb. 0,01 USD 50 TESZ-nivalónként.
@@ -377,9 +395,13 @@ Egyetlen JavaScript-oldal (`web/`), a Python oldalon csak a standard könyvtár 
   javaslatok (`split_review`). Jóváhagyás előtt az új javaslat neve, csoportja és iránya, az iránykérdésnél a javasolt
   irány szerkeszthető (a régi név alias lesz); a jóváhagyás és az elutasítás a `review --approve/--reject` parancsot
   indítja, a napló alatta látszik.
-- **Karbantartás:** `kesz-bovit` (próba, futtatás, próbafutásokból, próbafutásokból a sorba), `kesz-irany`, `generalize`,
-  `split` gombok, ugyanúgy a háttérben futó CLI-paranccsal; alatta a próbafutások KÉSZ-ség-hiányjelöltjei (név,
-  csoport, irány, R23-állapot, TESZ-nivaló). A munkakör próbafutás-eredményében (Futás oldal) is látszanak.
+- **Karbantartás:** „Mikor mit?” emlékeztető és négy kártya (bővítés, általánosítás, bontási javaslatok, irányok),
+  mindegyiken teendő-jelzés a bizonyítékkal (`GET /api/kesz/maint`, `web_kesz.maint_status`) és egy fő gomb; a próbák
+  és ritka változatok (próbafutásokból, `split` jóváhagyás nélkül, `kesz-irany --all`) a lecsukott „Haladó” részben.
+  A bővítés teendője: meg nem nézett hiányjelölt (`KeszHiany.bovit_at` hiányzik, vagy `last_seen` későbbi); az
+  általánosításé: az utolsó valódi futás (`runs/generalize-*.json`, `proba: false`) óta legalább 10 új munkakör.
+  A parancsok a háttérben futó CLI-paranccsal indulnak; a Haladó részben a próbafutások KÉSZ-ség-hiányjelöltjei is
+  látszanak (név, csoport, irány, R23-állapot, TESZ-nivaló).
 - **Használati segéd:** a `docs/hasznalati-segedlet.md` (fogalmak, indítás, lánc, fülek képernyőképpel, szakértői
   döntések, karbantartás, KÉSZ-ség-törzs, kimenetek, parancsok, GYIK) tartalomjegyzékkel és kereséssel; minden fül
   fejlécében a „?” a megfelelő fejezetre visz. A szabálytábla a `config/szabalyok.yaml`-ból frissül.

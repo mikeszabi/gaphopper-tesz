@@ -1,0 +1,2731 @@
+{
+ "esco": {
+  "11-1031.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/5bca96fd-4203-400b-be58-9e9b50bc98da",
+   "esco_match": "broadMatch"
+  },
+  "11-3012.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/6e6839b6-099c-4802-906e-7f2c8203ee69",
+   "esco_match": "broadMatch"
+  },
+  "11-3021.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/f0ca39a8-1e30-487c-95f9-ef2d5e734adc",
+   "esco_match": "closeMatch"
+  },
+  "11-3031.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/30f3ea93-882a-4525-841c-1d5b4b64076f",
+   "esco_match": "closeMatch"
+  },
+  "11-3051.01": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/109e0a5d-203d-4af6-8f70-692111335ec3",
+   "esco_match": "closeMatch"
+  },
+  "11-3051.02": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/cb446db8-e8b3-418c-a21c-2d10faea42a5",
+   "esco_match": "narrowMatch"
+  },
+  "11-3051.03": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/0d21a30d-25d9-427b-b8e4-339408425ff5",
+   "esco_match": "closeMatch"
+  },
+  "11-3051.06": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/cb446db8-e8b3-418c-a21c-2d10faea42a5",
+   "esco_match": "narrowMatch"
+  },
+  "11-9013.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/4552095e-3396-4831-86ad-4fc34ec39a19",
+   "esco_match": "closeMatch"
+  },
+  "11-9041.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/bea99fea-0383-4c63-b944-70d4799de2c5",
+   "esco_match": "narrowMatch"
+  },
+  "11-9041.01": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/1488589a-7b83-471d-b094-492f5616f4e0",
+   "esco_match": "narrowMatch"
+  },
+  "11-9121.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/73ceb2f9-18e3-4cfe-9c06-e9fb31ece440",
+   "esco_match": "closeMatch"
+  },
+  "11-9121.02": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/fab474ea-a4a9-4c11-9548-1d50ad594a34",
+   "esco_match": "broadMatch"
+  },
+  "11-9131.00": {
+   "confidence": 0.3,
+   "esco": "http://data.europa.eu/esco/occupation/6e6839b6-099c-4802-906e-7f2c8203ee69",
+   "esco_match": "broadMatch"
+  },
+  "11-9199.02": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/779d13be-60b4-48f3-a339-fe483be96c7f",
+   "esco_match": "closeMatch"
+  },
+  "11-9199.08": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/e9507d34-c70f-474f-a4a3-d2cbfe50f6e9",
+   "esco_match": "closeMatch"
+  },
+  "11-9199.11": {
+   "confidence": 0.25,
+   "esco": "http://data.europa.eu/esco/occupation/bea99fea-0383-4c63-b944-70d4799de2c5",
+   "esco_match": "broadMatch"
+  },
+  "13-1021.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/29fa406d-de89-4515-be8d-0fe7bda993f1",
+   "esco_match": "closeMatch"
+  },
+  "13-1022.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/3ac7fbb4-91b2-4d4d-abc8-7a6c55ed648f",
+   "esco_match": "broadMatch"
+  },
+  "13-1041.04": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/f0e479d9-7afd-40b1-b60f-b68c400c15fb",
+   "esco_match": "broadMatch"
+  },
+  "13-1051.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/219d1c30-3849-4de3-b0d6-07da187b6521",
+   "esco_match": "narrowMatch"
+  },
+  "13-1074.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/f5e80af5-eebe-4133-878a-5dc5ef34fe93",
+   "esco_match": "broadMatch"
+  },
+  "13-1081.02": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/51cd3a7a-eae6-4dc6-9f24-179d7ec6d230",
+   "esco_match": "closeMatch"
+  },
+  "13-1111.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/60082a99-d8ef-4e84-9290-78902681b6ed",
+   "esco_match": "closeMatch"
+  },
+  "13-1131.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/c2e6609d-0abe-4a38-b295-e06edbd52e82",
+   "esco_match": "closeMatch"
+  },
+  "13-1151.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/0ba06640-e0ac-4911-9e43-289a8e41651e",
+   "esco_match": "closeMatch"
+  },
+  "13-1161.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/66fb9704-0d56-4673-8e69-7823816b73e1",
+   "esco_match": "narrowMatch"
+  },
+  "13-2051.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/8d586ee9-0ab1-4155-a3b0-2ca786c8e48c",
+   "esco_match": "closeMatch"
+  },
+  "13-2099.01": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/b7f47c25-bdf3-42fa-a68e-ad32754b2dba",
+   "esco_match": "closeMatch"
+  },
+  "15-1211.01": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/a6a0b60f-08da-4faa-bf54-942987efb471",
+   "esco_match": "broadMatch"
+  },
+  "15-1241.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/e0b544dd-b621-4126-a55e-054af25c6ea0",
+   "esco_match": "closeMatch"
+  },
+  "15-1243.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/8d9ec84d-cf2d-4179-87bc-335cda54a427",
+   "esco_match": "closeMatch"
+  },
+  "15-1244.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/9e2e6e1e-363b-4e1b-a673-7bc0f7343300",
+   "esco_match": "closeMatch"
+  },
+  "15-1252.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/f2b15a0e-e65a-438a-affb-29b9d50b77d1",
+   "esco_match": "closeMatch"
+  },
+  "15-1299.05": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/0464b062-cea6-4164-b10d-956c61956ae7",
+   "esco_match": "closeMatch"
+  },
+  "15-1299.07": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/24135b84-cbdd-4d42-9ed2-02fd982d15b2",
+   "esco_match": "broadMatch"
+  },
+  "15-2031.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/207d7b18-6540-432e-8aa6-785ed434572f",
+   "esco_match": "narrowMatch"
+  },
+  "15-2051.02": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/ef909843-97c6-4c48-8038-2e7aefdfcad5",
+   "esco_match": "narrowMatch"
+  },
+  "15-2099.01": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/68d973df-bf10-4bf7-9a1b-fbd9f604b9db",
+   "esco_match": "broadMatch"
+  },
+  "17-1021.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/ad8ab454-b506-46a5-afd3-66bbffd54115",
+   "esco_match": "closeMatch"
+  },
+  "17-1022.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/d8e502b4-1be6-4d10-a224-151688f8f0c8",
+   "esco_match": "closeMatch"
+  },
+  "17-1022.01": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/d8e502b4-1be6-4d10-a224-151688f8f0c8",
+   "esco_match": "broadMatch"
+  },
+  "17-2051.02": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/fcf9024e-277c-43c7-8ec8-8903e5c9c576",
+   "esco_match": "broadMatch"
+  },
+  "17-2072.01": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/4d34a9ee-2653-4da0-bef7-f59294577224",
+   "esco_match": "broadMatch"
+  },
+  "17-2112.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/53d2052f-edc0-4f44-8be1-164526412bfe",
+   "esco_match": "closeMatch"
+  },
+  "17-2112.01": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/1d75ea5a-f902-4b47-8d63-5c6d2a5c0bb5",
+   "esco_match": "narrowMatch"
+  },
+  "17-2121.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/c36fc197-1f5b-4563-acd8-6f1d06aa1c03",
+   "esco_match": "broadMatch"
+  },
+  "17-2131.00": {
+   "confidence": 0.92,
+   "esco": "http://data.europa.eu/esco/occupation/4a375b68-88a0-4e5f-99ce-9b01341dfb81",
+   "esco_match": "closeMatch"
+  },
+  "17-2199.10": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/ba490796-46f7-45b7-827b-db6882fca3e1",
+   "esco_match": "narrowMatch"
+  },
+  "17-3011.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/364cb5ca-3002-425f-b815-aefa513df78a",
+   "esco_match": "broadMatch"
+  },
+  "17-3012.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/d849fd2a-5210-434b-a50b-2d92de3a4bac",
+   "esco_match": "broadMatch"
+  },
+  "17-3023.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/27811419-407f-4868-a388-2f7df7aafd91",
+   "esco_match": "broadMatch"
+  },
+  "17-3024.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/51c7015c-dc81-4fcb-b15f-619a4656a9fe",
+   "esco_match": "broadMatch"
+  },
+  "17-3025.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/e8461d2e-3d75-477c-93a2-ea8d342bb55b",
+   "esco_match": "closeMatch"
+  },
+  "19-1011.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/eee68e13-8248-43bb-a9fb-959832a6c217",
+   "esco_match": "narrowMatch"
+  },
+  "19-1012.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/4b709f9e-6112-4d58-81b0-2d6e6a69d61b",
+   "esco_match": "broadMatch"
+  },
+  "19-1013.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/c40ef517-d4ab-4932-b184-9c2ea5b24fe2",
+   "esco_match": "broadMatch"
+  },
+  "19-1021.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/6df6c5cb-c1a2-42c8-acd0-1ee5563c36c1",
+   "esco_match": "broadMatch"
+  },
+  "19-1023.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/eee68e13-8248-43bb-a9fb-959832a6c217",
+   "esco_match": "narrowMatch"
+  },
+  "19-1029.02": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/eee68e13-8248-43bb-a9fb-959832a6c217",
+   "esco_match": "narrowMatch"
+  },
+  "19-1031.02": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/fab474ea-a4a9-4c11-9548-1d50ad594a34",
+   "esco_match": "closeMatch"
+  },
+  "19-1031.03": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/80d880ec-3bae-45a2-a2d3-41345ee0b319",
+   "esco_match": "closeMatch"
+  },
+  "19-1032.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/f04eaeff-52f5-4d52-93ad-6f846884827f",
+   "esco_match": "closeMatch"
+  },
+  "19-1042.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/acbb7a20-c947-480d-a07e-868a0ab3eab8",
+   "esco_match": "closeMatch"
+  },
+  "19-2021.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/1c862e14-80f8-4aa8-8f1c-fd2ca95b63ad",
+   "esco_match": "closeMatch"
+  },
+  "19-2041.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/11d72bd6-779a-4643-9962-313833740094",
+   "esco_match": "closeMatch"
+  },
+  "19-2041.01": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/b5d2db88-9e2b-4efa-8f2f-0e62a494791e",
+   "esco_match": "narrowMatch"
+  },
+  "19-2041.02": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/89b87aa2-4008-4cc7-96f8-e2b5ffe59f28",
+   "esco_match": "closeMatch"
+  },
+  "19-2041.03": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/89b87aa2-4008-4cc7-96f8-e2b5ffe59f28",
+   "esco_match": "narrowMatch"
+  },
+  "19-2099.01": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/b176e5d7-1f94-495c-907f-80a7f61aed59",
+   "esco_match": "closeMatch"
+  },
+  "19-3011.01": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/99492920-e5a5-4dba-9e5a-93193147198c",
+   "esco_match": "broadMatch"
+  },
+  "19-3022.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/66fb9704-0d56-4673-8e69-7823816b73e1",
+   "esco_match": "broadMatch"
+  },
+  "19-3032.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/52ded7d7-11df-42e3-b90a-d7f4b70fb4b9",
+   "esco_match": "broadMatch"
+  },
+  "19-3051.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/e14548c8-c2b9-4ef8-8670-d5967d7ad804",
+   "esco_match": "closeMatch"
+  },
+  "19-3091.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/acf69cab-8629-45c8-ae10-c8fb15f474b6",
+   "esco_match": "broadMatch"
+  },
+  "19-4012.01": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/c25b3700-6095-42b7-99fc-b87dc326c044",
+   "esco_match": "broadMatch"
+  },
+  "19-4044.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/55167849-82cf-484e-b818-fa702a4e69e9",
+   "esco_match": "broadMatch"
+  },
+  "19-4061.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/5ac65daa-0896-4193-9f0e-8b00746b78a1",
+   "esco_match": "narrowMatch"
+  },
+  "19-4092.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/3cee6bea-4a19-4511-9bbb-fdf820857555",
+   "esco_match": "broadMatch"
+  },
+  "19-4099.01": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/dacaa18b-93f6-48b4-b4f2-cb33e21804e7",
+   "esco_match": "broadMatch"
+  },
+  "19-5012.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/789517fb-95ee-43d1-9530-c2860be1a439",
+   "esco_match": "broadMatch"
+  },
+  "21-1012.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/2412bbb1-29ca-4e17-a2b8-70694f0cb14f",
+   "esco_match": "broadMatch"
+  },
+  "21-1021.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/95d0a616-a4a9-4f56-a8fb-4de43cdb4c82",
+   "esco_match": "broadMatch"
+  },
+  "21-1022.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/6a167ceb-f847-4ef0-af47-89454c53770b",
+   "esco_match": "closeMatch"
+  },
+  "21-1023.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/a76a05bb-e04d-4be8-953e-1ffd691dd58d",
+   "esco_match": "broadMatch"
+  },
+  "21-1091.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/61053604-8091-4a8e-9c63-5151051722e3",
+   "esco_match": "broadMatch"
+  },
+  "23-1021.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/07bd65d7-c13f-443a-bdf6-88903f3822be",
+   "esco_match": "narrowMatch"
+  },
+  "23-1022.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/403be630-8d1e-43b7-9f07-098aca5bb689",
+   "esco_match": "closeMatch"
+  },
+  "23-2093.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/a9411821-4f54-406e-ba37-4c6e5a39f9fe",
+   "esco_match": "closeMatch"
+  },
+  "25-1041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/91ba2935-f5c9-426d-8573-997b8b91e5ed",
+   "esco_match": "closeMatch"
+  },
+  "25-1051.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/306e9867-cf55-446f-88c6-8adad5369f8c",
+   "esco_match": "broadMatch"
+  },
+  "25-1053.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/684fd8d5-9b40-4b02-a680-438f0082d923",
+   "esco_match": "narrowMatch"
+  },
+  "25-1061.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/9766cc19-5a64-4b3c-a741-71561285a419",
+   "esco_match": "broadMatch"
+  },
+  "25-1062.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/9766cc19-5a64-4b3c-a741-71561285a419",
+   "esco_match": "closeMatch"
+  },
+  "25-1064.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/306e9867-cf55-446f-88c6-8adad5369f8c",
+   "esco_match": "broadMatch"
+  },
+  "25-1121.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/66527cdc-b7a5-4996-9448-7e327b68d08d",
+   "esco_match": "broadMatch"
+  },
+  "25-1123.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/9a7e780a-b778-4a5a-b4eb-309d394d313d",
+   "esco_match": "narrowMatch"
+  },
+  "25-1124.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/be3c021d-bd93-45a0-ad32-e8fa8e0d17ef",
+   "esco_match": "broadMatch"
+  },
+  "25-1192.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/684fd8d5-9b40-4b02-a680-438f0082d923",
+   "esco_match": "narrowMatch"
+  },
+  "25-1193.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/e777fb61-16f5-476b-8262-578edfdb4d9d",
+   "esco_match": "broadMatch"
+  },
+  "25-2011.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/55d60ead-0343-4008-b9e4-fb4b5a179c83",
+   "esco_match": "closeMatch"
+  },
+  "25-2023.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/81f8d141-3f67-4fb0-a349-db0147ef7b3a",
+   "esco_match": "broadMatch"
+  },
+  "25-2032.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/81f8d141-3f67-4fb0-a349-db0147ef7b3a",
+   "esco_match": "broadMatch"
+  },
+  "25-2051.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/b6beb46d-9ed2-4a66-9117-7e3f21f234dd",
+   "esco_match": "closeMatch"
+  },
+  "25-2057.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/976cbfcc-8958-4800-a435-71d15405a42a",
+   "esco_match": "closeMatch"
+  },
+  "25-2059.01": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/11695786-9fb7-4895-b161-0480419107e4",
+   "esco_match": "broadMatch"
+  },
+  "25-3031.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/5efb2c08-ba3a-4659-a2e4-1883f54e77b6",
+   "esco_match": "closeMatch"
+  },
+  "25-4012.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/691d30cc-6b2c-4025-89b4-3e719fe664c7",
+   "esco_match": "closeMatch"
+  },
+  "25-4013.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/7556c748-15b4-4e44-97d9-00d885d4cd7d",
+   "esco_match": "closeMatch"
+  },
+  "25-9021.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/e1fdca51-a0e1-4bea-822f-82a090ece780",
+   "esco_match": "broadMatch"
+  },
+  "25-9031.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/a9c30651-ccbc-4a80-900c-7880615cdf6e",
+   "esco_match": "closeMatch"
+  },
+  "25-9042.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/00674f21-2f8f-4a41-9896-133f7cbe2a6e",
+   "esco_match": "broadMatch"
+  },
+  "27-1012.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/ec0e64c9-6d9b-4a9f-a022-a418f3b381fe",
+   "esco_match": "broadMatch"
+  },
+  "27-1014.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/48c8eccb-4bd0-487e-a187-4953cbbe956e",
+   "esco_match": "broadMatch"
+  },
+  "27-2012.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/52b9e8dc-de6c-41dd-b29a-e1291c273f6f",
+   "esco_match": "broadMatch"
+  },
+  "27-2012.03": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/7f0d69cf-8b02-4a84-865a-37585dea9b43",
+   "esco_match": "closeMatch"
+  },
+  "27-2012.05": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/00030d09-2b3a-4efd-87cc-c4ea39d27c34",
+   "esco_match": "closeMatch"
+  },
+  "27-2022.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/3e9c1262-4fe2-4eb1-bf94-4fe64498393a",
+   "esco_match": "closeMatch"
+  },
+  "27-2041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/13d8b1be-d711-4bbc-a45e-cad605162f41",
+   "esco_match": "broadMatch"
+  },
+  "27-2042.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/f6803a58-91d9-4251-9a07-09fc387cec16",
+   "esco_match": "closeMatch"
+  },
+  "27-3023.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/a47f82d3-4cf7-4abf-bb36-2c8cbad28234",
+   "esco_match": "broadMatch"
+  },
+  "27-3031.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/c0489e22-6a1b-4e52-974a-eb71bbb42134",
+   "esco_match": "closeMatch"
+  },
+  "27-3041.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/8bd74371-1818-47d5-a253-d703c51c5f26",
+   "esco_match": "broadMatch"
+  },
+  "27-3043.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/b06a1dde-e5a1-4219-9491-2bedd0282e4b",
+   "esco_match": "broadMatch"
+  },
+  "27-3043.05": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/b06a1dde-e5a1-4219-9491-2bedd0282e4b",
+   "esco_match": "broadMatch"
+  },
+  "27-3091.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/1a07bd7d-2e1d-4930-a84a-1a442b8f2a44",
+   "esco_match": "broadMatch"
+  },
+  "27-4011.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/7642cbcc-9839-47fb-b2cf-d4bb831d6c93",
+   "esco_match": "closeMatch"
+  },
+  "27-4014.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/aa50ae49-1e40-4ba9-959f-22a11ff172b4",
+   "esco_match": "broadMatch"
+  },
+  "27-4031.00": {
+   "confidence": 0.95,
+   "esco": "http://data.europa.eu/esco/occupation/6fed206a-ac4d-492b-a81a-5a3a0f2b67bc",
+   "esco_match": "closeMatch"
+  },
+  "27-4032.00": {
+   "confidence": 0.95,
+   "esco": "http://data.europa.eu/esco/occupation/ac734172-ae9a-41ab-80a0-a7b33694e027",
+   "esco_match": "closeMatch"
+  },
+  "29-1022.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/a580e79a-b752-49c1-b033-b5ab2b34bfba",
+   "esco_match": "closeMatch"
+  },
+  "29-1023.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/a580e79a-b752-49c1-b033-b5ab2b34bfba",
+   "esco_match": "closeMatch"
+  },
+  "29-1024.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/a580e79a-b752-49c1-b033-b5ab2b34bfba",
+   "esco_match": "closeMatch"
+  },
+  "29-1031.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/8a53f8d3-d995-4c7b-a70d-d79f76bdcb3f",
+   "esco_match": "closeMatch"
+  },
+  "29-1051.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/7c132147-428b-4ea3-87e1-70f7abb691ce",
+   "esco_match": "closeMatch"
+  },
+  "29-1122.01": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/dc69f2ed-ebe9-43da-bf9d-31aac874d4c2",
+   "esco_match": "broadMatch"
+  },
+  "29-1126.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/7b8b6118-6876-4a71-81a6-4b5fa9bfa221",
+   "esco_match": "broadMatch"
+  },
+  "29-1131.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/eb6efbb9-9216-4e86-bc3b-de2223cd4667",
+   "esco_match": "closeMatch"
+  },
+  "29-1141.01": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/18e14e61-495b-44cc-a7c6-df4c625934ba",
+   "esco_match": "closeMatch"
+  },
+  "29-1141.02": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/18e14e61-495b-44cc-a7c6-df4c625934ba",
+   "esco_match": "broadMatch"
+  },
+  "29-1141.03": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/18e14e61-495b-44cc-a7c6-df4c625934ba",
+   "esco_match": "broadMatch"
+  },
+  "29-1141.04": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/36494988-69d2-4420-9db4-eb56605ac983",
+   "esco_match": "broadMatch"
+  },
+  "29-1151.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/18e14e61-495b-44cc-a7c6-df4c625934ba",
+   "esco_match": "narrowMatch"
+  },
+  "29-1161.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/95cda6a9-a70a-4a93-9442-11d573cb4a02",
+   "esco_match": "closeMatch"
+  },
+  "29-1171.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/36494988-69d2-4420-9db4-eb56605ac983",
+   "esco_match": "broadMatch"
+  },
+  "29-1211.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/9b889f07-c39c-464d-b9d9-b2daa650f9ac",
+   "esco_match": "narrowMatch"
+  },
+  "29-1216.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/9b889f07-c39c-464d-b9d9-b2daa650f9ac",
+   "esco_match": "closeMatch"
+  },
+  "29-1222.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/9b889f07-c39c-464d-b9d9-b2daa650f9ac",
+   "esco_match": "narrowMatch"
+  },
+  "29-1229.01": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/9b889f07-c39c-464d-b9d9-b2daa650f9ac",
+   "esco_match": "narrowMatch"
+  },
+  "29-1229.04": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/9b889f07-c39c-464d-b9d9-b2daa650f9ac",
+   "esco_match": "narrowMatch"
+  },
+  "29-1229.05": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/9b889f07-c39c-464d-b9d9-b2daa650f9ac",
+   "esco_match": "narrowMatch"
+  },
+  "29-1229.06": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/9b889f07-c39c-464d-b9d9-b2daa650f9ac",
+   "esco_match": "narrowMatch"
+  },
+  "29-1241.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/9b889f07-c39c-464d-b9d9-b2daa650f9ac",
+   "esco_match": "narrowMatch"
+  },
+  "29-1299.01": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/c2a29b8d-1042-4766-a162-e174c7a77421",
+   "esco_match": "broadMatch"
+  },
+  "29-2011.01": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/d117ef65-b253-4f04-bc85-353ef853443a",
+   "esco_match": "narrowMatch"
+  },
+  "29-2011.04": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/d117ef65-b253-4f04-bc85-353ef853443a",
+   "esco_match": "closeMatch"
+  },
+  "29-2012.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/0044c991-c26f-4261-a213-4bd1c0564a4c",
+   "esco_match": "closeMatch"
+  },
+  "29-2012.01": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/0044c991-c26f-4261-a213-4bd1c0564a4c",
+   "esco_match": "closeMatch"
+  },
+  "29-2032.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/7d092380-1c2e-48fe-81de-0d191b4e96d6",
+   "esco_match": "broadMatch"
+  },
+  "29-2034.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/7d092380-1c2e-48fe-81de-0d191b4e96d6",
+   "esco_match": "broadMatch"
+  },
+  "29-2035.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/7639a601-6db0-41ed-9fb0-813d9b8beb05",
+   "esco_match": "broadMatch"
+  },
+  "29-2057.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/771244bf-b204-4e7f-8b25-ee523ae7b791",
+   "esco_match": "broadMatch"
+  },
+  "29-2061.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/87d0795a-d41f-47ee-979f-0ab7d73836e7",
+   "esco_match": "broadMatch"
+  },
+  "29-2072.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/6219f0ef-6414-4d01-9221-41ac25dcb409",
+   "esco_match": "closeMatch"
+  },
+  "29-2099.08": {
+   "confidence": 0.3,
+   "esco": "http://data.europa.eu/esco/occupation/045f05f2-4ff8-46b2-9d08-e12a81657498",
+   "esco_match": "broadMatch"
+  },
+  "29-9021.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/983c2816-a339-4817-97f4-151a9ff3e64d",
+   "esco_match": "broadMatch"
+  },
+  "29-9091.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/006cc1f9-2841-41c3-991a-dc3f2f3bd533",
+   "esco_match": "broadMatch"
+  },
+  "29-9093.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/0c041d1e-1841-4acb-b0a1-2c387a61bf65",
+   "esco_match": "broadMatch"
+  },
+  "31-1122.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/1391bdf9-bd61-4fb5-91ca-c29036ab2b60",
+   "esco_match": "closeMatch"
+  },
+  "31-1133.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/d38c2107-98f2-47b7-8bb4-f69750d51082",
+   "esco_match": "narrowMatch"
+  },
+  "31-2021.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/f88124d7-ee7e-4d21-9036-0658b496c119",
+   "esco_match": "closeMatch"
+  },
+  "31-9011.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/9487f835-b5a9-4742-8ecf-35520911e28c",
+   "esco_match": "closeMatch"
+  },
+  "31-9092.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/0c041d1e-1841-4acb-b0a1-2c387a61bf65",
+   "esco_match": "closeMatch"
+  },
+  "31-9099.02": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/7005c266-d1a9-42ac-8c36-b42d5d755463",
+   "esco_match": "broadMatch"
+  },
+  "33-1021.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/a05d0a6d-7b60-445a-8dcb-282c7d5a6852",
+   "esco_match": "closeMatch"
+  },
+  "33-3021.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/3cee6bea-4a19-4511-9bbb-fdf820857555",
+   "esco_match": "closeMatch"
+  },
+  "33-3021.02": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/3cee6bea-4a19-4511-9bbb-fdf820857555",
+   "esco_match": "broadMatch"
+  },
+  "33-3041.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/b8b98b65-7db2-43f8-8ac4-2f1903984e7b",
+   "esco_match": "closeMatch"
+  },
+  "33-3051.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc",
+   "esco_match": "closeMatch"
+  },
+  "33-3051.04": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/5f16819d-50b9-475b-a2d8-607ee6d99a9d",
+   "esco_match": "closeMatch"
+  },
+  "33-3052.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc",
+   "esco_match": "narrowMatch"
+  },
+  "33-9091.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/12da0bb1-26c8-46eb-9476-797f4f1c441e",
+   "esco_match": "closeMatch"
+  },
+  "33-9092.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/3025dea4-1752-40a9-9431-fd874420386f",
+   "esco_match": "closeMatch"
+  },
+  "33-9093.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/b00e9e89-fd8d-4655-b6a2-f58b17629473",
+   "esco_match": "closeMatch"
+  },
+  "33-9099.02": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/71c3a49a-e55e-42ce-bd3f-31f37d3cfab6",
+   "esco_match": "closeMatch"
+  },
+  "35-1012.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/4a1125ee-5728-4b1f-b655-7b8eb2e27660",
+   "esco_match": "closeMatch"
+  },
+  "35-2011.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/96a0d8d3-d4a6-473d-80d6-b5dbadde940a",
+   "esco_match": "closeMatch"
+  },
+  "35-2012.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/11e6d39e-1295-40e7-8eea-3eb042bc7e34",
+   "esco_match": "closeMatch"
+  },
+  "35-2014.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/90f75f67-495d-49fa-ab57-2f320e251d7e",
+   "esco_match": "narrowMatch"
+  },
+  "35-2015.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/bbaa1444-2c0a-4f76-8375-d72e3ea968fd",
+   "esco_match": "broadMatch"
+  },
+  "35-3041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/d5db9d5c-2ebf-4a54-a79a-1b7e7ff70471",
+   "esco_match": "narrowMatch"
+  },
+  "35-9011.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/d5db9d5c-2ebf-4a54-a79a-1b7e7ff70471",
+   "esco_match": "broadMatch"
+  },
+  "37-1012.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/8e24c53a-9dc6-46d1-986b-48a93f20df2a",
+   "esco_match": "broadMatch"
+  },
+  "39-1014.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/234be692-befb-41df-bdf0-e1b2f4eaf5e7",
+   "esco_match": "broadMatch"
+  },
+  "39-1022.00": {
+   "confidence": 0.2,
+   "esco": "http://data.europa.eu/esco/occupation/d5eb6150-bbff-4a9c-9d0c-21eab4dbe2b6",
+   "esco_match": "narrowMatch"
+  },
+  "39-2021.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/0b14d5d7-1bbe-4403-b9e6-7b0f37fc44fc",
+   "esco_match": "closeMatch"
+  },
+  "39-3031.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/7f346896-a4fb-47a1-9572-13398bc297a6",
+   "esco_match": "closeMatch"
+  },
+  "39-3093.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/1f1a45a8-8f5c-4b66-a8a1-e02490addc55",
+   "esco_match": "closeMatch"
+  },
+  "39-5012.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/099c6bb0-22d3-4c5d-8bf5-70910af381ef",
+   "esco_match": "closeMatch"
+  },
+  "39-5092.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/bced9b86-d4e7-42f8-bb47-acb2001b9bd0",
+   "esco_match": "broadMatch"
+  },
+  "39-6011.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/3cc51201-cd20-47f8-92ad-4d5861f963cf",
+   "esco_match": "broadMatch"
+  },
+  "39-7012.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/b476f45f-2c79-44d5-a4d7-fa357aa83074",
+   "esco_match": "closeMatch"
+  },
+  "39-9041.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/b7507136-e71e-47e8-b873-e77d5cdf2922",
+   "esco_match": "broadMatch"
+  },
+  "41-1011.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/9e81adde-9983-44fa-b74b-c548d0dbfbdd",
+   "esco_match": "narrowMatch"
+  },
+  "41-1012.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/bdfb48e0-79dc-4b63-8470-db2e03b37326",
+   "esco_match": "narrowMatch"
+  },
+  "41-2012.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/961cbd1f-2a9b-4756-b227-67a1c23c94b6",
+   "esco_match": "broadMatch"
+  },
+  "41-2022.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/099a901f-91a7-4d26-af2e-f385247dcf20",
+   "esco_match": "broadMatch"
+  },
+  "41-3031.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/c0463fbe-7914-48ac-84ec-abaee1a7f292",
+   "esco_match": "closeMatch"
+  },
+  "41-3091.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/14031d4a-6e99-442f-b4fe-18262b6432b2",
+   "esco_match": "narrowMatch"
+  },
+  "41-4012.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/14031d4a-6e99-442f-b4fe-18262b6432b2",
+   "esco_match": "narrowMatch"
+  },
+  "41-9012.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/9af5fd79-d76e-4343-bc13-ff2d172aec62",
+   "esco_match": "broadMatch"
+  },
+  "41-9091.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/ae73f0dc-05a7-4e23-a234-9bb7e6d86975",
+   "esco_match": "broadMatch"
+  },
+  "43-2021.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/0bf68df5-e808-4c27-abf2-6f85440f2d7f",
+   "esco_match": "broadMatch"
+  },
+  "43-3031.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/c3aae59e-1441-4b3e-bdd1-6da50dc7cf42",
+   "esco_match": "broadMatch"
+  },
+  "43-4021.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/6c999fc7-c6b7-4ef3-a4b9-af124a1783a2",
+   "esco_match": "closeMatch"
+  },
+  "43-4031.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/a7f63810-a21a-4e7e-8aa2-6637d14ea3c1",
+   "esco_match": "closeMatch"
+  },
+  "43-4041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/075e4d25-74b3-46fb-9b6e-6b53cdb196e7",
+   "esco_match": "closeMatch"
+  },
+  "43-4061.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/4d750b7f-f40d-447c-ba90-f5fb0ee9ef27",
+   "esco_match": "closeMatch"
+  },
+  "43-4111.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/7843a4c6-a9f6-4095-94b9-45b384d4bd57",
+   "esco_match": "broadMatch"
+  },
+  "43-4121.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/37b15470-3b2d-4ae0-816c-c7c06ed15c99",
+   "esco_match": "narrowMatch"
+  },
+  "43-4131.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/8e185c49-704e-49c0-8584-a7e0b618f628",
+   "esco_match": "closeMatch"
+  },
+  "43-4151.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/5c1eba1e-7820-4287-9746-4c5906320100",
+   "esco_match": "closeMatch"
+  },
+  "43-4171.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/f7b04542-d8c7-42db-8475-e63b507cce82",
+   "esco_match": "broadMatch"
+  },
+  "43-5011.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/49e28648-4fa8-4b36-ac4d-781c108547bf",
+   "esco_match": "broadMatch"
+  },
+  "43-5021.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/3a959644-beed-4afc-8e57-d5068ae6a43e",
+   "esco_match": "narrowMatch"
+  },
+  "43-5032.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/49e28648-4fa8-4b36-ac4d-781c108547bf",
+   "esco_match": "broadMatch"
+  },
+  "43-5061.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/c8b296be-54ae-48cf-be21-031fa8457937",
+   "esco_match": "closeMatch"
+  },
+  "43-5111.00": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/f84dbfe2-fa6b-43ef-97f5-54c3ad9c631f",
+   "esco_match": "broadMatch"
+  },
+  "43-6014.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/044d78cc-f62f-4532-83a5-8e04f2889652",
+   "esco_match": "closeMatch"
+  },
+  "43-9071.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/6c999fc7-c6b7-4ef3-a4b9-af124a1783a2",
+   "esco_match": "broadMatch"
+  },
+  "43-9081.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/f8f34041-3640-41a9-852e-c5a7574de780",
+   "esco_match": "closeMatch"
+  },
+  "45-1011.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/4552095e-3396-4831-86ad-4fc34ec39a19",
+   "esco_match": "broadMatch"
+  },
+  "45-2021.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/65bd2342-f7de-4932-9164-eb480e35a791",
+   "esco_match": "broadMatch"
+  },
+  "45-2041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/b4306d87-7992-47fc-914a-4485a4e7003c",
+   "esco_match": "closeMatch"
+  },
+  "45-2092.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/c9191f7f-28b5-4df8-991d-804c53009b83",
+   "esco_match": "closeMatch"
+  },
+  "45-2093.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/c0a15ec7-10e6-45e7-b69c-b85ff6f4f87f",
+   "esco_match": "narrowMatch"
+  },
+  "45-3031.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/24413f38-e457-4de1-bba0-5a02b7282e2c",
+   "esco_match": "narrowMatch"
+  },
+  "45-4021.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/bd378c4e-f656-46af-a728-fcfb40b113ef",
+   "esco_match": "closeMatch"
+  },
+  "47-1011.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/0dd7e6cd-2e5a-4fae-9ce0-6a3622d4019f",
+   "esco_match": "narrowMatch"
+  },
+  "47-1011.03": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/75b63949-1b93-4bf2-a777-ccf978dc3e8a",
+   "esco_match": "broadMatch"
+  },
+  "47-2042.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/0663d464-f139-4554-ae87-97aa6c4dad77",
+   "esco_match": "closeMatch"
+  },
+  "47-2043.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/3bdf6206-e952-4177-a17b-2a03bfee2144",
+   "esco_match": "broadMatch"
+  },
+  "47-2044.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/02447817-ea01-4d8b-b09c-8bc128e447e6",
+   "esco_match": "closeMatch"
+  },
+  "47-2061.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/fb7e2f4f-1545-42f1-972e-94082e49c6dc",
+   "esco_match": "closeMatch"
+  },
+  "47-2073.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/eedbf8b1-9432-4f42-ab7f-db5cd3eb2a05",
+   "esco_match": "broadMatch"
+  },
+  "47-2082.00": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/f4a22809-c00c-4dd0-8b09-c7251f8dcd1c",
+   "esco_match": "broadMatch"
+  },
+  "47-2151.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/73d77554-2016-46fa-ac3d-44a02e8d1a89",
+   "esco_match": "closeMatch"
+  },
+  "47-2152.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/ed3cf43d-c2c1-4c46-82fc-1375e27e0290",
+   "esco_match": "closeMatch"
+  },
+  "47-3011.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/05f321f8-055b-407d-bf19-e0ddabda56b7",
+   "esco_match": "broadMatch"
+  },
+  "47-3013.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/4910419f-b4af-4f59-b544-9dbebc8a74f0",
+   "esco_match": "broadMatch"
+  },
+  "47-3014.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/15620506-fb5d-49cd-87a2-1c9047fb406a",
+   "esco_match": "broadMatch"
+  },
+  "47-3015.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/ed3cf43d-c2c1-4c46-82fc-1375e27e0290",
+   "esco_match": "broadMatch"
+  },
+  "47-4011.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/f0e479d9-7afd-40b1-b60f-b68c400c15fb",
+   "esco_match": "closeMatch"
+  },
+  "47-4031.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/fb7e2f4f-1545-42f1-972e-94082e49c6dc",
+   "esco_match": "broadMatch"
+  },
+  "47-4041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/990bfa45-5001-4365-93b6-daf01a03b4cd",
+   "esco_match": "broadMatch"
+  },
+  "47-4071.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/1f31c047-3d72-45fe-83ff-91bd826913c6",
+   "esco_match": "closeMatch"
+  },
+  "47-4099.03": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/b2dab4fb-b7f7-4f57-94b2-9c0f0848564a",
+   "esco_match": "broadMatch"
+  },
+  "47-5012.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/622b1d5e-bf14-4ec0-b83e-3bfcf8dff624",
+   "esco_match": "closeMatch"
+  },
+  "47-5013.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/d3c1c718-a093-4e2e-80a0-2bd331266a8b",
+   "esco_match": "broadMatch"
+  },
+  "47-5022.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/eedbf8b1-9432-4f42-ab7f-db5cd3eb2a05",
+   "esco_match": "closeMatch"
+  },
+  "47-5023.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/610bee9f-d7f0-4b18-918e-f2a4a91f8912",
+   "esco_match": "closeMatch"
+  },
+  "47-5032.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/2aae7736-f58b-4027-8de4-6884281c3b0b",
+   "esco_match": "closeMatch"
+  },
+  "47-5044.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/425f4904-3a7a-4ad0-ac5b-42b38392f768",
+   "esco_match": "broadMatch"
+  },
+  "49-1011.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/a9b20949-897b-481f-8642-d1f69263baff",
+   "esco_match": "broadMatch"
+  },
+  "49-2021.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/d07e6a57-a339-4cfd-bf22-a951713148a3",
+   "esco_match": "broadMatch"
+  },
+  "49-2093.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/1d196f32-05ca-4ea5-a347-4fccbb3da863",
+   "esco_match": "broadMatch"
+  },
+  "49-2095.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/5df63943-f1bc-4438-90f1-92768a7a23c8",
+   "esco_match": "broadMatch"
+  },
+  "49-2097.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/f8ab2e08-d14e-4938-a2cd-c04821556db7",
+   "esco_match": "broadMatch"
+  },
+  "49-3031.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/24d378d8-1e16-4667-bdb4-1f4a0f2c6379",
+   "esco_match": "broadMatch"
+  },
+  "49-3042.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/b0480558-269d-4903-9bc7-f390cd6a6964",
+   "esco_match": "closeMatch"
+  },
+  "49-3043.00": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/839d738b-8b54-4408-868a-6d8af102d2de",
+   "esco_match": "broadMatch"
+  },
+  "49-3092.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/4ad4024e-d1d3-4dea-b6d1-2c7948111dce",
+   "esco_match": "closeMatch"
+  },
+  "49-9011.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/0b5e4142-90ad-48a6-8407-ed47b2664954",
+   "esco_match": "narrowMatch"
+  },
+  "49-9012.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/fddb7bd8-f176-4dc8-9d12-32b6072452c9",
+   "esco_match": "narrowMatch"
+  },
+  "49-9044.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/269c47e7-9017-4aa6-bce8-49e89a696a64",
+   "esco_match": "narrowMatch"
+  },
+  "49-9045.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/05f321f8-055b-407d-bf19-e0ddabda56b7",
+   "esco_match": "broadMatch"
+  },
+  "49-9062.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/30641348-f9f2-4fe5-ab8c-fe6ff9931a54",
+   "esco_match": "closeMatch"
+  },
+  "49-9081.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/a32187fa-bc37-4fc2-8e89-296632bfc271",
+   "esco_match": "closeMatch"
+  },
+  "49-9091.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/490d0c6f-0dc8-4825-9f17-207749fb1785",
+   "esco_match": "narrowMatch"
+  },
+  "49-9092.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/5a596834-bc8f-4273-8d09-006957b60347",
+   "esco_match": "closeMatch"
+  },
+  "49-9095.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/95da5e1b-cc1e-46bd-96c4-81d4f7003080",
+   "esco_match": "closeMatch"
+  },
+  "49-9097.00": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/755c5c5f-2ee3-4487-94db-30ec2ba2e883",
+   "esco_match": "narrowMatch"
+  },
+  "49-9098.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/269c47e7-9017-4aa6-bce8-49e89a696a64",
+   "esco_match": "broadMatch"
+  },
+  "51-2021.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/4c86c7c1-0839-456e-856f-65396d1f39d7",
+   "esco_match": "broadMatch"
+  },
+  "51-2022.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/6565dc02-14e4-4819-b99c-44c352000f43",
+   "esco_match": "closeMatch"
+  },
+  "51-2031.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/be0e6189-46a5-4b90-8622-2d1988efba1a",
+   "esco_match": "broadMatch"
+  },
+  "51-2041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/691ec040-f5ad-47ef-8698-03212d66dbbf",
+   "esco_match": "closeMatch"
+  },
+  "51-2061.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/dec7ed73-8688-4328-bc50-c72d31b25956",
+   "esco_match": "broadMatch"
+  },
+  "51-2092.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/be0e6189-46a5-4b90-8622-2d1988efba1a",
+   "esco_match": "broadMatch"
+  },
+  "51-3022.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/05f6eaeb-b285-46bd-a44a-225bd429e329",
+   "esco_match": "closeMatch"
+  },
+  "51-3091.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/804f1ae2-429c-48a9-9858-d5d42df144eb",
+   "esco_match": "broadMatch"
+  },
+  "51-3092.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/e3dc66de-99c7-4607-a82b-7244036d316d",
+   "esco_match": "broadMatch"
+  },
+  "51-3093.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/e3dc66de-99c7-4607-a82b-7244036d316d",
+   "esco_match": "broadMatch"
+  },
+  "51-4021.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/a0f9903e-2ba5-4b9d-bb0a-a8646db15221",
+   "esco_match": "closeMatch"
+  },
+  "51-4022.00": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/60b9b847-d964-4a8a-a756-904080b0f35f",
+   "esco_match": "broadMatch"
+  },
+  "51-4023.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/6dbca2aa-f83b-4567-a4e7-b9a21fb948bf",
+   "esco_match": "closeMatch"
+  },
+  "51-4031.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/fd2dd3e9-498f-490f-8589-8c1eea05aa3f",
+   "esco_match": "broadMatch"
+  },
+  "51-4032.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/ebe42b55-4801-493f-af18-04a35ebfbb9c",
+   "esco_match": "closeMatch"
+  },
+  "51-4033.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/1d8545df-e3d8-4ece-9449-0f2940e97e7c",
+   "esco_match": "broadMatch"
+  },
+  "51-4035.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/a1c9f8b7-c4ce-4b15-ac3c-3378c300d8f2",
+   "esco_match": "closeMatch"
+  },
+  "51-4041.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/5c082067-ea18-4ccb-8c43-e70b18ad8120",
+   "esco_match": "broadMatch"
+  },
+  "51-4062.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/2a8d6b4c-661d-4620-8f68-2c99e78f512e",
+   "esco_match": "closeMatch"
+  },
+  "51-4072.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/25206eaa-04da-4fd6-bac7-173d7eb142dc",
+   "esco_match": "broadMatch"
+  },
+  "51-4081.00": {
+   "confidence": 0.3,
+   "esco": "http://data.europa.eu/esco/occupation/2fc8dace-d828-4af3-b0cb-e1cb73726f4b",
+   "esco_match": "broadMatch"
+  },
+  "51-4121.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/7aedaa07-3884-4c5b-88f9-80997b2aa54b",
+   "esco_match": "broadMatch"
+  },
+  "51-4191.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/a51ab2e2-aaa9-4d7d-a747-bff2e276636a",
+   "esco_match": "closeMatch"
+  },
+  "51-4192.00": {
+   "confidence": 0.3,
+   "esco": "http://data.europa.eu/esco/occupation/572c9810-e1ee-4f7a-a71f-820f17c0c25b",
+   "esco_match": "broadMatch"
+  },
+  "51-4193.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/bb2933e9-f6ec-4ab0-b2ea-3cc34cf56d18",
+   "esco_match": "closeMatch"
+  },
+  "51-5111.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/54ffd31f-ed90-4af4-b877-cd246351ad39",
+   "esco_match": "closeMatch"
+  },
+  "51-5112.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/ea4aff10-4d20-4a2b-886b-299c2bd349f1",
+   "esco_match": "broadMatch"
+  },
+  "51-5113.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/49b21ca8-04be-4912-a2f7-0170550e18fa",
+   "esco_match": "closeMatch"
+  },
+  "51-6041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/f8e76759-811e-4b39-9adf-3e77429cff8f",
+   "esco_match": "broadMatch"
+  },
+  "51-6042.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/1b4e795d-6e49-4b7b-bb34-585edfd6eb18",
+   "esco_match": "closeMatch"
+  },
+  "51-6051.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/7324e9f5-0f94-497e-af2f-42142e939a94",
+   "esco_match": "narrowMatch"
+  },
+  "51-6052.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/978ae3a2-0831-415a-8396-b84dde656fc5",
+   "esco_match": "broadMatch"
+  },
+  "51-6061.00": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/884beda8-d242-4fc3-a097-dc11098a7c3d",
+   "esco_match": "closeMatch"
+  },
+  "51-6063.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/6da80214-d360-49ec-b1e7-172ab0a0cb0c",
+   "esco_match": "broadMatch"
+  },
+  "51-6064.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/4c86c7c1-0839-456e-856f-65396d1f39d7",
+   "esco_match": "broadMatch"
+  },
+  "51-7021.00": {
+   "confidence": 0.9,
+   "esco": "http://data.europa.eu/esco/occupation/fb6df00f-4810-442b-8f93-89b9580c7c9f",
+   "esco_match": "closeMatch"
+  },
+  "51-7032.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/2a8d6b4c-661d-4620-8f68-2c99e78f512e",
+   "esco_match": "closeMatch"
+  },
+  "51-7041.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/865adac9-9bb7-4680-a13d-62b2942974ac",
+   "esco_match": "closeMatch"
+  },
+  "51-7042.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/77a05858-f682-4648-baa5-9b86deeffbc1",
+   "esco_match": "broadMatch"
+  },
+  "51-8012.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/74332fd0-4a50-464e-9116-98fa9b8127ac",
+   "esco_match": "closeMatch"
+  },
+  "51-8013.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/72381086-cb6e-455e-a40b-ccb26550aab6",
+   "esco_match": "closeMatch"
+  },
+  "51-8021.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/2cad9c6f-0289-4b26-b247-e65c0089f8f4",
+   "esco_match": "closeMatch"
+  },
+  "51-8031.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/1ab184b6-de00-4476-ba1d-c6a71c668be3",
+   "esco_match": "closeMatch"
+  },
+  "51-8091.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/a241eff8-309b-43ae-8890-ac4cfbd3067c",
+   "esco_match": "closeMatch"
+  },
+  "51-8093.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/217e7ae2-605d-4225-afd2-6319c2408116",
+   "esco_match": "broadMatch"
+  },
+  "51-8099.01": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/a241eff8-309b-43ae-8890-ac4cfbd3067c",
+   "esco_match": "broadMatch"
+  },
+  "51-9011.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/a241eff8-309b-43ae-8890-ac4cfbd3067c",
+   "esco_match": "closeMatch"
+  },
+  "51-9012.00": {
+   "confidence": 0.3,
+   "esco": "http://data.europa.eu/esco/occupation/28d82e8d-7379-4245-a5a0-c5a68864a528",
+   "esco_match": "broadMatch"
+  },
+  "51-9021.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/1d8545df-e3d8-4ece-9449-0f2940e97e7c",
+   "esco_match": "broadMatch"
+  },
+  "51-9022.00": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/d07a4984-e775-46a7-b967-a3d0b3a54268",
+   "esco_match": "broadMatch"
+  },
+  "51-9023.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/5b3ef95b-7d99-4af9-b2d0-41c6bc33f58c",
+   "esco_match": "broadMatch"
+  },
+  "51-9031.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/928dd410-c74b-4dab-94b8-fcbdcf541bd1",
+   "esco_match": "broadMatch"
+  },
+  "51-9032.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/16ad07cd-2fd2-4f93-b442-89918c10bbbf",
+   "esco_match": "broadMatch"
+  },
+  "51-9041.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/a0f9903e-2ba5-4b9d-bb0a-a8646db15221",
+   "esco_match": "broadMatch"
+  },
+  "51-9051.00": {
+   "confidence": 0.3,
+   "esco": "http://data.europa.eu/esco/occupation/57b89801-0e43-4b19-bf29-ef9a51d65155",
+   "esco_match": "broadMatch"
+  },
+  "51-9061.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/cc8f929a-75fa-404d-aa17-3301fb494b4f",
+   "esco_match": "closeMatch"
+  },
+  "51-9071.06": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/73bcde7c-bc34-485d-a7af-7b94fc43f61b",
+   "esco_match": "broadMatch"
+  },
+  "51-9111.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/b0fa69b4-998c-4e66-acd3-5f5d73cadb5c",
+   "esco_match": "closeMatch"
+  },
+  "51-9123.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/41a51397-089d-459d-9b7e-f1cdee5ad6bb",
+   "esco_match": "broadMatch"
+  },
+  "51-9124.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/a784b063-89cf-441b-9624-deed9dbdeae6",
+   "esco_match": "broadMatch"
+  },
+  "51-9151.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/7180a7be-68cd-4636-8c12-706722ad8862",
+   "esco_match": "closeMatch"
+  },
+  "51-9191.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/2be85651-c94a-4531-9df8-3cc56932960e",
+   "esco_match": "broadMatch"
+  },
+  "51-9192.00": {
+   "confidence": 0.3,
+   "esco": "http://data.europa.eu/esco/occupation/1c5ec3d2-a241-4ba2-ba20-e4da565383a6",
+   "esco_match": "broadMatch"
+  },
+  "51-9194.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/8b2d562c-8407-49cd-9843-636c352b8c82",
+   "esco_match": "broadMatch"
+  },
+  "51-9195.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/5f617498-da0d-454a-9658-5e02d28a4bd7",
+   "esco_match": "broadMatch"
+  },
+  "51-9195.03": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/565987b2-b980-4881-891c-cc4d5ab61d07",
+   "esco_match": "broadMatch"
+  },
+  "51-9195.04": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/64a68a43-24be-4929-95ce-5b14617199d1",
+   "esco_match": "closeMatch"
+  },
+  "51-9195.05": {
+   "confidence": 0.75,
+   "esco": "http://data.europa.eu/esco/occupation/97896345-d102-4549-97a5-8851979e6938",
+   "esco_match": "closeMatch"
+  },
+  "51-9196.00": {
+   "confidence": 0.45,
+   "esco": "http://data.europa.eu/esco/occupation/73270b73-8c71-445f-a8d3-4647b1ae38d0",
+   "esco_match": "broadMatch"
+  },
+  "53-1042.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/dddf9385-2939-4395-951a-70ef8a36cabe",
+   "esco_match": "broadMatch"
+  },
+  "53-1044.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/95f56fc4-99f9-49da-b942-1dfbc857e933",
+   "esco_match": "broadMatch"
+  },
+  "53-3032.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/45037d43-a8f5-4f46-b332-b2935bc305f4",
+   "esco_match": "closeMatch"
+  },
+  "53-3033.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/0c408028-c48f-4df8-ba5d-c3d3be15f5a2",
+   "esco_match": "closeMatch"
+  },
+  "53-3051.00": {
+   "confidence": 0.85,
+   "esco": "http://data.europa.eu/esco/occupation/00cee175-1376-43fb-9f02-ba3d7a910a58",
+   "esco_match": "narrowMatch"
+  },
+  "53-3053.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/e75305db-9011-4ee0-ab62-8d41a98f807e",
+   "esco_match": "broadMatch"
+  },
+  "53-4022.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/12f9c0e8-26f4-4f1d-bf04-b16a34d12798",
+   "esco_match": "broadMatch"
+  },
+  "53-4031.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/ea034d66-0d35-4891-b82c-6434cad2c76f",
+   "esco_match": "broadMatch"
+  },
+  "53-4041.00": {
+   "confidence": 0.8,
+   "esco": "http://data.europa.eu/esco/occupation/03e02554-15d1-4697-960c-8909e7d36f7e",
+   "esco_match": "closeMatch"
+  },
+  "53-5011.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/3a3fac9d-323e-4ba6-989b-0e1d44e113cc",
+   "esco_match": "closeMatch"
+  },
+  "53-5021.00": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/f2a416b8-c7e4-49ee-964d-a49f6af79b84",
+   "esco_match": "closeMatch"
+  },
+  "53-5022.00": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/5684182e-7b4c-4eea-97d9-4c2b88b9f906",
+   "esco_match": "broadMatch"
+  },
+  "53-6011.00": {
+   "confidence": 0.15,
+   "esco": "http://data.europa.eu/esco/occupation/05ebeb56-6ceb-488d-ba91-ed15088efc8e",
+   "esco_match": "narrowMatch"
+  },
+  "53-6031.00": {
+   "confidence": 0.6,
+   "esco": "http://data.europa.eu/esco/occupation/3b4eb248-6b40-42fe-9d10-cba8ccfe6613",
+   "esco_match": "closeMatch"
+  },
+  "53-6041.00": {
+   "confidence": 0.35,
+   "esco": "http://data.europa.eu/esco/occupation/aad7819e-d62e-41de-a594-9f2be186a6c2",
+   "esco_match": "narrowMatch"
+  },
+  "53-6051.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/50609eb5-9957-4cbf-9b91-6f46ce49cfad",
+   "esco_match": "broadMatch"
+  },
+  "53-6051.07": {
+   "confidence": 0.4,
+   "esco": "http://data.europa.eu/esco/occupation/42e9d1c5-76f1-41ef-996e-38d5ac711a31",
+   "esco_match": "broadMatch"
+  },
+  "53-6061.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/58ff0ec2-08ba-4b21-b765-babb6d76ca36",
+   "esco_match": "closeMatch"
+  },
+  "53-7011.00": {
+   "confidence": 0.2,
+   "esco": "http://data.europa.eu/esco/occupation/8d2df08e-0b2e-4837-8096-66595bbaab15",
+   "esco_match": "narrowMatch"
+  },
+  "53-7021.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/0ea5fdff-074c-4094-98b9-04432361e4d9",
+   "esco_match": "broadMatch"
+  },
+  "53-7041.00": {
+   "confidence": 0.5,
+   "esco": "http://data.europa.eu/esco/occupation/1f2b8092-1787-4ef4-9282-cf81ce4b4d76",
+   "esco_match": "broadMatch"
+  },
+  "53-7051.00": {
+   "confidence": 0.92,
+   "esco": "http://data.europa.eu/esco/occupation/eeac6251-1974-42f5-91ed-513c6c883755",
+   "esco_match": "closeMatch"
+  },
+  "53-7062.00": {
+   "confidence": 0.65,
+   "esco": "http://data.europa.eu/esco/occupation/808becc8-5a4e-4e71-a043-c2ea32b56ae3",
+   "esco_match": "closeMatch"
+  },
+  "53-7062.04": {
+   "confidence": 0.7,
+   "esco": "http://data.europa.eu/esco/occupation/4ed9ce62-75d4-4b05-80d4-e86528fecdcd",
+   "esco_match": "closeMatch"
+  },
+  "53-7071.00": {
+   "confidence": 0.55,
+   "esco": "http://data.europa.eu/esco/occupation/f1c8c186-bef9-4d72-9257-90fc4f992ab7",
+   "esco_match": "closeMatch"
+  }
+ },
+ "feor": {
+  "11-1031.00": {
+   "confidence": 0.85,
+   "feor": "1110"
+  },
+  "11-2033.00": {
+   "confidence": 0.6,
+   "feor": "2532"
+  },
+  "11-9071.00": {
+   "confidence": 0.4,
+   "feor": "1336"
+  },
+  "11-9072.00": {
+   "confidence": 0.5,
+   "feor": "1336"
+  },
+  "11-9179.01": {
+   "confidence": 0.75,
+   "feor": "1336"
+  },
+  "11-9179.02": {
+   "confidence": 0.6,
+   "feor": "1336"
+  },
+  "11-9199.01": {
+   "confidence": 0.5,
+   "feor": "2910"
+  },
+  "11-9199.02": {
+   "confidence": 0.5,
+   "feor": "2910"
+  },
+  "13-1011.00": {
+   "confidence": 0.55,
+   "feor": "3639"
+  },
+  "13-1041.06": {
+   "confidence": 0.35,
+   "feor": "2619"
+  },
+  "13-1041.07": {
+   "confidence": 0.55,
+   "feor": "2910"
+  },
+  "13-1074.00": {
+   "confidence": 0.3,
+   "feor": "6111"
+  },
+  "13-1081.01": {
+   "confidence": 0.6,
+   "feor": "2139"
+  },
+  "13-1131.00": {
+   "confidence": 0.6,
+   "feor": "2532"
+  },
+  "13-1161.00": {
+   "confidence": 0.9,
+   "feor": "2531"
+  },
+  "13-1199.06": {
+   "confidence": 0.4,
+   "feor": "2531"
+  },
+  "13-1199.07": {
+   "confidence": 0.4,
+   "feor": "5254"
+  },
+  "13-2011.00": {
+   "confidence": 0.9,
+   "feor": "2513"
+  },
+  "13-2031.00": {
+   "confidence": 0.6,
+   "feor": "2514"
+  },
+  "13-2061.00": {
+   "confidence": 0.5,
+   "feor": "2513"
+  },
+  "13-2082.00": {
+   "confidence": 0.8,
+   "feor": "2512"
+  },
+  "13-2099.04": {
+   "confidence": 0.6,
+   "feor": "2513"
+  },
+  "15-1299.03": {
+   "confidence": 0.35,
+   "feor": "1329"
+  },
+  "15-2011.00": {
+   "confidence": 0.55,
+   "feor": "2166"
+  },
+  "15-2021.00": {
+   "confidence": 0.95,
+   "feor": "2166"
+  },
+  "15-2041.00": {
+   "confidence": 0.9,
+   "feor": "2625"
+  },
+  "15-2041.01": {
+   "confidence": 0.8,
+   "feor": "2625"
+  },
+  "15-2099.01": {
+   "confidence": 0.6,
+   "feor": "2167"
+  },
+  "17-2031.00": {
+   "confidence": 0.6,
+   "feor": "2139"
+  },
+  "17-2111.00": {
+   "confidence": 0.5,
+   "feor": "2139"
+  },
+  "17-2111.02": {
+   "confidence": 0.55,
+   "feor": "2139"
+  },
+  "17-2112.00": {
+   "confidence": 0.4,
+   "feor": "3161"
+  },
+  "17-2112.02": {
+   "confidence": 0.85,
+   "feor": "2137"
+  },
+  "17-2112.03": {
+   "confidence": 0.4,
+   "feor": "3161"
+  },
+  "17-2131.00": {
+   "confidence": 0.5,
+   "feor": "2139"
+  },
+  "17-2141.01": {
+   "confidence": 0.6,
+   "feor": "2139"
+  },
+  "17-2161.00": {
+   "confidence": 0.6,
+   "feor": "2139"
+  },
+  "17-2171.00": {
+   "confidence": 0.8,
+   "feor": "2111"
+  },
+  "17-2199.07": {
+   "confidence": 0.6,
+   "feor": "2139"
+  },
+  "17-2199.08": {
+   "confidence": 0.6,
+   "feor": "2139"
+  },
+  "17-2199.09": {
+   "confidence": 0.7,
+   "feor": "2139"
+  },
+  "17-2199.10": {
+   "confidence": 0.7,
+   "feor": "2139"
+  },
+  "17-2199.11": {
+   "confidence": 0.7,
+   "feor": "2139"
+  },
+  "17-3024.01": {
+   "confidence": 0.55,
+   "feor": "3139"
+  },
+  "17-3026.00": {
+   "confidence": 0.55,
+   "feor": "3139"
+  },
+  "17-3026.01": {
+   "confidence": 0.5,
+   "feor": "2139"
+  },
+  "17-3029.01": {
+   "confidence": 0.7,
+   "feor": "3135"
+  },
+  "17-3029.08": {
+   "confidence": 0.55,
+   "feor": "3139"
+  },
+  "19-1011.00": {
+   "confidence": 0.8,
+   "feor": "2167"
+  },
+  "19-1013.00": {
+   "confidence": 0.7,
+   "feor": "2131"
+  },
+  "19-1021.00": {
+   "confidence": 0.7,
+   "feor": "2167"
+  },
+  "19-1022.00": {
+   "confidence": 0.8,
+   "feor": "2167"
+  },
+  "19-1023.00": {
+   "confidence": 0.9,
+   "feor": "2167"
+  },
+  "19-1029.01": {
+   "confidence": 0.6,
+   "feor": "2167"
+  },
+  "19-1029.02": {
+   "confidence": 0.8,
+   "feor": "2167"
+  },
+  "19-1029.03": {
+   "confidence": 0.75,
+   "feor": "2167"
+  },
+  "19-1029.04": {
+   "confidence": 0.9,
+   "feor": "2167"
+  },
+  "19-1041.00": {
+   "confidence": 0.5,
+   "feor": "2169"
+  },
+  "19-2011.00": {
+   "confidence": 0.95,
+   "feor": "2162"
+  },
+  "19-2012.00": {
+   "confidence": 0.95,
+   "feor": "2161"
+  },
+  "19-2032.00": {
+   "confidence": 0.5,
+   "feor": "2139"
+  },
+  "19-3011.00": {
+   "confidence": 0.9,
+   "feor": "2624"
+  },
+  "19-3011.01": {
+   "confidence": 0.85,
+   "feor": "2624"
+  },
+  "19-3022.00": {
+   "confidence": 0.8,
+   "feor": "2531"
+  },
+  "19-3041.00": {
+   "confidence": 0.95,
+   "feor": "2626"
+  },
+  "19-3091.00": {
+   "confidence": 0.6,
+   "feor": "2623"
+  },
+  "19-3092.00": {
+   "confidence": 0.8,
+   "feor": "2629"
+  },
+  "19-3093.00": {
+   "confidence": 0.95,
+   "feor": "2622"
+  },
+  "19-3094.00": {
+   "confidence": 0.9,
+   "feor": "2621"
+  },
+  "19-4012.00": {
+   "confidence": 0.9,
+   "feor": "3131"
+  },
+  "19-4012.01": {
+   "confidence": 0.6,
+   "feor": "2131"
+  },
+  "19-4021.00": {
+   "confidence": 0.6,
+   "feor": "3139"
+  },
+  "21-1011.00": {
+   "confidence": 0.85,
+   "feor": "2312"
+  },
+  "21-1013.00": {
+   "confidence": 0.8,
+   "feor": "2312"
+  },
+  "21-1014.00": {
+   "confidence": 0.85,
+   "feor": "2312"
+  },
+  "21-1015.00": {
+   "confidence": 0.85,
+   "feor": "2312"
+  },
+  "21-1021.00": {
+   "confidence": 0.9,
+   "feor": "2312"
+  },
+  "21-1022.00": {
+   "confidence": 0.9,
+   "feor": "2312"
+  },
+  "21-1023.00": {
+   "confidence": 0.9,
+   "feor": "2312"
+  },
+  "21-1092.00": {
+   "confidence": 0.8,
+   "feor": "2312"
+  },
+  "21-1093.00": {
+   "confidence": 0.7,
+   "feor": "3511"
+  },
+  "23-1011.00": {
+   "confidence": 0.9,
+   "feor": "2615"
+  },
+  "23-1012.00": {
+   "confidence": 0.6,
+   "feor": "3649"
+  },
+  "23-1022.00": {
+   "confidence": 0.7,
+   "feor": "2619"
+  },
+  "23-2011.00": {
+   "confidence": 0.7,
+   "feor": "3649"
+  },
+  "23-2093.00": {
+   "confidence": 0.5,
+   "feor": "3649"
+  },
+  "25-2051.00": {
+   "confidence": 0.9,
+   "feor": "2441"
+  },
+  "25-2055.00": {
+   "confidence": 0.9,
+   "feor": "2441"
+  },
+  "25-2056.00": {
+   "confidence": 0.9,
+   "feor": "2441"
+  },
+  "25-2057.00": {
+   "confidence": 0.9,
+   "feor": "2441"
+  },
+  "25-2058.00": {
+   "confidence": 0.9,
+   "feor": "2441"
+  },
+  "25-3011.00": {
+   "confidence": 0.3,
+   "feor": "2441"
+  },
+  "25-3021.00": {
+   "confidence": 0.3,
+   "feor": "3515"
+  },
+  "25-4011.00": {
+   "confidence": 0.95,
+   "feor": "2712"
+  },
+  "25-4012.00": {
+   "confidence": 0.85,
+   "feor": "2713"
+  },
+  "25-4013.00": {
+   "confidence": 0.7,
+   "feor": "2713"
+  },
+  "25-9021.00": {
+   "confidence": 0.6,
+   "feor": "2131"
+  },
+  "27-1023.00": {
+   "confidence": 0.4,
+   "feor": "5113"
+  },
+  "27-1025.00": {
+   "confidence": 0.9,
+   "feor": "3716"
+  },
+  "27-1026.00": {
+   "confidence": 0.7,
+   "feor": "3716"
+  },
+  "27-1027.00": {
+   "confidence": 0.8,
+   "feor": "3714"
+  },
+  "27-2012.03": {
+   "confidence": 0.4,
+   "feor": "2719"
+  },
+  "27-3023.00": {
+   "confidence": 0.9,
+   "feor": "2716"
+  },
+  "27-3031.00": {
+   "confidence": 0.7,
+   "feor": "2532"
+  },
+  "27-3041.00": {
+   "confidence": 0.7,
+   "feor": "2715"
+  },
+  "27-3042.00": {
+   "confidence": 0.5,
+   "feor": "2721"
+  },
+  "27-3043.00": {
+   "confidence": 0.85,
+   "feor": "2721"
+  },
+  "27-3043.05": {
+   "confidence": 0.9,
+   "feor": "2721"
+  },
+  "27-3091.00": {
+   "confidence": 0.85,
+   "feor": "2627"
+  },
+  "27-3092.00": {
+   "confidence": 0.4,
+   "feor": "3649"
+  },
+  "27-4015.00": {
+   "confidence": 0.6,
+   "feor": "3715"
+  },
+  "29-1122.01": {
+   "confidence": 0.5,
+   "feor": "2312"
+  },
+  "29-2053.00": {
+   "confidence": 0.6,
+   "feor": "3513"
+  },
+  "29-2091.00": {
+   "confidence": 0.9,
+   "feor": "3334"
+  },
+  "29-2092.00": {
+   "confidence": 0.6,
+   "feor": "3334"
+  },
+  "29-9092.00": {
+   "confidence": 0.4,
+   "feor": "2169"
+  },
+  "33-1011.00": {
+   "confidence": 0.5,
+   "feor": "1329"
+  },
+  "33-1012.00": {
+   "confidence": 0.45,
+   "feor": "1121"
+  },
+  "33-1021.00": {
+   "confidence": 0.5,
+   "feor": "1329"
+  },
+  "33-1091.00": {
+   "confidence": 0.7,
+   "feor": "5254"
+  },
+  "33-2022.00": {
+   "confidence": 0.5,
+   "feor": "3659"
+  },
+  "33-3011.00": {
+   "confidence": 0.4,
+   "feor": "3649"
+  },
+  "33-3031.00": {
+   "confidence": 0.8,
+   "feor": "5255"
+  },
+  "33-3041.00": {
+   "confidence": 0.85,
+   "feor": "5256"
+  },
+  "33-9011.00": {
+   "confidence": 0.5,
+   "feor": "5259"
+  },
+  "33-9021.00": {
+   "confidence": 0.35,
+   "feor": "3649"
+  },
+  "33-9031.00": {
+   "confidence": 0.4,
+   "feor": "3659"
+  },
+  "33-9032.00": {
+   "confidence": 0.85,
+   "feor": "5254"
+  },
+  "33-9091.00": {
+   "confidence": 0.5,
+   "feor": "5259"
+  },
+  "33-9092.00": {
+   "confidence": 0.7,
+   "feor": "5259"
+  },
+  "33-9093.00": {
+   "confidence": 0.7,
+   "feor": "5254"
+  },
+  "33-9094.00": {
+   "confidence": 0.6,
+   "feor": "5221"
+  },
+  "33-9099.02": {
+   "confidence": 0.3,
+   "feor": "3649"
+  },
+  "35-2012.00": {
+   "confidence": 0.9,
+   "feor": "5134"
+  },
+  "35-2014.00": {
+   "confidence": 0.95,
+   "feor": "5134"
+  },
+  "35-2015.00": {
+   "confidence": 0.85,
+   "feor": "5134"
+  },
+  "39-3031.00": {
+   "confidence": 0.7,
+   "feor": "9239"
+  },
+  "39-3091.00": {
+   "confidence": 0.7,
+   "feor": "9239"
+  },
+  "39-3092.00": {
+   "confidence": 0.75,
+   "feor": "3715"
+  },
+  "39-3093.00": {
+   "confidence": 0.7,
+   "feor": "9239"
+  },
+  "39-5091.00": {
+   "confidence": 0.6,
+   "feor": "5212"
+  },
+  "39-5092.00": {
+   "confidence": 0.95,
+   "feor": "5213"
+  },
+  "39-5094.00": {
+   "confidence": 0.9,
+   "feor": "5212"
+  },
+  "39-6011.00": {
+   "confidence": 0.85,
+   "feor": "9234"
+  },
+  "39-9011.00": {
+   "confidence": 0.9,
+   "feor": "5221"
+  },
+  "39-9011.01": {
+   "confidence": 0.75,
+   "feor": "5221"
+  },
+  "39-9041.00": {
+   "confidence": 0.6,
+   "feor": "2312"
+  },
+  "41-2022.00": {
+   "confidence": 0.9,
+   "feor": "5113"
+  },
+  "41-2031.00": {
+   "confidence": 0.95,
+   "feor": "5113"
+  },
+  "41-3011.00": {
+   "confidence": 0.75,
+   "feor": "3639"
+  },
+  "43-3031.00": {
+   "confidence": 0.9,
+   "feor": "3614"
+  },
+  "43-3061.00": {
+   "confidence": 0.5,
+   "feor": "3649"
+  },
+  "43-3071.00": {
+   "confidence": 0.95,
+   "feor": "4211"
+  },
+  "43-4031.00": {
+   "confidence": 0.6,
+   "feor": "3649"
+  },
+  "43-5011.00": {
+   "confidence": 0.8,
+   "feor": "4132"
+  },
+  "43-5011.01": {
+   "confidence": 0.7,
+   "feor": "4132"
+  },
+  "43-5032.00": {
+   "confidence": 0.55,
+   "feor": "4132"
+  },
+  "43-5051.00": {
+   "confidence": 0.95,
+   "feor": "4227"
+  },
+  "43-5061.00": {
+   "confidence": 0.5,
+   "feor": "3649"
+  },
+  "43-6011.00": {
+   "confidence": 0.9,
+   "feor": "3641"
+  },
+  "43-6014.00": {
+   "confidence": 0.5,
+   "feor": "3649"
+  },
+  "45-2011.00": {
+   "confidence": 0.6,
+   "feor": "3659"
+  },
+  "45-2041.00": {
+   "confidence": 0.45,
+   "feor": "3135"
+  },
+  "45-4023.00": {
+   "confidence": 0.45,
+   "feor": "3135"
+  },
+  "47-2021.00": {
+   "confidence": 0.9,
+   "feor": "7511"
+  },
+  "47-2031.00": {
+   "confidence": 0.6,
+   "feor": "7513"
+  },
+  "47-3011.00": {
+   "confidence": 0.6,
+   "feor": "7511"
+  },
+  "47-3012.00": {
+   "confidence": 0.55,
+   "feor": "7513"
+  },
+  "47-4021.00": {
+   "confidence": 0.95,
+   "feor": "7523"
+  },
+  "49-2092.00": {
+   "confidence": 0.85,
+   "feor": "7341"
+  },
+  "49-3041.00": {
+   "confidence": 0.9,
+   "feor": "7333"
+  },
+  "49-3042.00": {
+   "confidence": 0.7,
+   "feor": "7333"
+  },
+  "49-3051.00": {
+   "confidence": 0.6,
+   "feor": "7333"
+  },
+  "49-3053.00": {
+   "confidence": 0.35,
+   "feor": "7341"
+  },
+  "49-9011.00": {
+   "confidence": 0.4,
+   "feor": "7514"
+  },
+  "49-9031.00": {
+   "confidence": 0.85,
+   "feor": "7341"
+  },
+  "49-9041.00": {
+   "confidence": 0.7,
+   "feor": "7333"
+  },
+  "49-9043.00": {
+   "confidence": 0.6,
+   "feor": "7334"
+  },
+  "49-9044.00": {
+   "confidence": 0.6,
+   "feor": "7334"
+  },
+  "49-9045.00": {
+   "confidence": 0.55,
+   "feor": "7537"
+  },
+  "49-9094.00": {
+   "confidence": 0.8,
+   "feor": "7321"
+  },
+  "49-9095.00": {
+   "confidence": 0.5,
+   "feor": "7529"
+  },
+  "49-9098.00": {
+   "confidence": 0.45,
+   "feor": "7333"
+  },
+  "49-9099.01": {
+   "confidence": 0.35,
+   "feor": "7341"
+  },
+  "51-3011.00": {
+   "confidence": 0.85,
+   "feor": "7114"
+  },
+  "51-3091.00": {
+   "confidence": 0.85,
+   "feor": "8111"
+  },
+  "51-3092.00": {
+   "confidence": 0.85,
+   "feor": "8111"
+  },
+  "51-3093.00": {
+   "confidence": 0.85,
+   "feor": "8111"
+  },
+  "51-4061.00": {
+   "confidence": 0.7,
+   "feor": "7322"
+  },
+  "51-4062.00": {
+   "confidence": 0.65,
+   "feor": "7322"
+  },
+  "51-4111.00": {
+   "confidence": 0.95,
+   "feor": "7322"
+  },
+  "51-6052.00": {
+   "confidence": 0.85,
+   "feor": "7212"
+  },
+  "51-6091.00": {
+   "confidence": 0.6,
+   "feor": "8142"
+  },
+  "51-7011.00": {
+   "confidence": 0.9,
+   "feor": "7223"
+  },
+  "51-7021.00": {
+   "confidence": 0.7,
+   "feor": "7223"
+  },
+  "51-7031.00": {
+   "confidence": 0.7,
+   "feor": "7223"
+  },
+  "51-7032.00": {
+   "confidence": 0.45,
+   "feor": "7322"
+  },
+  "51-9012.00": {
+   "confidence": 0.5,
+   "feor": "8111"
+  },
+  "51-9023.00": {
+   "confidence": 0.8,
+   "feor": "8132"
+  },
+  "51-9061.00": {
+   "confidence": 0.7,
+   "feor": "3135"
+  },
+  "51-9193.00": {
+   "confidence": 0.6,
+   "feor": "8111"
+  },
+  "53-1041.00": {
+   "confidence": 0.55,
+   "feor": "4132"
+  },
+  "53-3032.00": {
+   "confidence": 0.95,
+   "feor": "8417"
+  },
+  "53-3051.00": {
+   "confidence": 0.9,
+   "feor": "8418"
+  },
+  "53-3052.00": {
+   "confidence": 0.93,
+   "feor": "8418"
+  },
+  "53-4011.00": {
+   "confidence": 0.95,
+   "feor": "8411"
+  },
+  "53-4041.00": {
+   "confidence": 0.6,
+   "feor": "8413"
+  },
+  "53-6032.00": {
+   "confidence": 0.2,
+   "feor": "8423"
+  },
+  "53-6051.00": {
+   "confidence": 0.4,
+   "feor": "3659"
+  },
+  "53-7063.00": {
+   "confidence": 0.35,
+   "feor": "8111"
+  }
+ }
+}

@@ -184,8 +184,8 @@ Példa („Programkód írása és módosítása”):
 ### 3.6 P6 – általánosítás (generalize) és bontás (split)
 
 A több munkakörben, eltérő kontextussal használt TESZ-nivalókra eldönti: MARAD, ATNEVEZ (általánosabb név, a régi
-alias marad), vagy BONT (gyűjtő-név, bontási javaslat a szakértői sorba). A jóváhagyott bontást a `split` hajtja
-végre. Példa (korábbi kör): „Szoftver tesztelése” mellé a villanyszerelő és a villamosmérnök számára új
+alias marad), vagy BONT (gyűjtő-név, bontási javaslat a szakértői sorba). A bontást a KÉSZ-ség-sorban adott
+jóváhagyás rögtön végre is hajtja (ugyanazt teszi, mint a `split --review <qid>`). Példa (korábbi kör): „Szoftver tesztelése” mellé a villanyszerelő és a villamosmérnök számára új
 „Villamos áramkör vizsgálata” TESZ-nivaló jött létre.
 
 ### 3.7 kesz-bovit – a KÉSZ-ség-törzs bővítése
@@ -205,6 +205,19 @@ a KÉSZ-ség-sorba teszi. Példa: „Hipotézisvizsgálat” → Tudományos; �
 
 A P1–P3 lefut (tokenek, költség), de sem a gráf, sem a futási napló nem változik. Kimenet: `runs/dryrun/<munkakör>.json`.
 Promptváltoztatás után mindig 3 munkakörön próbálj, mielőtt élesben futtatsz.
+
+### 3.10 Munkakörlista és besorolási taxonómiák (job-all, taxonomy)
+
+A teljes munkakörlista a `data/job_all.jsonl`: minden O\*NET-munkakör (923) angol feladatlistával, magyar címmel,
+és ESCO-, ISCO-08- és FEOR-08-hivatkozással (`codes`: elsődleges kódok, `refs`: minden hivatkozás a
+hierarchiaúttal). Elkészítése: `python -m gaphopper job-all`. A crawler-hirdetésekből készült magyar
+feladatlisták (`crawl-export`) a megfelelő munkakör `refs.crawl` részébe kerülnek.
+
+A `python -m gaphopper taxonomy` a teljes ISCO-, ESCO-, FEOR-, SOC- és O\*NET-hierarchiát, a köztük lévő
+megfeleltetéseket, valamint az ISIC- és WEF-ágazatokat tölti a gráfba, és a már feldolgozott munkaköröket
+beköti (`BESOROLVA`). A `--munkakorok` kapcsolóval a job_all minden munkaköre előzetes (még fel nem bontott,
+`elozetes: true`) `MunkaKor`-csomópontként is a gráfba kerül a besorolásaival. Ezután a gráfban ágazat, FEOR-csoport vagy ISCO-csoport szerint is lehet szűrni és
+összesíteni. Részletes leírás és lekérdezési példák: [taxonomia.md](taxonomia.md).
 
 ## 4. A felület fülei
 
@@ -267,26 +280,37 @@ Itt vannak a nem munkakörhöz kötött szakértői kérések:
   név alias lesz. Jóváhagyás: új gh_c szám a yaml-ban és a gráfban, IGENYEL élekkel.
 - **KÉSZ-ség iránya** (kesz-irany): a KÉSZ-ség neve, csoportja, jelenlegi és javasolt irány, indoklás, az igénylő
   TESZ-nivalók. A javasolt irány a két legördülő menüben módosítható.
-- **Bontási javaslat** (generalize BONT): jóváhagyás után a Karbantartás fülön a „split” hajtja végre.
+- **Bontási javaslat** (generalize BONT): a jóváhagyás egyben végre is hajtja a bontást (új TESZ-nivaló, a munkakörök
+  átkötése); külön `split` nem kell.
 
 ### 4.5 Karbantartás
 
 ![Karbantartás](img/karbantartas.png)
 
-Gombok a karbantartó parancsokhoz (mind háttérfolyamatban, naplóval):
+Az oldal tetején egy rövid „Mikor mit?” emlékeztető, alatta négy kártya. Minden kártya fejlécében
+**teendő** vagy **nincs teendő** jelzés áll, mellette a bizonyíték. Kártyánként egy fő gomb van; a próbák és a ritka
+változatok a kártya alján, a lecsukott **Haladó** részben vannak. A parancsok háttérfolyamatban futnak, a napló a
+kártyák alatt látszik, és a futás végén a kártyák állapota frissül.
 
-| Kártya | Gomb | Parancs | Mit ír |
+| Kártya | Mikor jelez teendőt | Fő gomb | Haladó |
 |---|---|---|---|
-| KÉSZ-ség-törzs bővítése | Próba (gráfból) | `kesz-bovit --dry-run` | semmit |
-| | Futtatás | `kesz-bovit` | ALIAS: yaml + gráf; UJ: sor; ELVET: jelölt állapota |
-| | Próba a próbafutásokból | `kesz-bovit --from-dryrun runs/dryrun/*.json` | semmit |
-| | Próbafutásokból, UJ a sorba | `… --queue` | csak a sort |
-| KÉSZ-ség-irányok | Próba / Futtatás / Mind, próba | `kesz-irany [--dry-run] [--all]` | yaml + gráf (IRANYUL), bizonytalan: sor |
-| Általánosítás | Próba / Futtatás | `generalize [--dry-run]` | átnevezés (régi név alias), bontás: sor |
-| Bontás | Végrehajtás | `split` | új TESZ-nivaló, munkakörök átkötése |
+| KÉSZ-ség-törzs bővítése | van még meg nem nézett hiányjelölt, vagy egy várakozó jelöltet azóta újabb munkakör is igényel | Futtatás (`kesz-bovit`) | Próba (gráfból), Próba a próbafutásokból, Próbafutásokból, UJ a sorba; a próbafutások hiányjelöltjei |
+| TESZ-nivalók általánosítása | az utolsó valódi futás óta legalább 10 munkakör került a gráfba (vagy még nem futott) | Futtatás (`generalize`) | Próba |
+| Bontási javaslatok | van nyitott bontási javaslat a KÉSZ-ség-sorban | – (a sorban adott jóváhagyás hajtja végre) | Összes végrehajtása jóváhagyás nélkül (`split`) |
+| KÉSZ-ség-irányok | van KÉSZ-ség, amelynek iránya még csak a csoportjától öröklött | Futtatás (`kesz-irany`) | Próba, Mind, próba (`--all --dry-run`) |
 
-Alul a próbafutások KÉSZ-ség-hiányjelöltjei: név, csoport, irány, R23-állapot (törzsjelölt / TUD-ás-SZER-ELEM / már a
-törzsben), TESZ-nivaló.
+Mit ír a fő gomb:
+
+- **Bővítés:** ALIAS esetén a meglévő törzselem új nevet kap (yaml és gráf); UJ esetén javaslat kerül a
+  KÉSZ-ség-sorba, de csak ha legalább 2 munkakör igényli; ELVET esetén a jelölt elvetett állapotba kerül. **Új KÉSZ-ség
+  csak a KÉSZ-ség-sorban adott jóváhagyással lesz** (a következő gh_c szám). Az egy munkakörös jelöltek várnak: a
+  kártya csak akkor jelez újra, ha valamelyiket azóta újabb munkakör is igényli.
+- **Általánosítás:** a túl szűk név átnevezése (a régi név alias lesz); a gyűjtő-nevekre bontási javaslat kerül a sorba.
+- **Irányok:** a biztos eltérés a yaml-ba és a gráfba kerül (IRANYUL), a bizonytalan a sorba.
+
+A próbák semmit nem írnak. A próbafutásos változatok a Futás oldal próbafutásainak (`runs/dryrun/`) jelöltjeiből
+dolgoznak; az így sorba tett javaslat jóváhagyásakor még nincs igénylő munkakör (az IGENYEL él a munkakör valódi
+futásakor jön létre).
 
 ### 4.6 Adatbázis
 
@@ -408,11 +432,12 @@ munkakörönként). A szokásos sorrend:
 
 1. munkakörök feldolgozása (Futás);
 2. a szakértői sor átnézése;
-3. `generalize`: előbb próba, majd futtatás;
-4. a bontási javaslatok jóváhagyása, majd `split`;
-5. `kesz-bovit`, majd az új KÉSZ-ség-javaslatok jóváhagyása;
-6. `kesz-irany`, ha új KÉSZ-ség került a törzsbe;
-7. `certify` (P5).
+3. `kesz-bovit` (Karbantartás, ha teendőt jelez), majd az új KÉSZ-ség-javaslatok jóváhagyása a KÉSZ-ség-sorban;
+4. `generalize` (ha teendőt jelez), majd a bontási javaslatok jóváhagyása: a jóváhagyás végre is hajtja a bontást;
+5. `kesz-irany`, ha a kártya örökölt irányt jelez;
+6. `certify` (P5).
+
+A Karbantartás oldal kártyái mutatják, melyik lépésnél van teendő; ahol nincs, ott a lépés kihagyható.
 
 Költség: egy-egy karbantartó parancs 0,001–0,02 USD (Haiku). A drága rész a P1 a munkakörönkénti feldolgozásban
 (kb. 0,08–0,10 USD munkakörönként a teljes lánccal).

@@ -30,6 +30,16 @@ NODE_LABELS = ["MunkaKor", "TeszNivalo", "TeszSzin", "SzerElem", "TeszTipus", "K
 _LUCENE = re.compile(r'([+\-&|!(){}\[\]^"~*?:\\/])')
 
 
+BESOROLVA_Q = ("UNWIND $rows AS r MATCH (m:MunkaKor {id: r.job}), (b:Besorolas {id: r.b}) "
+               "MERGE (m)-[e:BESOROLVA]->(b) "
+               "SET e.match = r.match, e.method = r.method, e.primary = r.primary, e.confidence = r.confidence")
+TAXONOMY_LABELS = {"Besorolas": ("Isco", "Esco", "Feor", "Soc", "Onet"), "Agazat": ("Isic", "Wef")}
+
+
+def _tax_label(node_id: str) -> str:
+    return "Agazat" if node_id.split(":", 1)[0] in ("isic", "wef") else "Besorolas"
+
+
 def _label(entity_type: str) -> str:
     return LABELS[entity_type]
 
@@ -66,6 +76,7 @@ class Graph:
             self.run(f"CREATE CONSTRAINT {lbl.lower()}_id IF NOT EXISTS FOR (n:{lbl}) REQUIRE n.id IS UNIQUE")
         for lbl in ("KeszsegCsoport", "KeszsegKategoria"):
             self.run(f"CREATE CONSTRAINT {lbl.lower()}_kod IF NOT EXISTS FOR (n:{lbl}) REQUIRE n.kod IS UNIQUE")
+        self.setup_taxonomy()
         for lbl, idx in FULLTEXT.items():
             self.run(f"CREATE FULLTEXT INDEX {idx} IF NOT EXISTS FOR (n:{lbl}) "
                      f"ON EACH [n.label_hu, n.label_en, n.alias_text]")
@@ -138,15 +149,20 @@ class Graph:
         return [r for r in rows if r["munkakorok"]]
 
     def kesz_hiany_status(self, ids: list[str], status: str, ok: str = "") -> None:
-        self.run("MATCH (h:KeszHiany) WHERE h.id IN $ids SET h.status = $st, h.dontes_hu = $ok",
+        self.run("MATCH (h:KeszHiany) WHERE h.id IN $ids SET h.status = $st, h.dontes_hu = $ok, h.bovit_at = datetime()",
                  ids=ids, st=status, ok=ok)
+
+    def kesz_hiany_seen(self, ids: list[str]) -> None:
+        """A kesz-bovit megnézte, de kevés munkakör igényli (vár): a Karbantartás oldal csak akkor jelez újra
+        teendőt, ha a jelöltet azóta újabb munkakör is igényli (h.last_seen > h.bovit_at)."""
+        self.run("MATCH (h:KeszHiany) WHERE h.id IN $ids SET h.bovit_at = datetime()", ids=ids)
 
     def kesz_hiany_resolve(self, ids: list[str], kesz_id: str, status: str) -> int:
         """ALIAS vagy BEEMELT: a hiányjelöltek a törzselembe olvadnak; az igénylő TESZ-nivalók IGENYEL élt kapnak
         (munkakörönként súlyozva, a meglévő igénylésekkel összevonva)."""
         res = self.run(
             "MATCH (h:KeszHiany) WHERE h.id IN $ids MATCH (k:Keszseg {id: $k}) "
-            "SET h.status = $st, h.kesz_id = $k MERGE (h)-[:BEOLVADT]->(k) "
+            "SET h.status = $st, h.kesz_id = $k, h.bovit_at = datetime() MERGE (h)-[:BEOLVADT]->(k) "
             "WITH h, k MATCH (g:TeszNivalo)-[e:HIANYZIK]->(h) MERGE (g)-[i:IGENYEL]->(k) "
             "WITH i, e, [x IN coalesce(i.munkakorok, []) WHERE NOT x IN e.munkakorok] + e.munkakorok AS mk "
             "SET i.munkakorok = mk, i.suly = size(mk), i.rang = coalesce(i.rang, 6) RETURN count(i) AS n",
@@ -291,7 +307,7 @@ class Graph:
         hasznal = [{"t": t["id"], **s} for t in tesz for s in t["secondary"]]
 
         def work(tx):
-            tx.run("MERGE (m:MunkaKor {id: $id}) SET m += $props", plan.job)
+            tx.run("MERGE (m:MunkaKor {id: $id}) SET m += $props REMOVE m.elozetes", plan.job)
             tx.run("UNWIND $rows AS r MERGE (s:SzerElem {id: r.id}) "
                    "ON CREATE SET s += r.props, s.embedding = r.emb, s.created_at = datetime() "
                    "SET s.last_seen = datetime()", rows=szer)
@@ -346,10 +362,86 @@ class Graph:
             tx.run("MATCH (:MunkaKor {id: $j})-[r:TARTALMAZ_TESZT]->() DELETE r", j=plan.job["id"])
             tx.run("UNWIND $rows AS r MATCH (m:MunkaKor {id: $j}), (t:TeszSzin {id: r.t}) "
                    "MERGE (m)-[e:TARTALMAZ_TESZT]->(t) SET e += r.props", j=plan.job["id"], rows=plan.links)
+            if plan.job.get("besorolas") is not None:  # taxonómia-hivatkozások (a rekord refs-éből)
+                tx.run("MATCH (:MunkaKor {id: $j})-[r:BESOROLVA]->() DELETE r", j=plan.job["id"])
+                tx.run(BESOROLVA_Q, rows=[{"job": plan.job["id"], **x} for x in plan.job["besorolas"]])
 
         with self.driver.session(database=self.database) as sess:
             sess.execute_write(work)
         return {"szer": len(szer), "mag": len(magok), "szinek": len(tesz), "link": len(plan.links)}
+
+    # ---------------------------------------------------------------- taxonómiák (taxonomy.py, docs/taxonomia.md)
+    def setup_taxonomy(self) -> None:
+        for lbl in TAXONOMY_LABELS:
+            self.run(f"CREATE CONSTRAINT {lbl.lower()}_id IF NOT EXISTS FOR (n:{lbl}) REQUIRE n.id IS UNIQUE")
+        self.run("CREATE FULLTEXT INDEX besorolas_text IF NOT EXISTS FOR (n:Besorolas) "
+                 "ON EACH [n.label_hu, n.label_en, n.kod]")
+
+    def write_taxonomy(self, t: dict) -> dict:
+        """Besorolási és ágazati taxonómia egy tranzakcióban; a RESZE, és a betöltött források MEGFELEL/AGAZATBAN
+        élei újraíródnak (a csomópontok MERGE-dzsel frissülnek, nem törlődnek)."""
+        self.setup_taxonomy()
+        by_sys = {}
+        for n in t["nodes"]:
+            by_sys.setdefault(n["rendszer"], []).append(n)
+        sect = {}
+        for s in t["sectors"]:
+            sect.setdefault(s["rendszer"], []).append(s)
+
+        def edges(rows):
+            out = {}
+            for e in rows:
+                out.setdefault((_tax_label(e["a"]), _tax_label(e["b"])), []).append(e)
+            return out
+
+        def work(tx):
+            for base, (rows_by, subs) in (("Besorolas", (by_sys, TAXONOMY_LABELS["Besorolas"])),
+                                          ("Agazat", (sect, TAXONOMY_LABELS["Agazat"]))):
+                for sub in subs:
+                    rows = rows_by.get(sub.lower(), [])
+                    if rows:
+                        tx.run(f"UNWIND $rows AS r MERGE (n:{base} {{id: r.id}}) SET n:{sub}, n += r", rows=rows)
+            tx.run("MATCH (:Besorolas)-[r:RESZE]->(:Besorolas) DELETE r")
+            tx.run("UNWIND $rows AS r MATCH (a:Besorolas {id: r.a}), (b:Besorolas {id: r.b}) MERGE (a)-[:RESZE]->(b)",
+                   rows=t["resze"])
+            for rel, key in (("MEGFELEL", "megfelel"), ("AGAZATBAN", "agazat")):
+                forrasok = sorted({e["forras"] for e in t[key]})
+                tx.run(f"MATCH ()-[r:{rel}]->() WHERE r.forras IN $f DELETE r", f=forrasok)
+                for (la, lb), rows in edges(t[key]).items():
+                    tx.run(f"UNWIND $rows AS r MATCH (a:{la} {{id: r.a}}), (b:{lb} {{id: r.b}}) "
+                           f"MERGE (a)-[e:{rel} {{forras: r.forras}}]->(b) "
+                           "SET e += r {.match, .method, .primary, .confidence, .arany, .db}", rows=rows)
+
+        with self.driver.session(database=self.database) as sess:
+            sess.execute_write(work)
+        return {"csomopont": len(t["nodes"]) + len(t["sectors"]), "resze": len(t["resze"]),
+                "megfelel": len(t["megfelel"]), "agazatban": len(t["agazat"])}
+
+    def write_job_nodes(self, rows: list[dict]) -> dict:
+        """Előzetes MunkaKor-csomópontok (TESZ-felbontás nélkül, a besorolás-hivatkozásokhoz), egy tranzakcióban.
+
+        Új csomópontnál minden tulajdonság beíródik; meglévőnél (már felbontott munkakör) csak a kódok, a P1-ből
+        származó név és leírás marad."""
+        def work(tx):
+            return tx.run("UNWIND $rows AS r MERGE (m:MunkaKor {id: r.id}) "
+                          "ON CREATE SET m += r.props, m.created_at = datetime(), m.elozetes = true "
+                          "SET m += r.kodok RETURN count(m) AS n", rows=rows).single()["n"]
+
+        with self.driver.session(database=self.database) as sess:
+            n = sess.execute_write(work)
+        return {"munkakor": n}
+
+    def write_job_besorolas(self, rows: list[dict]) -> dict:
+        """Meglévő MunkaKor-csomópontok BESOROLVA élei (a régiek törlődnek), egy tranzakcióban."""
+        jobs = sorted({r["job"] for r in rows})
+
+        def work(tx):
+            tx.run("UNWIND $jobs AS j MATCH (:MunkaKor {id: j})-[r:BESOROLVA]->() DELETE r", jobs=jobs)
+            tx.run(BESOROLVA_Q, rows=rows)
+
+        with self.driver.session(database=self.database) as sess:
+            sess.execute_write(work)
+        return {"el": len(rows), "munkakor": len(jobs)}
 
     def merge_entities(self, entity_type: str, keep_id: str, drop_id: str) -> None:
         """Két azonos entitás összevonása: a drop nevei aliasok lesznek, kapcsolatai átkötődnek."""
@@ -525,6 +617,8 @@ class Graph:
         out["csomopontok"] = self.run(
             "MATCH (n) WHERE n:MunkaKor OR n:TeszNivalo OR n:TeszSzin OR n:SzerElem OR n:Keszseg "
             "RETURN labels(n)[0] AS tipus, count(*) AS db ORDER BY tipus")
+        out["munkakor_elozetes"] = self.run(
+            "MATCH (m:MunkaKor) WHERE m.elozetes RETURN count(m) AS db")[0]["db"]  # csak besorolás, nincs felbontva
         out["tesz_tipus"] = self.run(
             "MATCH (:MunkaKor)-[:TARTALMAZ_TESZT]->(t)-[:SZINEZI]->(:TeszNivalo)-[:TIPUSA]->(ty) "
             "RETURN ty.id AS tipus, count(*) AS db ORDER BY db DESC")

@@ -1,4 +1,5 @@
 import json
+import pytest
 
 from gaphopper import config, web
 from gaphopper.llm import LocalLLM, get_llm
@@ -6,8 +7,14 @@ from gaphopper.report import summary
 from gaphopper.store import Store
 
 
+@pytest.fixture(autouse=True)
+def offline_model_probe(monkeypatch):
+    monkeypatch.setattr(web,'verify_model',lambda *a,**kw:None)
+
+
 def test_save_switch_and_endpoint(monkeypatch):
     monkeypatch.setenv("TEST_API_KEY", "secret")
+    monkeypatch.setattr(web,"verify_model",lambda *a,**kw:None)
     state = web.models_state()
     state["steps"][1].update(provider="gemini", model="gemini-test", effort="")
     state["openai"].update(base_url="https://example.com/v1", api_key_env="TEST_API_KEY")
@@ -22,11 +29,14 @@ def test_save_switch_and_endpoint(monkeypatch):
     assert "secret" not in config.MODELS_PATH.read_text()
 
 
-def test_catalog_persisted(monkeypatch):
-    monkeypatch.setattr(LocalLLM, "models", lambda self: ["model-b", "model-a"])
-    r = web.discover_models({"provider": "openai", "base_url": "https://example.com/v1"})
-    assert r == {"ok": True, "models": ["model-a", "model-b"]}
-    assert web.models_state()["catalog"]["openai"] == r["models"]
+def test_catalog_is_live_and_never_reused_as_available(monkeypatch):
+    config.save_ui_models({'catalog':{'openai':['stale-model']}})
+    before=config.MODELS_PATH.read_text()
+    monkeypatch.setattr(web,'list_models',lambda *a,**kw:['live-model'])
+    result=web.discover_models({'provider':'openai','base_url':'https://example.com/v1'})
+    assert result=={'ok':True,'models':['live-model']}
+    assert web.models_state()['catalog']['openai']==[]
+    assert config.MODELS_PATH.read_text()==before
 
 
 def test_embed_probe_and_error(monkeypatch):
@@ -71,7 +81,7 @@ def test_saved_empty_embed_disables_environment(monkeypatch):
 def test_gemini_choices_and_prices_available_offline():
     state = web.models_state()
     ids = state["catalog"]["gemini"]
-    assert len(ids) >= 10
+    assert ids == []
     prices = {r["model"]: r for r in state["prices"]}
     assert all(m in prices for m in ids)
     assert prices["gemini-2.5-flash"]["input"] == 0.30
@@ -166,7 +176,7 @@ def test_gemini_default_prefers_available_generation(monkeypatch):
     monkeypatch.setenv("GH_PROVIDER_P2", "gemini")
     monkeypatch.delenv("GH_MODEL_P2", raising=False)
     assert config.settings().p2.model == "gemini-3.8-flash"
-    assert web.models_state()["catalog"]["gemini"][0] == "gemini-3.8-flash"
+    assert web.models_state()["catalog"]["gemini"] == []
 
 
 def test_parallel_graph_failure_does_not_stop_remaining_jobs(tmp_path, monkeypatch):

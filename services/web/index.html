@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gaphopper · Kompetencialabor</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="lab">
+<header>
+  <a class="brand" href="/">gaphopper<span> / kompetencialabor</span></a>
+  <div class="header-links">
+    <span id="active-model" class="muted"></span>
+    <span id="current-user"></span>
+    <a id="config-link" href="/config.html" hidden>Konfiguráció</a>
+    <a href="/docs" target="_blank" rel="noopener">API ↗</a>
+    <button id="theme" class="ghost" type="button" title="Világos / sötét téma" aria-label="Téma váltása">◐</button>
+    <button id="logout" class="secondary" type="button">Kilépés</button>
+  </div>
+</header>
+
+<!-- Állandó kontextus: a kiválasztott munkakörök és az egyéni profil; a 3. és 4. funkció ezekből dolgozik -->
+<section id="context" class="context" aria-label="Aktuális kiválasztás">
+  <div class="ctx-block">
+    <div class="ctx-head"><span class="eyebrow">MUNKAKÖRÖK</span><span class="muted" id="ctx-jobs-count">0 / 6</span></div>
+    <div id="ctx-jobs" class="chips"><span class="muted">Még nincs kiválasztott munkakör — az 1. fülön adhatsz hozzá.</span></div>
+  </div>
+  <div class="ctx-block ctx-person">
+    <div class="ctx-head"><span class="eyebrow">EGYÉN</span><button type="button" class="link" id="ctx-person-clear" hidden>törlés</button></div>
+    <div id="ctx-person"><span class="muted">Még nincs egyéni profil — a 2. fülön készítheted el.</span></div>
+  </div>
+</section>
+
+<nav class="tabs" role="tablist" aria-label="Funkciók">
+  <button role="tab" data-tab="job" aria-selected="true"><b>1</b> Munkakör-profil</button>
+  <button role="tab" data-tab="person" aria-selected="false"><b>2</b> Egyéni profil</button>
+  <button role="tab" data-tab="recommend" aria-selected="false"><b>3</b> Munkakör-ajánló</button>
+  <button role="tab" data-tab="gap" aria-selected="false"><b>4</b> Illeszkedés és hiány</button>
+  <button role="tab" data-tab="space" aria-selected="false"><b>5</b> Kompetenciatér</button>
+</nav>
+
+<main>
+  <!-- 1. Munkakör-profil -->
+  <section class="pane" id="pane-job" role="tabpanel">
+    <aside class="panel">
+      <h2>Munkakör hozzáadása</h2>
+      <div class="seg" role="radiogroup" aria-label="Forrás">
+        <button type="button" data-src="list" aria-pressed="true">Listából</button>
+        <button type="button" data-src="file" aria-pressed="false">Dokumentum</button>
+        <button type="button" data-src="text" aria-pressed="false">Szöveg</button>
+      </div>
+      <div data-src-pane="list">
+        <label>Keresés<input id="job-search" placeholder="Pl. ápoló, villanyszerelő…" autocomplete="off"></label>
+        <p class="muted small" id="job-total"></p>
+        <ul id="job-list" class="pick-list"></ul>
+      </div>
+      <div data-src-pane="file" hidden>
+        <label>Álláshirdetés vagy munkaköri leírás<input id="job-file" type="file" accept=".pdf,.docx,.txt,.md,.html,.htm"></label>
+        <p class="muted small">PDF, DOCX, TXT, MD, HTML · legfeljebb 8 MB. Az AI a felbontott munkakörök közül választ.</p>
+        <button type="button" class="primary" data-identify="file">Munkakör azonosítása</button>
+      </div>
+      <div data-src-pane="text" hidden>
+        <label>Szöveg<textarea id="job-text" rows="8" maxlength="60000" placeholder="Másold ide az álláshirdetést vagy a feladatleírást…"></textarea></label>
+        <button type="button" class="primary" data-identify="text">Munkakör azonosítása</button>
+      </div>
+      <p class="status" id="job-status" role="status" aria-live="polite"></p>
+      <div id="job-candidates"></div>
+    </aside>
+    <div class="stage" id="job-stage"></div>
+  </section>
+
+  <!-- 2. Egyéni profil -->
+  <section class="pane" id="pane-person" role="tabpanel" hidden>
+    <aside class="panel">
+      <h2>Kompetenciák kigyűjtése</h2>
+      <div class="seg" role="radiogroup" aria-label="Forrás">
+        <button type="button" data-src="file" aria-pressed="true">Dokumentum (CV)</button>
+        <button type="button" data-src="text" aria-pressed="false">Szöveg</button>
+        <button type="button" data-src="manual" aria-pressed="false">Kézi</button>
+      </div>
+      <div data-src-pane="file">
+        <label>Önéletrajz vagy más dokumentum<input id="person-file" type="file" accept=".pdf,.docx,.txt,.md,.html,.htm"></label>
+        <p class="muted small">Az AI öt forrásból gyűjt: explicit és implicit említés, betöltött munkakörök (a felbontott munkakörök kompetenciái öröklődnek), képzések és a dokumentum stílusa. Minden kompetenciához forrás és EQF-becslés tartozik.</p>
+        <button type="button" class="primary" data-identify-person="file">Kompetenciák kigyűjtése</button>
+      </div>
+      <div data-src-pane="text" hidden>
+        <label>Szöveg<textarea id="person-text" rows="8" maxlength="60000" placeholder="Tapasztalat, végzettség, feladatok…"></textarea></label>
+        <button type="button" class="primary" data-identify-person="text">Kompetenciák kigyűjtése</button>
+      </div>
+      <div data-src-pane="manual" hidden>
+        <label>Kompetencia keresése<input id="skill-search" placeholder="Név szerint…" autocomplete="off"></label>
+        <ul id="skill-list" class="pick-list"></ul>
+      </div>
+      <p class="status" id="person-status" role="status" aria-live="polite"></p>
+      <details class="io">
+        <summary>Profil mentése / betöltése</summary>
+        <div class="row-buttons"><button type="button" class="secondary" id="person-export">JSON letöltése</button>
+          <label class="secondary file-btn">JSON betöltése<input id="person-import" type="file" accept=".json,application/json" hidden></label></div>
+        <p class="muted small">A profil csak ebben a böngészőben marad meg; a szerver nem tárolja.</p>
+      </details>
+    </aside>
+    <div class="stage" id="person-stage"></div>
+  </section>
+
+  <!-- 3. Ajánló -->
+  <section class="pane" id="pane-recommend" role="tabpanel" hidden>
+    <aside class="panel">
+      <h2>Munkakör-ajánló</h2>
+      <p class="muted small">A 2. fül egyéni profilját az összes felbontott munkakörrel összeveti, és illeszkedés szerint rangsorol. AI-hívás nélkül, a gráf adataiból számol.</p>
+      <label>EQF-szint<select id="rec-window">
+        <option value="">bármely szint</option><option value="1">saját szintem ±1</option><option value="2">saját szintem ±2</option>
+      </select></label>
+      <label>Találatok száma<select id="rec-limit"><option>8</option><option selected>12</option><option>20</option></select></label>
+      <button type="button" class="primary" id="rec-run">Ajánlás készítése</button>
+      <p class="status" id="rec-status" role="status" aria-live="polite"></p>
+      <details class="method"><summary>Hogyan számolunk?</summary><div id="method-rec"></div></details>
+    </aside>
+    <div class="stage" id="rec-stage"></div>
+  </section>
+
+  <!-- 4. GAP -->
+  <section class="pane" id="pane-gap" role="tabpanel" hidden>
+    <aside class="panel">
+      <h2>Illeszkedés és hiány</h2>
+      <p class="muted small">A kiválasztott munkakörök (felül, legfeljebb 6) és az egyéni profil összevetése kompetenciánként és EQF-szinten.</p>
+      <button type="button" class="primary" id="gap-run">Összevetés</button>
+      <p class="status" id="gap-status" role="status" aria-live="polite"></p>
+      <details class="method"><summary>Hogyan számolunk?</summary><div id="method-gap"></div></details>
+    </aside>
+    <div class="stage" id="gap-stage"></div>
+  </section>
+  <!-- 5. Kompetenciatér -->
+  <section class="pane" id="pane-space" role="tabpanel" hidden>
+    <aside class="panel">
+      <h2>Kompetenciatér</h2>
+      <p class="muted small">A kiválasztott munkakörök és az egyéni profil kompetenciái egy térben. Közel kerülnek egymáshoz, amelyeket a feladatok (TESZ-SZÍN-ek) gyakran együtt igényelnek; így klaszterek rajzolódnak ki. A szín az illeszkedés a választott nézőponthoz.</p>
+      <label>Nézőpont<select id="space-focus"></select></label>
+      <div class="toggles" style="margin-top:10px">
+        <label class="toggle"><input type="checkbox" id="space-edges" checked>kapcsolatok</label>
+        <label class="toggle"><input type="checkbox" id="space-labels">minden címke</label>
+      </div>
+      <h3 style="margin-top:16px">Klaszterek</h3>
+      <div id="space-clusters" class="small muted">–</div>
+      <p class="status" id="space-status" role="status" aria-live="polite"></p>
+      <details class="method"><summary>Hogyan készül a tér?</summary><div id="method-space"></div></details>
+    </aside>
+    <div class="stage" id="space-stage"></div>
+  </section>
+</main>
+
+<div id="tip" class="tip" role="tooltip" hidden></div>
+<script src="/common.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

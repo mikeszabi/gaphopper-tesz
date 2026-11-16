@@ -40,6 +40,13 @@ a Futás oldal naplózott tokeneket és becsült API-költséget mutat. Kulcsér
 - `python -m gaphopper review` – szakértői sor; `--approve <qid>` gráfba írja
 - `python -m gaphopper stats`, `anchors`, `p4a --type ... --value ...`
 - `python -m gaphopper onet-tasks <Task Statements> [--ratings <Task Ratings>]` – O*NET-feladatlisták a `tasks` mezőbe
+- `python -m gaphopper crawl-export [--dry-run]` – C0: crawler-adatbázisból (gh_jobs_pg) foglalkozásonként egy rekord
+- `python -m gaphopper job-all [--dry-run]` – J0: `data/job_all.jsonl`, minden O*NET-munkakör ESCO/ISCO/FEOR-hivatkozással
+  (`codes` + `refs` hierarchiaúttal); a C0/J0 promptja a modulban van, nem a `prompts/`-ban (prompt_version)
+- `python -m gaphopper taxonomy [--dry-run]` – T0: ISCO/ESCO/FEOR/SOC/O*NET (`Besorolas`, `RESZE`, `MEGFELEL`) és
+  ISIC/WEF (`Agazat`, `AGAZATBAN`) a gráfba, meglévő munkakörök `BESOROLVA` élei; `--munkakorok`: a job_all minden rekordja előzetes `MunkaKor`
+  (`elozetes: true`, felbontás nélkül; a P3 törli a jelölést); a P1/P2 a besorolási mezőket nem kapja
+  (`pipeline.llm_job_view`); leírás: `docs/taxonomia.md`
 - `python -m gaphopper embed check|backfill` – helyi Ollama beágyazás próbája, hiányzó vektorok pótlása
 - `python -m gaphopper generalize [--dry-run]` – P6 törzskarbantartás: a több munkakörben, eltérő kontextussal
   használt TESZ-nivalók túl szűk nevének általánosítása (a régi név alias), gyűjtő-nevek bontási javaslata (szakértőhöz)

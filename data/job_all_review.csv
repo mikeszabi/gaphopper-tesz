@@ -1,0 +1,211 @@
+onet,title_en,tipus,valasztott,nev_hu,match,method,confidence,jeloltek
+53-6011.00,Bridge and Lock Tenders,ESCO,3123.1.2,hídépítési művezető,broadMatch,crosswalk+llm,0.15,víz alatti mélyépítési munkák irányítója
+39-1022.00,First-Line Supervisors of Personal Service Workers,ESCO,1412.1,konyhavezető étterem vezető,narrowMatch,llm,0.2,
+53-6032.00,Aircraft Service Attendants,FEOR,8423,"Köztisztasági, településtisztasági gép kezelője",,crosswalk+llm,0.2,"8417 Tehergépkocsi-vezető, kamionsofőr"
+53-7011.00,Conveyor Operators and Tenders,ESCO,8141.1.1,szállítóheveder-építő,narrowMatch,llm,0.2,
+11-9199.11,Brownfield Redevelopment Specialists and Site Managers,ESCO,1219.6,projektmenedzser,broadMatch,llm,0.25,
+11-9131.00,Postmasters and Mail Superintendents,ESCO,3341.7,"irodai szakmai irányító, felügyelő",broadMatch,llm,0.3,
+13-1074.00,Farm Labor Contractors,FEOR,6111,Szántóföldi növény-termesztő,,crosswalk+llm,0.3,6112 Bionövény-termesztő | 6113 Zöldségtermesztő | 6116 Gyógynövénytermesztő
+25-3011.00,"Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",FEOR,2441,Gyógypedagógus,,crosswalk+llm,0.3,2442 Konduktor
+25-3021.00,Self-Enrichment Teachers,FEOR,3515,Ifjúságsegítő,,crosswalk+llm,0.3,"3511 Szociális segítő | 3513 Szociális gondozó, szakgondozó"
+29-2099.08,Patient Representatives,ESCO,3344.1,egészségügyi adminisztrációs asszisztens,broadMatch,llm,0.3,
+33-9099.02,Retail Loss Prevention Specialists,FEOR,3649,Egyéb igazgatási és jogi asszisztens,,crosswalk+llm,0.3,3910 Egyéb ügyintéző
+51-4081.00,"Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",ESCO,7223.19,csavareszterga-kezelő,broadMatch,crosswalk+llm,0.3,szerszámkészítő | egyengetőgép kezelője | sorjázó | kovácsprés kezelője | lyukasztóprés kezelője
+51-4192.00,"Layout Workers, Metal and Plastic",ESCO,7213.4,lemezlakatos,broadMatch,llm,0.3,
+51-9012.00,"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",ESCO,8160.14,centrifugakezelő,broadMatch,crosswalk+llm,0.3,tej-hőkezelési eljárás kezelő | lepárolóüzem dolgozója | zsírtisztítással foglalkozó szakmunkás | hidrogénező reaktorkezelő | almabor erjesztésével foglalkozó szakember
+51-9051.00,"Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",ESCO,8121.3,hőkezelő kemence kezelője,broadMatch,crosswalk+llm,0.3,alagútkemence-kezelő | síküveghúzógép-kezelő | kokszolókemence-kezelő | mészégetőkemence-töltő | faipari szárítókemence-kezelő
+51-9192.00,"Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",ESCO,8122.12,koptatódob-kezelő,broadMatch,crosswalk+llm,0.3,finomító berendezés vezérlője | mosásos festéktelenítő berendezés kezelője | olajszűrő gép kezelője | kakaóbab-tisztító
+11-9041.00,Architectural and Engineering Managers,ESCO,1219.6,projektmenedzser,narrowMatch,crosswalk+llm,0.35,építési szakipari építésvezető | építész | repülésfelügyeleti és kódkoordinációs igazgató | repülési kommunikációért és frekvenciakoordinációért felelős igazgató | kőolaj- és gázipari termelési vezető
+13-1022.00,"Wholesale and Retail Buyers, Except Farm Products",ESCO,3324.4,nagykereskedő,broadMatch,llm,0.35,
+13-1041.06,Coroners,FEOR,2619,Egyéb jogi foglalkozású,,crosswalk+llm,0.35,"2611 Jogász, jogtanácsos | 2614 Közjegyző | 2910 Egyéb magasan képzett ügyintéző"
+13-1074.00,Farm Labor Contractors,ESCO,6111.1,mezőgazdasági növénytermesztési brigád vezetője,broadMatch,llm,0.35,
+15-1299.03,Document Management Specialists,FEOR,1329,Egyéb szolgáltatást nyújtó egység vezetője,,crosswalk+llm,0.35,1335 Kulturális tevékenységet folytató egység vezetője
+25-1193.00,"Recreation and Fitness Studies Teachers, Postsecondary",ESCO,2320.1.21,testnevelés szakoktató,closeMatch,crosswalk+llm,0.35,középiskolai testneveléstanár
+29-2057.00,Ophthalmic Medical Technicians,ESCO,2267.2,ortoptikus,closeMatch,crosswalk+llm,0.35,optometrista
+33-9021.00,Private Detectives and Investigators,FEOR,3649,Egyéb igazgatási és jogi asszisztens,,crosswalk+llm,0.35,3910 Egyéb ügyintéző
+49-3053.00,Outdoor Power Equipment and Other Small Engine Mechanics,FEOR,7341,"Villamos gépek és készülékek műszerésze, javítója",,crosswalk+llm,0.35,7523 Felvonószerelő
+49-9098.00,"Helpers--Installation, Maintenance, and Repair Workers",ESCO,7233.7,"ipari gép karbantartója, javítója",broadMatch,llm,0.35,
+49-9099.01,Geothermal Technicians,FEOR,7341,"Villamos gépek és készülékek műszerésze, javítója",,crosswalk+llm,0.35,7523 Felvonószerelő
+51-9191.00,Adhesive Bonding Machine Operators and Tenders,ESCO,8183.5,fóliahegesztő gép kezelője,closeMatch,crosswalk+llm,0.35,kompozitfalemez-gyártó gép kezelője | élzárógép-kezelő | hullámpapírgyártógép-kezelő | kartontermék-összeszerelő | fatermék-összeszerelő
+53-1042.00,"First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",ESCO,9333.7,rakodási felügyelő,broadMatch,crosswalk+llm,0.35,szétszerelésvezető | fúrótorony-felügyelő | bontásvezető | darukezelők művezetője
+53-6041.00,Traffic Technicians,ESCO,2142.1.9,közlekedésmérnök,narrowMatch,llm,0.35,
+53-7063.00,Machine Feeders and Offbearers,FEOR,8111,"Élelmiszer-, italgyártó gép kezelője",,crosswalk+llm,0.35,"7115 Borász és egyéb szeszesital-gyártó, szikvízkészítő"
+11-3012.00,Administrative Services Managers,ESCO,3341.7,"irodai szakmai irányító, felügyelő",closeMatch,crosswalk+llm,0.4,könyvtári igazgató | bírósági igazgatási vezető | védelmi igazgatási tisztviselő | tagságszervező
+11-9071.00,Gambling Managers,FEOR,1336,Sport- és rekreációs tevékenységet folytató egység vezetője,,crosswalk+llm,0.4,1335 Kulturális tevékenységet folytató egység vezetője
+13-1041.04,Government Property Inspectors and Investigators,ESCO,3112.1.2,építőipari felügyelő,narrowMatch,crosswalk+llm,0.4,ingatlan-értékbecslő
+13-1199.06,Online Merchants,FEOR,2531,"Piackutató, reklám- és marketingtevékenységet tervező, szervező",,crosswalk+llm,0.4,3632 Marketing- és PR-ügyintéző
+13-1199.07,Security Management Specialists,FEOR,5254,"Vagyonőr, testőr",,crosswalk+llm,0.4,"9231 Portás, telepőr, egyszerű őr"
+15-1211.01,Health Informatics Specialists,ESCO,2511.13,IKT rendszerelemző,closeMatch,crosswalk+llm,0.4,klinikai informatikai igazgató | szoftverelemző
+15-2031.00,Operations Research Analysts,ESCO,2421.3,üzletiintelligencia-menedzser,closeMatch,crosswalk+llm,0.4,munkaügyi elemző | logisztikai elemző | logisztikai mérnök
+17-2072.01,Radio Frequency Identification Device Specialists,ESCO,2152.1,elektronikai mérnök,closeMatch,crosswalk+llm,0.4,távközlési mérnök | szenzormérnök | szenzortechnikus | elektromágneses mérnök | elektronikai technikus
+17-2112.00,Industrial Engineers,FEOR,3161,Munka- és termelésszervező,,crosswalk+llm,0.4,3162 Energetikus | 3163 Munkavédelmi és üzembiztonsági foglalkozású
+17-2112.03,Manufacturing Engineers,FEOR,3161,Munka- és termelésszervező,,crosswalk+llm,0.4,3162 Energetikus | 3163 Munkavédelmi és üzembiztonsági foglalkozású
+19-1011.00,Animal Scientists,ESCO,2131.4,biológus,narrowMatch,crosswalk+llm,0.4,általános állatorvos | hatósági állatorvos | akvakultúra-biológus | szakállatorvos
+19-4012.01,Precision Agriculture Technicians,ESCO,2132.1,mezőgazdasági kutató,closeMatch,crosswalk+llm,0.4,mezőgazdasági mérnök
+19-4092.00,Forensic Science Technicians,ESCO,3355.1,bűnügyi nyomozó,closeMatch,crosswalk+llm,0.4,rendőrségi nyomozó | grafológus
+19-4099.01,Quality Control Analysts,ESCO,3116.1.2,vegyipari termékminőség-technikus,broadMatch,crosswalk+llm,0.4,termékminőség-biztosító | cipőipari minőség-ellenőrzési laboratóriumi technikus | bőráruk minőségét ellenőrző laboratóriumi technikus | cipőipari minőségbiztosítási technikus | termékminőség-ellenőr
+21-1091.00,Health Education Specialists,ESCO,2422.6,egészségügyi tanácsadó,broadMatch,crosswalk+llm,0.4,közösségfejlesztési szakértő | köztisztviselő | egészségpolitikai szakértő | fogyókúrás tanácsadó
+25-1121.00,"Art, Drama, and Music Teachers, Postsecondary",ESCO,2310.1.4,művészettörténet-oktató felsőoktatási intézményben,closeMatch,crosswalk+llm,0.4,középiskolai ének-zene tanár | középiskolai drámatanár | középiskolai képzőművészet-tanár | előadó-művészeti iskola tanára | drámatanár
+25-9021.00,Farm and Home Management Educators,ESCO,2132.6,állattenyésztési tanácsadó,broadMatch,llm,0.4,
+27-1023.00,Floral Designers,FEOR,5113,Bolti eladó,,crosswalk+llm,0.4,5114 Kölcsönző
+27-2012.03,Media Programming Directors,FEOR,2719,Egyéb kulturális és sportfoglalkozású (felsőfokú képzettséghez kapcsolódó),,crosswalk+llm,0.4,"3719 Egyéb művészeti és kulturális foglalkozású | 3715 Kiegészítő filmgyártási és színházi foglalkozású | 2714 Kulturális szervező | 3711 Segédszínész, statiszta | 3712 Segédrendező"
+27-3092.00,Court Reporters and Simultaneous Captioners,FEOR,3649,Egyéb igazgatási és jogi asszisztens,,crosswalk+llm,0.4,3641 Személyi asszisztens
+29-2061.00,Licensed Practical and Licensed Vocational Nurses,ESCO,5321.1.1,segédápoló/segédápolónő,broadMatch,crosswalk+llm,0.4,hospice ellátással foglalkozó szociális munkás | házi gondozó | ápolási asszisztens
+29-9021.00,Health Information Technologists and Medical Registrars,ESCO,3252.2,egészségügyi dokumentációs vezető,closeMatch,crosswalk+llm,0.4,infokommunikációs rendszerinformációs menedzser | klinikai informatikai igazgató | információmenedzser | képtároló és képtovábbító rendszer kezelője
+29-9092.00,Genetic Counselors,FEOR,2169,Egyéb természettudományi foglalkozású,,crosswalk+llm,0.4,"2167 Biológus, botanikus, zoológus és rokon foglalkozású"
+29-9093.00,Surgical Assistants,ESCO,3256.1,orvosi rendelő asszisztense,closeMatch,crosswalk+llm,0.4,segédápoló/segédápolónő | ápolási asszisztens | klinikai perfúziós asszisztens | aneszteziológiai szakasszisztens
+33-3011.00,Bailiffs,FEOR,3649,Egyéb igazgatási és jogi asszisztens,,crosswalk+llm,0.4,3910 Egyéb ügyintéző
+33-9031.00,Gambling Surveillance Officers and Gambling Investigators,FEOR,3659,Egyéb hatósági ügyintéző,,crosswalk+llm,0.4,3910 Egyéb ügyintéző
+35-9011.00,Dining Room and Cafeteria Attendants and Bartender Helpers,ESCO,5131.2,pincér/pincérnő,broadMatch,llm,0.4,
+39-9041.00,Residential Advisors,ESCO,2635.3.27,ifjúságsegítő,closeMatch,crosswalk+llm,0.4,társasházkezelő
+41-1012.00,First-Line Supervisors of Non-Retail Sales Workers,ESCO,5222.1,üzletvezető,narrowMatch,crosswalk+llm,0.4,"boltvezető | sport és szabadidő szaküzlet vezetője | cipő- és bőrdíszműbolt vezetője | szupermarket vezetője | hírlapáru-, papír- és írószerbolt vezetője"
+45-2093.00,"Farmworkers, Farm, Ranch, and Aquacultural Animals",ESCO,6221.7,tenyésztési akvakultúra-munkás,broadMatch,crosswalk+llm,0.4,nyílt vízi akvakultúrás alkalmazott | keltetési akvakultúra-dolgozó | szarvasmarha-körmöző | baromfitenyésztő | sertéstenyésztő
+47-4031.00,Fence Erectors,ESCO,9313.1,építőipari munkás,narrowMatch,crosswalk+llm,0.4,ajtóbeépítő
+49-1011.00,"First-Line Supervisors of Mechanics, Installers, and Repairers",ESCO,3115.1.6,ipari karbantartási felügyelő,broadMatch,crosswalk+llm,0.4,járműkarbantartási vezető | finommechanikai művezető | víz-újrahasznosítási berendezések telepítőinek művezetője | járműjavító műhely vezetője
+49-2095.00,"Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",ESCO,7411.1.1.2,ipari villanyszerelő,broadMatch,crosswalk+llm,0.4,átvitelirendszer-üzemeltető | villamoshálózati távvezeték- és kábelszerelő | erőműkezelő | központi irányítótermi erőművi operátor | villanyszerelő
+49-9011.00,Mechanical Door Repairers,FEOR,7514,Épületasztalos,,crosswalk+llm,0.4,7513 Ács
+51-2092.00,Team Assemblers,ESCO,8211.2,iparigép-összeszerelő,broadMatch,crosswalk+llm,0.4,automata összeszerelő gépsor kezelője | kerékpár-összeszerelő | motorkerékpár-összeszerelő | gépjármű-összeszerelő | fémtermék-összeszerelő
+51-3091.00,"Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",ESCO,8160.28,szárítási tevékenységet végző dolgozó,broadMatch,crosswalk+llm,0.4,faipari szárítókemence-kezelő | alagútkemence-kezelő | kerámiaégető kemence kezelője | mázégető kemence kezelője | malátapörkölő kezelője
+51-4041.00,Machinists,ESCO,7223.4,CNC-gépkezelő,broadMatch,crosswalk+llm,0.4,sebességváltó-szerelő | csavareszterga-kezelő | marós | forgácsoló | gyalus
+51-6051.00,"Sewers, Hand",ESCO,7533.2,hímző,closeMatch,crosswalk+llm,0.4,bőripari szabász | cipővarró | matrackészítő
+51-6063.00,"Textile Knitting and Weaving Machine Setters, Operators, and Tenders",ESCO,8152.1,kötőgépkezelő,broadMatch,crosswalk+llm,0.4,kötőgép-felügyelő | kötő | szövő | szövőgépkezelő | szövőgép-felügyelő
+51-7042.00,"Woodworking Machine Setters, Operators, and Tenders, Except Sawing",ESCO,7523.3,bútoripari gép kezelője,broadMatch,crosswalk+llm,0.4,fafúrós | szögelő | kompozitfalemez-gyártó gép kezelője | faipari marógépkezelő | faipari gyalugépkezelő
+51-8099.01,Biofuels Processing Technicians,ESCO,3133.1,vegyipari feldolgozó berendezés kezelője,broadMatch,llm,0.4,
+51-9021.00,"Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",ESCO,7223.4.2,köszörűgép-kezelő,broadMatch,crosswalk+llm,0.4,kőcsiszoló | ásvány-előkészítő | felületcsiszoló gép kezelője | kakaómasszát készítő őrlőgép kezelője | palástköszörűgép-kezelő
+51-9023.00,"Mixing and Blending Machine Setters, Operators, and Tenders",ESCO,8131.2,vegyianyag-keverő kezelője,broadMatch,crosswalk+llm,0.4,keverőüzemi gépkezelő | üdítőital-turmixgép kezelője | illatszerkészítő gép kezelője | festőgép-beállító | rágógumigyártó gép kezelője
+51-9031.00,"Cutters and Trimmers, Hand",ESCO,7532.2,ruhaszabó,broadMatch,crosswalk+llm,0.4,tímár
+51-9041.00,"Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",ESCO,8121.2,sajtológép-kezelő,broadMatch,crosswalk+llm,0.4,üvegprésgép-kezelő | édesség automata kezelője | extrudálógép-kezelő | hanglemezprés-kezelő | kerámiaipari csigapréskezelő
+51-9123.00,"Painting, Coating, and Decorating Workers",ESCO,7316.1,iparművész-festő,broadMatch,crosswalk+llm,0.4,bőrfeldolgozó-ipari utómunkálati technikus | fafestő művész | üvegfestő | porcelánfestő művész | bútorfelület-kezelő
+51-9195.00,"Molders, Shapers, and Casters, Except Metal and Plastic",ESCO,7314.3,kerámia- és porcelánformázó,broadMatch,crosswalk+llm,0.4,keramikus | téglakészítő | kézi öntő | öntőminta-készítő
+53-5022.00,Motorboat Operators,ESCO,8350.7,hajókarbantartó,closeMatch,crosswalk+llm,0.4,révkalauz | halász
+53-6051.00,Transportation Inspectors,FEOR,3659,Egyéb hatósági ügyintéző,,crosswalk+llm,0.4,3910 Egyéb ügyintéző
+53-6051.07,"Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",ESCO,3115.1.21,vasútijármű-ellenőr,broadMatch,crosswalk+llm,0.4,gépjármű-összeszerelési felügyelő | hajó-összeszerelési felügyelő | hajómotor-ellenőr | vasútijárműmotor-ellenőr
+19-1031.03,Park Naturalists,ESCO,2133.9,természetvédelmi előadó,closeMatch,crosswalk+llm,0.45,erdő- és természetvédelmi mérnök | környezeti nevelő | zöldterület-kezelésért felelős munkatárs | parki idegenvezető
+19-2041.03,Industrial Ecologists,ESCO,2133.5,ökológus,narrowMatch,crosswalk+llm,0.45,környezetvédelmi kutató | környezetmérnök | környezetvédelmi szakértő
+33-1012.00,First-Line Supervisors of Police and Detectives,FEOR,1121,"Országos és területi köz igazgatás, igazság szolgáltatás vezetője",,crosswalk+llm,0.45,1123 Helyi önkormányzat kinevezett vezetője
+43-5111.00,"Weighers, Measurers, Checkers, and Samplers, Recordkeeping",ESCO,4321.1.3,nyersanyagátvétel kezelője,broadMatch,crosswalk+llm,0.45,súly- és méretvizsgáló termékellenőr | termékminősítő
+45-2041.00,"Graders and Sorters, Agricultural Products",FEOR,3135,Minőségbiztosítási technikus,,crosswalk+llm,0.45,"7919 Egyéb, máshova nem sorolható ipari és építőipari foglalkozású"
+45-4023.00,Log Graders and Scalers,FEOR,3135,Minőségbiztosítási technikus,,crosswalk+llm,0.45,"7919 Egyéb, máshova nem sorolható ipari és építőipari foglalkozású"
+47-2082.00,Tapers,ESCO,7123.2,vakoló kőműves,broadMatch,llm,0.45,
+49-3043.00,Rail Car Repairers,ESCO,8211.6,vasútijármű-összeszerelő,closeMatch,crosswalk+llm,0.45,vasútijármű-villanyszerelő
+49-9097.00,Signal and Track Switch Repairers,ESCO,3112.1.10,vasúti vonalgondozó technikus,narrowMatch,crosswalk+llm,0.45,vasúti váltókezelő | vasúti műszaki ellenőr | blokkmester | jármű-elektronikai technikus
+49-9098.00,"Helpers--Installation, Maintenance, and Repair Workers",FEOR,7333,"Mezőgazdasági és ipari gép (motor) karbantartója, javítója",,crosswalk+llm,0.45,"7334 Mechanikaigép-karbantartó, -javító (műszerész)"
+51-4022.00,"Forging Machine Setters, Operators, and Tenders, Metal and Plastic",ESCO,7223.21,fémipari sajtológép-kezelő,broadMatch,crosswalk+llm,0.45,kovácsprés kezelője | egyengetőgép kezelője | fémhúzógép-kezelő | zömítőprés kezelője | süllyesztékes kovácsoló gép kezelője
+51-7032.00,"Patternmakers, Wood",FEOR,7322,Szerszámkészítő,,crosswalk+llm,0.45,7321 Lakatos
+51-9022.00,"Grinding and Polishing Workers, Hand",ESCO,7224.1,fémcsiszoló,broadMatch,crosswalk+llm,0.45,üvegcsiszoló | kőcsiszoló | facsiszoló | szerszámköszörűs
+51-9196.00,"Paper Goods Machine Setters, Operators, and Tenders",ESCO,8143.4,papírzacskógép-kezelő,broadMatch,crosswalk+llm,0.45,papírgépkezelő | papír írószereket készítő gép kezelője | pelenkagyártógép-kezelő | papírpépformázó gép kezelője | pépfehérítő berendezés kezelője
+11-1031.00,Legislators,ESCO,1111.5,parlamenti képviselő,broadMatch,crosswalk+llm,0.5,miniszter | államtitkár | szenátor | polgármester | tartományi kormányzó
+11-9041.01,Biofuels/Biodiesel Technology and Product Development Managers,ESCO,1223.2.1,termékfejlesztési menedzser,narrowMatch,crosswalk+llm,0.5,biokémiai mérnök
+11-9072.00,"Entertainment and Recreation Managers, Except Gambling",FEOR,1336,Sport- és rekreációs tevékenységet folytató egység vezetője,,crosswalk+llm,0.5,1335 Kulturális tevékenységet folytató egység vezetője
+11-9121.02,Water Resource Specialists,ESCO,2133.8,természetierőforrás-szakértő,closeMatch,crosswalk+llm,0.5,vízmérnök | környezetmérnök | környezetpolitikai referens
+11-9199.01,Regulatory Affairs Managers,FEOR,2910,Egyéb magasan képzett ügyintéző,,crosswalk+llm,0.5,"2611 Jogász, jogtanácsos | 2614 Közjegyző | 2619 Egyéb jogi foglalkozású"
+11-9199.02,Compliance Managers,FEOR,2910,Egyéb magasan képzett ügyintéző,,crosswalk+llm,0.5,"2611 Jogász, jogtanácsos | 2614 Közjegyző | 2619 Egyéb jogi foglalkozású"
+13-1051.00,Cost Estimators,ESCO,2421.1.1,gyártásiköltség-becslő,broadMatch,crosswalk+llm,0.5,költségelemző | mennyiségi ellenőr
+13-2061.00,Financial Examiners,FEOR,2513,"Könyvvizsgáló, könyvelő, könyvszakértő",,crosswalk+llm,0.5,"2512 Adótanácsadó, adószakértő | 2514 Kontroller"
+15-2051.02,Clinical Data Managers,ESCO,1342.1,klinikai informatikai igazgató,closeMatch,crosswalk+llm,0.5,egészségügyi dokumentációs vezető
+17-1022.01,Geodetic Surveyors,ESCO,2165.4,földmérő,broadMatch,llm,0.5,
+17-2111.00,"Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",FEOR,2139,"Egyéb, máshova nem sorolható mérnök",,crosswalk+llm,0.5,2113 Élelmiszer-ipari mérnök | 2114 Fa- és könnyűipari mérnök | 2137 Minőségbiztosítási mérnök
+17-2131.00,Materials Engineers,FEOR,2139,"Egyéb, máshova nem sorolható mérnök",,crosswalk+llm,0.5,2113 Élelmiszer-ipari mérnök | 2114 Fa- és könnyűipari mérnök | 2137 Minőségbiztosítási mérnök
+17-3026.01,Nanotechnology Engineering Technologists and Technicians,FEOR,2139,"Egyéb, máshova nem sorolható mérnök",,crosswalk+llm,0.5,2113 Élelmiszer-ipari mérnök | 2114 Fa- és könnyűipari mérnök | 2137 Minőségbiztosítási mérnök
+19-1031.02,Range Managers,ESCO,2133.8,természetierőforrás-szakértő,closeMatch,crosswalk+llm,0.5,erdész
+19-1041.00,Epidemiologists,FEOR,2169,Egyéb természettudományi foglalkozású,,crosswalk+llm,0.5,"2167 Biológus, botanikus, zoológus és rokon foglalkozású"
+19-2032.00,Materials Scientists,FEOR,2139,"Egyéb, máshova nem sorolható mérnök",,crosswalk+llm,0.5,2113 Élelmiszer-ipari mérnök | 2114 Fa- és könnyűipari mérnök | 2137 Minőségbiztosítási mérnök
+19-2041.02,Environmental Restoration Planners,ESCO,2133.5,ökológus,closeMatch,crosswalk+llm,0.5,környezetmérnök | környezetvédelmi szakértő | környezetvédelmi technikus | környezetvédelmi kutató | természetierőforrás-szakértő
+19-4044.00,Hydrologic Technicians,ESCO,2114.1.5,hidrológus,closeMatch,crosswalk+llm,0.5,hidrogeológus
+19-4061.00,Social Science Research Assistants,ESCO,2310.1.41,egyetemi tudományos segédmunkatárs,narrowMatch,crosswalk+llm,0.5,szociálpolitikai kutató
+23-2093.00,"Title Examiners, Abstractors, and Searchers",FEOR,3649,Egyéb igazgatási és jogi asszisztens,,crosswalk+llm,0.5,3910 Egyéb ügyintéző
+25-1053.00,"Environmental Science Teachers, Postsecondary",ESCO,2310.1,oktató felsőoktatási intézményben,narrowMatch,crosswalk+llm,0.5,biológiaoktató felsőoktatási intézményben
+25-1062.00,"Area, Ethnic, and Cultural Studies Teachers, Postsecondary",ESCO,2310.1.1,antropológiaoktató felsőoktatási intézményben,closeMatch,crosswalk+llm,0.5,történelemoktató felsőoktatási intézményben | szociológiaoktató felsőoktatási intézményben
+25-1123.00,"English Language and Literature Teachers, Postsecondary",ESCO,2310.1.40,irodalomoktató felsőoktatási intézményben,narrowMatch,crosswalk+llm,0.5,középiskolai irodalomtanár | modern nyelvek oktatója felsőoktatási intézményben | nyelviskolai nyelvtanár | nyelvészetoktató felsőoktatási intézményben | irodalmár
+25-1192.00,"Family and Consumer Sciences Teachers, Postsecondary",ESCO,2310.1,oktató felsőoktatási intézményben,narrowMatch,crosswalk+llm,0.5,pedagógiaoktató felsőoktatási intézményben | szociológiaoktató felsőoktatási intézményben | jogi oktató felsőoktatási intézményben | gazdasági oktató felsőoktatási intézményben | közgazdaságtan-oktató felsőoktatási intézményben
+25-2059.01,Adapted Physical Education Specialists,ESCO,3422.4,sportoktató,narrowMatch,crosswalk+llm,0.5,sportterapeuta
+27-1012.00,Craft Artists,ESCO,2651.4,kerámiakészítő,broadMatch,crosswalk+llm,0.5,üvegművész | szőnyegszövő | iparművész-festő | lakástextil-készítő | kerámiafestő
+27-3041.00,Editors,ESCO,2642.1.5,olvasószerkesztő,broadMatch,crosswalk+llm,0.5,könyvszerkesztő | főszerkesztő | magazinszerkesztő | szerkesztőségi titkár | lapszerkesztő
+27-3042.00,Technical Writers,FEOR,2721,Író (újságíró nélkül),,crosswalk+llm,0.5,2715 Könyv- és lapkiadó szerkesztője
+29-1122.01,"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",ESCO,2635.3.22,rehabilitációs szociális munkás,closeMatch,crosswalk+llm,0.5,munkaterápiás asszisztens | segítő technológus
+29-1122.01,"Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",FEOR,2312,Szociális munkás és tanácsadó,,crosswalk+llm,0.5,2311 Szociálpolitikus
+29-2012.01,Histology Technicians,ESCO,3212.2,orvosi laboratóriumi asszisztens,closeMatch,crosswalk+llm,0.5,laboratóriumi technikus | citotechnológus | biológiai technikus
+29-9091.00,Athletic Trainers,ESCO,2264.2,fizioterapeuta,closeMatch,crosswalk+llm,0.5,kiropraktőr
+31-1133.00,Psychiatric Aides,ESCO,5321.1,ápolási asszisztens,narrowMatch,crosswalk+llm,0.5,segédápoló/segédápolónő
+33-1011.00,First-Line Supervisors of Correctional Officers,FEOR,1329,Egyéb szolgáltatást nyújtó egység vezetője,,crosswalk+llm,0.5,1335 Kulturális tevékenységet folytató egység vezetője
+33-1021.00,First-Line Supervisors of Firefighting and Prevention Workers,FEOR,1329,Egyéb szolgáltatást nyújtó egység vezetője,,crosswalk+llm,0.5,1335 Kulturális tevékenységet folytató egység vezetője
+33-2022.00,Forest Fire Inspectors and Prevention Specialists,FEOR,3659,Egyéb hatósági ügyintéző,,crosswalk+llm,0.5,3910 Egyéb ügyintéző
+33-3021.02,Police Identification and Records Officers,ESCO,3355.1,bűnügyi nyomozó,closeMatch,crosswalk+llm,0.5,rendőrségi nyomozó
+33-9011.00,Animal Control Workers,FEOR,5259,Egyéb személy- és vagyonvédelmi foglalkozású,,crosswalk+llm,0.5,5255 Természetvédelmi őr | 5256 Közterület-felügyelő
+33-9091.00,Crossing Guards and Flaggers,FEOR,5259,Egyéb személy- és vagyonvédelmi foglalkozású,,crosswalk+llm,0.5,5255 Természetvédelmi őr | 5256 Közterület-felügyelő
+35-2015.00,"Cooks, Short Order",ESCO,5120.1.3,grillszakács,broadMatch,crosswalk+llm,0.5,gyorskiszolgáló éttermi személyzet | szakács
+37-1012.00,"First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",ESCO,6113.3,kertészeti termelési csoportvezető,closeMatch,crosswalk+llm,0.5,táj- és kertépítészmérnök | tájkertész | kertészeti termeléssel foglalkozó egység vezetője
+39-1014.00,"First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",ESCO,3423.1,szabadidő-szervező,broadMatch,crosswalk+llm,0.5,programszervezésért felelős menedzser | rekreáció- és sportszervező
+39-6011.00,Baggage Porters and Bellhops,ESCO,9621.2,londiner,broadMatch,crosswalk+llm,0.5,repülőtéri poggyászkezelő
+41-3031.00,"Securities, Commodities, and Financial Services Sales Agents",ESCO,3311.2.4,értékpapírbróker,closeMatch,crosswalk+llm,0.5,tőzsde- és pénzügyi ügynök | pénzügyi bróker | kereskedelmi ügynök | befektetésialap-kereskedő | devizabróker
+41-3091.00,"Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",ESCO,3322.1,értékesítési ügyintéző,narrowMatch,crosswalk+llm,0.5,napenergia-tanácsadó | házaló ügynök | ügyfélkapcsolati menedzser | villamosenergia-értékesítési ügyintéző | megújulóenergia-értékesítési ügyintéző
+43-3061.00,Procurement Clerks,FEOR,3649,Egyéb igazgatási és jogi asszisztens,,crosswalk+llm,0.5,3641 Személyi asszisztens
+43-4021.00,Correspondence Clerks,ESCO,4110.1,irodai ügyintéző,closeMatch,crosswalk+llm,0.5,recepciós | igazgatási asszisztens | gyors- és gépíró | idegennyelvű levelező
+43-5011.00,Cargo and Freight Agents,ESCO,4323.6,árufuvarozói ügyintéző,broadMatch,crosswalk+llm,0.5,"szállítási, szállítmányozási nyilvántartó | légi szállítmányozási nyilvántartó"
+43-5021.00,Couriers and Messengers,ESCO,9331.1,kerékpáros kézbesítő,broadMatch,crosswalk+llm,0.5,gépkocsi- és kisteherautó-vezető | postai kézbesítő | motoros futár
+43-5061.00,"Production, Planning, and Expediting Clerks",FEOR,3649,Egyéb igazgatási és jogi asszisztens,,crosswalk+llm,0.5,3641 Személyi asszisztens
+43-6014.00,"Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",FEOR,3649,Egyéb igazgatási és jogi asszisztens,,crosswalk+llm,0.5,3641 Személyi asszisztens
+43-9071.00,"Office Machine Operators, Except Computer",ESCO,4110.1,irodai ügyintéző,closeMatch,crosswalk+llm,0.5,szkennerkezelő | gépi könyvkötő | hajtogatógép-kezelő | reprográfiai technikus
+45-3031.00,Fishing and Hunting Workers,ESCO,6223.1,mélytengeri halász,broadMatch,crosswalk+llm,0.5,vadőr | halászháló-készítő | matróz halászhajón | vadász | víziélőlény-begyűjtő
+47-2043.00,Floor Sanders and Finishers,ESCO,7523.5,facsiszoló,closeMatch,crosswalk+llm,0.5,fapadló- és parkettarakó
+47-2073.00,Operating Engineers and Other Construction Equipment Operators,ESCO,8342.3,markológép-kezelő,broadMatch,crosswalk+llm,0.5,útépítő | szkreperkezelő | buldózerkezelő | úthengerkezelő | földgyalukezelő
+47-3011.00,"Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",ESCO,7112.1,épületfalazó kőműves,closeMatch,crosswalk+llm,0.5,épületszobrász
+47-3014.00,"Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",ESCO,7131.1,festő és mázoló,closeMatch,crosswalk+llm,0.5,tapétázó | vakoló kőműves
+47-5023.00,"Earth Drillers, Except Oil and Gas",ESCO,8112.3,kőzetfúrógép-kezelő,closeMatch,crosswalk+llm,0.5,kapcsolós | fúrós | fúrósegédmunkás | alagútfúrógép-kezelő
+49-2021.00,"Radio, Cellular, and Tower Equipment Installers and Repairers",ESCO,7422.6,telekommunikációs berendezések műszerésze,broadMatch,crosswalk+llm,0.5,távközlési technikus | mobiltelefon-szerelő | kommunikációs infrastruktúra karbantartó | rádiótechnikus | távközlési mérnök
+49-2097.00,Audiovisual Equipment Installers and Repairers,ESCO,7421.3,szórakoztatóelektronikai szerelő,broadMatch,llm,0.5,
+49-9011.00,Mechanical Door Repairers,ESCO,7115.2,ajtóbeépítő,narrowMatch,crosswalk+llm,0.5,lakatos és zárszerelő
+49-9012.00,"Control and Valve Installers and Repairers, Except Mechanical Door",ESCO,7411.1.2,villanyóra-szerelő,broadMatch,crosswalk+llm,0.5,gyengeáramú villamosipari technikus
+49-9045.00,"Refractory Materials Repairers, Except Brickmasons",ESCO,7112.1,épületfalazó kőműves,closeMatch,crosswalk+llm,0.5,épületszobrász | kőcsiszoló | téglakészítő
+49-9095.00,Manufactured Building and Mobile Home Installers,FEOR,7529,"Egyébépítési, szerelési foglalkozású",,crosswalk+llm,0.5,7515 Építményszerkezet-szerelő | 7519 Egyéb építőmesteri foglalkozású | 7539 Egyébépítési szakipari foglalkozású | 7912 Ipari alpinista
+51-2061.00,Timing Device Assemblers and Adjusters,ESCO,7311.4,mérő- és precíziósműszer-készítő,closeMatch,crosswalk+llm,0.5,órakészítő | órajavító
+51-4031.00,"Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",ESCO,7223.4.7,lyukasztóprés kezelője,broadMatch,crosswalk+llm,0.5,fémipari sajtológép-kezelő | lézergravírozó gép kezelője | oszlopos fúrógép kezelője | lézervágógép-kezelő | egyengetőgép kezelője
+51-8093.00,"Petroleum Pump System Operators, Refinery Operators, and Gaugers",ESCO,3134.3,központi irányítótermi operátor kőolaj-finomítóban,broadMatch,crosswalk+llm,0.5,kőolajszivattyú-rendszer kezelője | olajszint-szabályozó
+51-9012.00,"Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",FEOR,8111,"Élelmiszer-, italgyártó gép kezelője",,crosswalk+llm,0.5,"7115 Borász és egyéb szeszesital-gyártó, szikvízkészítő"
+51-9061.00,"Inspectors, Testers, Sorters, Samplers, and Weighers",ESCO,7543.8,termékminősítő,closeMatch,crosswalk+llm,0.5,bőrválogató | akkumulátortesztelő technikus | szivarellenőr | bőripari minőségellenőr | textilipari minőségellenőr
+53-3053.00,Shuttle Drivers and Chauffeurs,ESCO,8322.6,magánsofőr,broadMatch,crosswalk+llm,0.5,trolibuszvezető | autóbuszvezető | taxis | villamosvezető | halottaskocsi-vezető
+53-6051.00,Transportation Inspectors,ESCO,3359.5,teheráru-felügyelő,broadMatch,crosswalk+llm,0.5,hajórakomány-felügyelő | vasútijármű-ellenőr | vasútijármű-összeszerelési felügyelő | hajóellenőr | veszélyesáru-szállítási biztonsági tanácsadó
+53-7021.00,Crane and Tower Operators,ESCO,8343.5,toronydaru-kezelő,broadMatch,crosswalk+llm,0.5,mobildaru-kezelő | konténerdaru kezelője | ipari daru kezelője | darukötöző
+53-7041.00,Hoist and Winch Operators,ESCO,8343.3,mobildaru-kezelő,closeMatch,crosswalk+llm,0.5,toronydaru-kezelő | konténerdaru kezelője | ipari daru kezelője
+11-3051.03,Biofuels Production Managers,ESCO,1321.2.1.1,vegyipari termelési vezető,closeMatch,crosswalk+llm,0.55,vegyipari folyamatirányító | vegyi üzem vezetője
+13-1011.00,"Agents and Business Managers of Artists, Performers, and Athletes",FEOR,3639,"Egyéb, máshova nem sorolható üzleti jellegű szolgáltatás ügyintézője",,crosswalk+llm,0.55,3910 Egyéb ügyintéző
+13-1041.07,Regulatory Affairs Specialists,FEOR,2910,Egyéb magasan képzett ügyintéző,,crosswalk+llm,0.55,"2611 Jogász, jogtanácsos | 2614 Közjegyző | 2619 Egyéb jogi foglalkozású"
+13-2099.01,Financial Quantitative Analysts,ESCO,2413.1.2,befektetési elemző,closeMatch,crosswalk+llm,0.55,pénzügyi elemző | értékpapír-elemző | vagyonértékelő
+15-2011.00,Actuaries,FEOR,2166,Matematikus,,crosswalk+llm,0.55,2625 Statisztikus
+15-2099.01,Bioinformatics Technicians,ESCO,2131.3,bioinformatikus,closeMatch,crosswalk+llm,0.55,laboratóriumi technikus
+17-2111.02,Fire-Prevention and Protection Engineers,FEOR,2139,"Egyéb, máshova nem sorolható mérnök",,crosswalk+llm,0.55,2113 Élelmiszer-ipari mérnök | 2114 Fa- és könnyűipari mérnök | 2137 Minőségbiztosítási mérnök
+17-3024.01,Robotics Technicians,FEOR,3139,"Egyéb, máshova nem sorolható technikus",,crosswalk+llm,0.55,3162 Energetikus | 3163 Munkavédelmi és üzembiztonsági foglalkozású | 3113 Élelmiszer-ipari technikus | 3114 Fa- és könnyűipari technikus | 3133 Földmérő és térinformatikai technikus | 3134 Környezetvédelmi technikus | 3190 Egyéb műszaki foglalkozású | 3135 Minőségbiztosítási technikus
+17-3026.00,Industrial Engineering Technologists and Technicians,FEOR,3139,"Egyéb, máshova nem sorolható technikus",,crosswalk+llm,0.55,3162 Energetikus | 3163 Munkavédelmi és üzembiztonsági foglalkozású | 3113 Élelmiszer-ipari technikus | 3114 Fa- és könnyűipari technikus | 3133 Földmérő és térinformatikai technikus | 3134 Környezetvédelmi technikus | 3190 Egyéb műszaki foglalkozású | 3135 Minőségbiztosítási technikus
+17-3029.08,Photonics Technicians,FEOR,3139,"Egyéb, máshova nem sorolható technikus",,crosswalk+llm,0.55,3162 Energetikus | 3163 Munkavédelmi és üzembiztonsági foglalkozású | 3113 Élelmiszer-ipari technikus | 3114 Fa- és könnyűipari technikus | 3133 Földmérő és térinformatikai technikus | 3134 Környezetvédelmi technikus | 3190 Egyéb műszaki foglalkozású | 3135 Minőségbiztosítási technikus
+19-1042.00,"Medical Scientists, Except Epidemiologists",ESCO,2269.16,orvosbiológiai kutató,broadMatch,crosswalk+llm,0.55,immunológus | fiziológus | vezető orvosbiológus | orvosbiológus | toxikológus
+19-3022.00,Survey Researchers,ESCO,2431.11,piackutatási elemző,broadMatch,crosswalk+llm,0.55,"szociálpolitikai kutató | piackutatási kérdező | lakossági kérdező, összeíró | piackutatási vezető | demográfus"
+19-3091.00,Anthropologists and Archeologists,ESCO,2632.1,antropológus,broadMatch,crosswalk+llm,0.55,régész
+23-1021.00,"Administrative Law Judges, Adjudicators, and Hearing Officers",ESCO,2612.1,bíró,narrowMatch,crosswalk+llm,0.55,békebíró | legfelsőbb bíróság bírája
+27-3091.00,Interpreters and Translators,ESCO,2643.6,fordító,broadMatch,crosswalk+llm,0.55,tolmács | jelnyelvi tolmács | filmfeliratozó | lokalizációs szakember | jogász-nyelvész
+29-1141.04,Clinical Nurse Specialists,ESCO,2221.1,osztályvezető ápoló,broadMatch,crosswalk+llm,0.55,szakápoló | betegápoló | szülész/szülésznő
+29-1171.00,Nurse Practitioners,ESCO,2221.1,osztályvezető ápoló,broadMatch,crosswalk+llm,0.55,háziorvos | betegápoló | szakápoló | szülész/szülésznő
+29-2011.04,Histotechnologists,ESCO,2269.13.1,citotechnológus,closeMatch,crosswalk+llm,0.55,orvosbiológus
+29-2032.00,Diagnostic Medical Sonographers,ESCO,2269.8.1,diagnosztikai radiográfus,closeMatch,crosswalk+llm,0.55,radiográfus
+43-5032.00,"Dispatchers, Except Police, Fire, and Ambulance",FEOR,4132,"Szállítási, szállítmányozási nyilvántartó",,crosswalk+llm,0.55,3161 Munka- és termelésszervező
+43-5061.00,"Production, Planning, and Expediting Clerks",ESCO,3343.1.7,logisztikai ügyintéző,closeMatch,crosswalk+llm,0.55,beszerzéstervező | élelmiszergyártási tervező | bőripari termelésszervező | gázforgalom-tervező | gyártósori gyártáskoordinátor
+45-1011.00,"First-Line Supervisors of Farming, Fishing, and Forestry Workers",ESCO,6130.1,mezőgazdasági üzemvezető,closeMatch,crosswalk+llm,0.55,akvakultúrás-tenyésztési menedzser | akvakultúra-betakarítási menedzser | növénytermesztés vezetője | vincellér | akvakultúra-telep vezetője
+45-2021.00,Animal Breeders,ESCO,9212.4,állattenyésztő,closeMatch,crosswalk+llm,0.55,pásztor | prémesállat-tenyésztő | sertéstenyésztő | szarvasmarha-tenyésztő | méhész
+47-1011.03,Solar Energy Installation Managers,ESCO,7411.1.4,napenergia-technikus,closeMatch,crosswalk+llm,0.55,villanyszerelők művezetője
+47-3012.00,Helpers--Carpenters,FEOR,7513,Ács,,crosswalk+llm,0.55,7514 Épületasztalos
+47-4099.03,Weatherization Installers and Technicians,ESCO,7124.1,szigetelő,closeMatch,crosswalk+llm,0.55,"hűtő-, klíma- és hőszivattyúberendezés-szerelő | födémpanel-elhelyező | ablakszerelő | szigetelők művezetője | tetőfedő"
+49-9044.00,Millwrights,ESCO,7233.7,"ipari gép karbantartója, javítója",narrowMatch,crosswalk+llm,0.55,hajóépítő | magasépítő tartószerkezet-szerelő | darukötöző | árbócmester | tartószerkezetek terepszinti elemeinek szerelője
+49-9045.00,"Refractory Materials Repairers, Except Brickmasons",FEOR,7537,Kályha- és kandallóépítő,,crosswalk+llm,0.55,7511 Kőműves
+51-2021.00,"Coil Winders, Tapers, and Finishers",ESCO,8151.4,csévélőgép-kezelő,broadMatch,crosswalk+llm,0.55,száltekercselőgép-kezelő | szigetelőcső-tekercselő
+51-2031.00,Engine and Other Machine Assemblers,ESCO,8211.2,iparigép-összeszerelő,broadMatch,crosswalk+llm,0.55,gázturbináshajtómű-technikus | hajómotor-összeszerelő | légijárműmotor-összeszerelő | gépjárműmotor-összeszerelő
+51-3092.00,Food Batchmakers,ESCO,8160.34,élelmiszergyártó gép kezelője,closeMatch,crosswalk+llm,0.55,gabonatisztító-gép kezelője | fűszerkeverő | üdítőital-turmixgép kezelője | rágógumigyártó gép kezelője | keverőüzemi gépkezelő
+51-4033.00,"Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",ESCO,7223.4.2,köszörűgép-kezelő,broadMatch,crosswalk+llm,0.55,facsiszoló | felületcsiszoló gép kezelője | sorjázó | reszelőgép-kezelő | palástköszörűgép-kezelő
+51-6064.00,"Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",ESCO,8151.4,csévélőgép-kezelő,broadMatch,crosswalk+llm,0.55,sodrógépkezelő | fonógépkezelő | fonatológép-kezelő | fonatoló technikus | szálképzőgép-kezelő
+51-8031.00,Water and Wastewater Treatment Plant and System Operators,ESCO,3132.7,víztisztító berendezés kezelője,broadMatch,crosswalk+llm,0.55,folyékonyhulladék-tisztító berendezés kezelője | szennyvíztelepi gépkezelő | szennyvíztelep-kezelő | sótalanító technikus
+51-8091.00,Chemical Plant and System Operators,ESCO,3133.1,vegyipari feldolgozó berendezés kezelője,broadMatch,crosswalk+llm,0.55,vegyipari központi irányítótermi operátor | levegőszétválasztó berendezés kezelője | vegyianyag-keverő kezelője | gravitációs szeparátor kezelője | nitrálóberendezés kezelője
+51-9032.00,"Cutting and Slicing Machine Setters, Operators, and Tenders",ESCO,8156.2.1,vágógépkezelő,broadMatch,crosswalk+llm,0.55,áttekercselő-daraboló gép kezelője | automata cipőalkatrészvágó gép kezelője | gumivágó | furnérvágógép-kezelő | papírvágógép-kezelő
+51-9194.00,Etchers and Engravers,ESCO,7316.3,fémvésnök,broadMatch,crosswalk+llm,0.55,dombornyomógép-kezelő | ékszervésnök | kőfaragó | üvegmetsző | vésős
+53-1041.00,Aircraft Cargo Handling Supervisors,FEOR,4132,"Szállítási, szállítmányozási nyilvántartó",,crosswalk+llm,0.55,3161 Munka- és termelésszervező
+53-1044.00,First-Line Supervisors of Passenger Attendants,ESCO,5111.1,kabinszemélyzet-menedzser,exactMatch,crosswalk+llm,0.55,főkalauz
+53-4031.00,Railroad Conductors and Yardmasters,ESCO,5112.3,kalauz,closeMatch,crosswalk+llm,0.55,vasúti váltókezelő | vasúti forgalomirányító | blokkmester | főkalauz
+53-6061.00,Passenger Attendants,ESCO,5111.2,utaskísérő,broadMatch,crosswalk+llm,0.55,vasúti utaskísérő | légiutas-kísérő | vasúti ügyfél-tájékoztató | utaskísérő hajón | utaskiszolgálási ügyintéző
+53-7071.00,Gas Compressor and Gas Pumping Station Operators,ESCO,3133.1.5,gázállomás-kezelő,closeMatch,crosswalk+llm,0.55,gázfeldolgozó berendezés kezelője | földgázszállítórendszer-kezelő | gázfeldolgozó-üzemi központi irányítótermi operátor

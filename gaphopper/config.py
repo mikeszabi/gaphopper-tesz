@@ -53,8 +53,8 @@ GEMINI_PRICES = {
     "gemini-3.1-pro-preview": (2.0, 12.0, 0.20),
 }
 PRICES.update(GEMINI_PRICES)
-MODEL_CATALOG = {"gemini": ["gemini-3.8-flash"] + [m for m in GEMINI_PRICES if m != "gemini-3.8-flash"],
-    "anthropic": ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"]}
+# Runtime availability comes exclusively from model_catalog.list_models, never prices.
+MODEL_CATALOG = {}
 GEMINI_PRICE_NOTE = ("Google Developer API • fizetős Standard, szöveges tokenek • ellenőrizve: 2026-10-21. "
     "3.1 Pro: a táblázat ≤200 000 bemeneti tokenre; efelett 4 / 18 / 0.40 USD. "
     "2.5 Pro: ≤200k 1.25 / 10 / 0.125; >200k 2.50 / 15 / 0.25 USD. A 2.5 modellek hozzáférése korlátozott lehet. "

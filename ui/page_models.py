@@ -1,110 +1,85 @@
-"""Modellek: lépésenkénti szolgáltató, modell, gondolkodási szint; helyi (DGX Spark) szerver; P2-mód."""
+"""Optional Streamlit model page: choices come only from live provider catalogs."""
 from __future__ import annotations
-
+import hashlib
+import os
 import pandas as pd
 import streamlit as st
-
-from gaphopper.config import (MODELS_PATH, PRICES, PROVIDERS, STEP_NAMES, STEPS, save_ui_models, settings,
-                              ui_models)
-
-EFFORTS = ["alap", "low", "medium", "high", "xhigh", "max"]
-THINKING = ["be", "off"]
-
-PRESETS = {
-    "Olcsó felhő (Sonnet + Haiku)": {
-        "E0": ("anthropic", "claude-sonnet-5-5", "low", ""), "P1": ("anthropic", "claude-sonnet-5-5", "low", ""),
-        "P2": ("anthropic", "claude-haiku-5-5", "low", ""), "P3": ("anthropic", "claude-haiku-5-5", "low", "off"),
-        "P4": ("anthropic", "claude-sonnet-5-5", "medium", ""), "P5": ("anthropic", "claude-haiku-5-5", "low", "off")},
-    "Sonnet + helyi Qwen (DGX Spark)": {
-        "E0": ("anthropic", "claude-sonnet-5-5", "low", ""), "P1": ("anthropic", "claude-sonnet-5-5", "low", ""),
-        "P2": ("local", "", "", "off"), "P3": ("local", "", "", "off"),
-        "P4": ("anthropic", "claude-sonnet-5-5", "medium", ""), "P5": ("local", "", "", "off")},
-    "Minden helyben (Qwen)": {s: ("local", "", "", "off") for s in STEPS},
-}
+from gaphopper.config import MODELS_PATH, PRICES, PROVIDERS, STEPS, STEP_NAMES, settings, ui_models
+from gaphopper.model_catalog import list_models, ModelDiscoveryError
 
 
-def _rows(s) -> list[dict]:
-    return [{"lépés": st_, "feladat": STEP_NAMES[st_], "szolgáltató": s.step(st_).provider,
-             "modell": s.step(st_).model, "effort": s.step(st_).effort or "alap",
-             "thinking": s.step(st_).thinking or "be",
-             "max_tokens": s.step(st_).max_tokens} for st_ in STEPS]
+@st.cache_data(ttl=60,max_entries=24)
+def _catalog(provider, base_url, key_env, local_key, credential_fingerprint):
+    return list_models(provider,base_url=base_url,api_key_env=key_env,local_api_key=local_key)
 
 
-def page() -> None:
-    st.title("Modellek")
-    st.caption(f"A felületen mentett beállítás a {MODELS_PATH.relative_to(MODELS_PATH.parent.parent)} fájlba kerül, "
-               "és erősebb, mint a .env. Az API-kulcsok a .env-ben maradnak.")
-    s = settings()
-    data = ui_models()
-
-    st.subheader("Lépésenként")
-    preset = st.selectbox("Előbeállítás", ["(jelenlegi)"] + list(PRESETS))
-    rows = _rows(s)
-    if preset != "(jelenlegi)":
-        local_model = (data.get("local") or {}).get("model", "")
-        for r in rows:
-            p, m, e, t = PRESETS[preset][r["lépés"]]
-            r.update({"szolgáltató": p, "modell": m or (local_model if p == "local" else ""),
-                      "effort": e or "alap", "thinking": t or "be"})
-    ed = st.data_editor(pd.DataFrame(rows), hide_index=True, key=f"models_ed_{preset}",
-                        disabled=["lépés", "feladat"], column_config={
-                            "szolgáltató": st.column_config.SelectboxColumn(options=PROVIDERS, required=True),
-                            "effort": st.column_config.SelectboxColumn(
-                                options=EFFORTS, help="Anthropic gondolkodási szint; alap = a modell alapértéke"),
-                            "thinking": st.column_config.SelectboxColumn(
-                                options=THINKING, help="off: gondolkodás ki (Sonnet 5.5, Haiku 5.5, Qwen)"),
-                            "max_tokens": st.column_config.NumberColumn(min_value=256, max_value=128000, step=256),
-                        })
-    st.caption("Helyi szolgáltatónál üres modellnév esetén a lent megadott helyi modell fut.")
-
-    st.subheader("Helyi modell (OpenAI-kompatibilis szerver, pl. vLLM a DGX Sparkon)")
-    loc = data.get("local") or {}
-    c1, c2 = st.columns(2)
-    base_url = c1.text_input("Cím (base URL)", loc.get("base_url") or s.local_base_url,
-                             help="pl. http://spark.local:8000/v1 – a /v1 végződéssel")
-    model = c2.text_input("Modell neve a szerveren", loc.get("model", ""), help="a szerver /v1/models listája szerint")
-    c3, c4 = st.columns(2)
-    json_mode = c3.selectbox("JSON-kényszer", ["object", "schema", "none"],
-                             index=["object", "schema", "none"].index(loc.get("json_mode", s.local_json_mode)),
-                             help="object: json_object; schema: JSON-sémás kötött dekódolás (vLLM); none: nincs")
-    timeout = c4.number_input("Időkorlát (mp)", 30, 7200, int(loc.get("timeout", s.local_timeout)))
-    if st.button("Kapcsolat próba"):
-        from gaphopper.config import StepModel
-        from gaphopper.llm import LocalLLM
-
-        try:
-            ids = LocalLLM(StepModel("local", model or "x", None, 1), base_url, s.local_api_key).models()
-            st.success("Elérhető modellek: " + (", ".join(ids) or "-"))
-        except Exception as exc:  # hálózati hiba
-            st.error(f"Nem érhető el: {exc}")
-
-    st.subheader("Bírálat (P2)")
-    p2 = data.get("p2") or {}
-    modes = ["auto", "always", "never"]
-    c5, c6 = st.columns(2)
-    mode = c5.selectbox("Mikor fusson?", modes, index=modes.index(p2.get("mode", s.p2_mode)), format_func={
-        "auto": "csak szabályjelzésnél + véletlen minta", "always": "mindig", "never": "soha"}.get)
-    sample = c6.slider("Véletlen minta aránya", 0.0, 1.0, float(p2.get("sample", s.p2_sample)), 0.05)
-
-    if st.button("Mentés", type="primary"):
-        steps = {}
-        for r in ed.to_dict("records"):
-            steps[r["lépés"]] = {"provider": r["szolgáltató"], "model": r["modell"] or "",
-                                 "effort": "" if r["effort"] in (None, "alap") else r["effort"],
-                                 "thinking": "off" if r["thinking"] == "off" else "",
-                                 "max_tokens": int(r["max_tokens"])}
-        data.update({"steps": steps, "local": {"base_url": base_url, "model": model, "json_mode": json_mode,
-                                               "timeout": int(timeout)},
-                     "p2": {"mode": mode, "sample": float(sample)}})
-        save_ui_models(data)
-        st.success("Mentve. A következő futtatás már ezzel indul.")
+def page():
+    from gaphopper.web import save_models
+    st.title('Modellek')
+    st.caption('Csak az aktuális API-kulccsal és végponttal lekért modelllistából választhatsz. A mentett modellnév önmagában nem igazolja az elérhetőséget.')
+    st.caption('Mentéskor minden különböző kiválasztott modell rövid JSON-próbahívást kap; ez szolgáltatói díjat használhat.')
+    s=settings()
+    data=ui_models()
+    st.subheader('OpenAI-kompatibilis API')
+    base_url=st.text_input('API base URL',s.openai_base_url)
+    key_env=st.text_input('API-kulcs környezeti változója',s.openai_api_key_env)
+    json_mode=st.selectbox('API JSON-kényszer',['object','schema','none'],index=['object','schema','none'].index(s.openai_json_mode))
+    timeout=st.number_input('API időkorlát (mp)',min_value=1,max_value=7200,value=int(s.openai_timeout))
+    st.subheader('Helyi modell')
+    local_url=st.text_input('Helyi base URL',s.local_base_url)
+    local_json=st.selectbox('Helyi JSON-kényszer',['object','schema','none'],index=['object','schema','none'].index(s.local_json_mode))
+    local_timeout=st.number_input('Helyi időkorlát (mp)',min_value=30,max_value=7200,value=int(s.local_timeout))
+    if st.button('Modelllisták frissítése'):
+        _catalog.clear()
         st.rerun()
-    if MODELS_PATH.exists() and st.button("Felületi beállítás törlése (vissza a .env-re)"):
+    selections=[]
+    valid=True
+    fetched={}
+    for step in STEPS:
+        previous=s.step(step)
+        st.subheader(f'{step} – {STEP_NAMES[step]}')
+        provider=st.selectbox('Szolgáltató',PROVIDERS,index=PROVIDERS.index(previous.provider),key=f'provider_{step}')
+        model=''
+        if provider!='manual':
+            if provider not in fetched:
+                url=base_url if provider=='openai' else local_url
+                secret_names={'anthropic':['ANTHROPIC_API_KEY','ANTHROPIC_WORKSPACE_ID'],
+                              'gemini':['GEMINI_API_KEY','GOOGLE_API_KEY'],'openai':[key_env],'local':[]}[provider]
+                fingerprint=hashlib.sha256('|'.join(os.getenv(k,'') for k in secret_names).encode()).hexdigest()
+                try:
+                    fetched[provider]=(_catalog(provider,url,key_env,s.local_api_key,fingerprint),None)
+                except ModelDiscoveryError as exc:
+                    fetched[provider]=([],str(exc))
+            ids,error=fetched[provider]
+            if error:
+                st.error(error)
+            if previous.model and previous.model not in ids and provider==previous.provider:
+                st.caption(f'Mentett modell: {previous.model} – nem szerepel az aktuális API-listában.')
+            model=st.selectbox('Modell',ids,index=ids.index(previous.model) if previous.model in ids else None,
+                               placeholder='Válassz az API-modelllistából',disabled=not ids,key=f'model_{step}') or ''
+            valid=valid and bool(model)
+        effort=st.selectbox('Gondolkodási szint',['','low','medium','high','xhigh','max'],
+                            index=['','low','medium','high','xhigh','max'].index(previous.effort),
+                            disabled=provider!='anthropic',key=f'effort_{step}')
+        thinking=st.checkbox('Gondolkodás kikapcsolása',value=previous.thinking=='off',key=f'thinking_{step}')
+        max_tokens=st.number_input('Maximális kimenet',min_value=256,max_value=128000,value=previous.max_tokens,step=256,key=f'tokens_{step}')
+        selections.append({'step':step,'provider':provider,'model':model,'effort':effort if provider=='anthropic' else '',
+                           'thinking':'off' if thinking else '', 'max_tokens':max_tokens})
+    st.subheader('Bírálat (P2)')
+    modes=['auto','always','never']
+    mode=st.selectbox('Mikor fusson?',modes,index=modes.index(s.p2_mode))
+    sample=st.slider('Véletlen minta aránya',0.,1.,float(s.p2_sample),.05)
+    if st.button('Mentés',type='primary',disabled=not valid):
+        try:
+            save_models({'steps':selections,'openai':{'base_url':base_url,'api_key_env':key_env,'json_mode':json_mode,'timeout':timeout},
+                         'local':{'base_url':local_url,'model':(data.get('local') or {}).get('model',''),'json_mode':local_json,'timeout':local_timeout},
+                         'p2':{'mode':mode,'sample':sample}})
+            st.success('Mentve.')
+            st.rerun()
+        except (ValueError,ModelDiscoveryError) as exc:
+            st.error(str(exc))
+    if MODELS_PATH.exists() and st.button('Felületi beállítás törlése (vissza a .env-re)'):
         MODELS_PATH.unlink()
         st.rerun()
-
-    with st.expander("Árak (USD / 1M token: input, output, gyorsítótárból olvasott input)"):
-        st.dataframe(pd.DataFrame([{"modell": k, "input": v[0], "output": v[1], "cache": v[2]}
-                                   for k, v in (PRICES | (data.get("prices") or {})).items()]), hide_index=True)
-        st.caption("A helyi modell ingyenesnek számít. Más modell árát a config/models.yaml 'prices' részébe "
-                   "írhatod: modellnév: [input, output, cache].")
+    with st.expander('Mentett és referenciaárak – nem modellajánlások'):
+        st.dataframe(pd.DataFrame([{'modell':k,'input':v[0],'output':v[1],'cache':v[2]} for k,v in (PRICES | (data.get('prices') or {})).items()]),hide_index=True)
